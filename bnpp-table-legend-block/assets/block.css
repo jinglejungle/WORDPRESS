@@ -1,0 +1,56 @@
+/* Main block container */
+.bnpp-table-legend-block {
+    margin: 20px 0;
+}
+
+/* Legend styling */
+.bnpp-table-legend {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #0073aa;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+/* Table base styling */
+.bnpp-custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+/* Table cells */
+.bnpp-custom-table th,
+.bnpp-custom-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+/* Header row styling */
+.bnpp-custom-table .bnpp-header-row {
+    background-color: #e0e0e0;
+}
+
+.bnpp-custom-table .bnpp-header-row th {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Content row styling */
+.bnpp-custom-table .bnpp-content-row td {
+    background-color: #fff;
+}
+
+/* Editor-specific styles */
+.wp-block-bnpp-table-legend .components-text-control__input {
+    width: 100%;
+}
+
+.wp-block-bnpp-table-legend .components-base-control {
+    margin-bottom: 8px;
+}
+
+.wp-block-bnpp-table-legend td {
+    vertical-align: top;
+}
