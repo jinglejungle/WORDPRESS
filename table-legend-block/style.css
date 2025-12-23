@@ -1,0 +1,60 @@
+/* Styles pour le frontend */
+.table-legend-block {
+    margin: 20px 0;
+}
+
+.table-legend {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #0073aa;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    line-height: 1.6;
+}
+
+.table-legend strong {
+    color: #0073aa;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.custom-table thead {
+    background-color: #999;
+    color: white;
+}
+
+.custom-table th,
+.custom-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.custom-table .header-row th {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.custom-table .content-row:hover {
+    background-color: #f5f5f5;
+}
+
+.custom-table .color-cell {
+    transition: background-color 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .custom-table {
+        font-size: 14px;
+    }
+    
+    .custom-table th,
+    .custom-table td {
+        padding: 8px;
+    }
+}

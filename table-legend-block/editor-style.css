@@ -1,0 +1,50 @@
+/* Styles pour l'éditeur Gutenberg */
+.table-legend-block-editor {
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.table-legend-block-editor .table-legend {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #0073aa;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    line-height: 1.6;
+}
+
+.table-legend-block-editor .custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+}
+
+.table-legend-block-editor .custom-table th,
+.table-legend-block-editor .custom-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.table-legend-block-editor .header-row {
+    background-color: #999;
+    color: white;
+}
+
+.table-legend-block-editor .header-row th {
+    font-weight: bold;
+}
+
+.table-legend-block-editor .components-text-control__input {
+    width: 100%;
+}
+
+.table-legend-block-editor .components-base-control {
+    margin-bottom: 8px;
+}
+
+.table-legend-block-editor .components-button.is-small {
+    padding: 4px 8px;
+    min-height: auto;
+}
