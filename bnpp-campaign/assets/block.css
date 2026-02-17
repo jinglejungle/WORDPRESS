@@ -1,155 +1,278 @@
-/* ==========================================================================
-   Campaign Block – Frontend + editor styles
-   W3C standards and accessibility compliant (WCAG 2.1 AA)
-   ========================================================================== */
+/**
+ * Campaign Block – Stylesheet
+ *
+ * Applies to both the block editor (via editor_style) and the front end (via style).
+ *
+ * Layout overview
+ * ───────────────
+ * #campaign_container  : 808 px wide, min 500 px tall, uses CSS position to allow
+ *                        the image to sit behind .campaign-box-description on the
+ *                        same stacking context (z-index) without using background-image.
+ *
+ * .campaign-image-wrapper : absolutely positioned, so the image is visually "behind"
+ *                           the description box on the same stacking plane.
+ *
+ * .campaign-image         : 700 × 500 px.
+ *
+ * #boxDescription         : 590 px wide, min 360 px tall, green background, white text,
+ *                           margin-top: 70 px, z-index above the image.
+ *
+ * Alignment variants
+ * ──────────────────
+ * .campaign-image-left   : image pinned to the left  → boxDescription floated right.
+ * .campaign-image-right  : image pinned to the right → boxDescription floated left.
+ *
+ * Mobile (≤ 460 px)
+ * ─────────────────
+ * Image and description revert to normal flow, stack vertically, image 100 % wide.
+ *
+ * Accessibility
+ * ─────────────
+ * Focus outlines are preserved. High-contrast colour pairs meet WCAG AA.
+ *
+ */
 
-/* ── Main container ──────────────────────────────────────────────────────── */
-.campaign_container {
-    position: relative;
-    display: flex;
-    align-items: flex-start;
-    overflow: hidden;
-    width: 100%;
-    min-height: 300px;
-    box-sizing: border-box;
+/* =========================================================================
+   CSS Custom Properties
+   ========================================================================= */
+:root {
+	--campaign-container-width  : 808px;
+	--campaign-container-min-h  : 500px;
+
+	--campaign-image-width      : 700px;
+	--campaign-image-height     : 500px;
+
+	--campaign-box-width        : 590px;
+	--campaign-box-min-h        : 360px;
+	--campaign-box-margin-top   : 70px;
+	--campaign-box-padding      : 32px 36px;
+	--campaign-box-bg           : #2d7a4f;   /* Accessible green */
+	--campaign-box-color        : #ffffff;
+
+	--campaign-title-font-size  : 1.5rem;
+	--campaign-title-font-weight: 700;
+	--campaign-desc-font-size   : 1rem;
+	--campaign-desc-line-height : 1.6;
+
+	--campaign-image-z          : 1;   /* Image layer */
+	--campaign-box-z            : 2;   /* Description on top of image */
 }
 
-/* ── Image: out of flow (visual background, not background-image) ────────── */
-.campaign_image-wrapper {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 50%;
-    overflow: hidden;
-    /* Image sits behind boxDescription */
-    z-index: 0;
+/* =========================================================================
+   Container  (#campaign_container)
+   ========================================================================= */
+#campaign_container,
+.campaign-container {
+	position   : relative;       /* Establishes stacking context for children  */
+	width      : var( --campaign-container-width );
+	min-height : var( --campaign-container-min-h );
+	overflow   : hidden;         /* Clips any image overflow                   */
+	box-sizing : border-box;
+
+	/* Centre the block within its parent column */
+	margin-left  : auto;
+	margin-right : auto;
 }
 
-/* Image aligned left */
-.campaign_container.image-align-left .campaign_image-wrapper {
-    left: 0;
-    right: auto;
+/* =========================================================================
+   Image wrapper & image
+   ========================================================================= */
+.campaign-image-wrapper {
+	position : absolute;         /* Sits behind boxDescription                 */
+	top      : 0;
+	z-index  : var( --campaign-image-z );
+
+	/* Width & height match the image itself */
+	width  : var( --campaign-image-width );
+	height : var( --campaign-image-height );
 }
 
-/* Image aligned right */
-.campaign_container.image-align-right .campaign_image-wrapper {
-    right: 0;
-    left: auto;
+/* Left-aligned: image pinned to left edge */
+.campaign-image-left .campaign-image-wrapper {
+	left  : 0;
+	right : auto;
 }
 
-.campaign_image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+/* Right-aligned: image pinned to right edge */
+.campaign-image-right .campaign-image-wrapper {
+	right : 0;
+	left  : auto;
 }
 
-/* ── Box description: above the image ───────────────────────────────────── */
-.boxDescription {
-    position: relative;
-    z-index: 1;
-    width: 50%;
-    padding: 2rem;
-    box-sizing: border-box;
-    /* Ensures readable background (customisable by theme) */
-    background-color: rgba(255, 255, 255, 0.9);
+.campaign-image {
+	display    : block;
+	width      : var( --campaign-image-width );
+	height     : var( --campaign-image-height );
+	object-fit : cover;          /* Preserves aspect ratio while filling slot  */
+	max-width  : none;           /* Override theme resets that cap img width   */
 }
 
-/* Image left → description right */
-.campaign_container.image-align-left .boxDescription,
-.boxDescription.box-align-right {
-    margin-left: auto;
-    margin-right: 0;
+/* =========================================================================
+   Description box  (#boxDescription / .campaign-box-description)
+   ========================================================================= */
+#boxDescription,
+.campaign-box-description {
+	position   : relative;       /* Rises above the absolutely-placed image    */
+	z-index    : var( --campaign-box-z );
+
+	width      : var( --campaign-box-width );
+	min-height : var( --campaign-box-min-h );
+	margin-top : var( --campaign-box-margin-top );
+	padding    : var( --campaign-box-padding );
+	box-sizing : border-box;
+
+	background-color : var( --campaign-box-bg );
+	color            : var( --campaign-box-color );
 }
 
-/* Image right → description left */
-.campaign_container.image-align-right .boxDescription,
-.boxDescription.box-align-left {
-    margin-left: 0;
-    margin-right: auto;
+/* Left image → description sits on the right */
+.campaign-image-left #boxDescription,
+.campaign-image-left .campaign-box-description {
+	margin-left : auto;
+	margin-right: 0;
 }
 
-/* ── Typography ──────────────────────────────────────────────────────────── */
-.boxDescription__title {
-    margin: 0 0 1rem 0;
-    font-size: 1.5rem;
-    line-height: 1.3;
-    /* Readability (WCAG 1.4.3: minimum contrast ratio 4.5:1) */
-    color: inherit;
+/* Right image → description sits on the left */
+.campaign-image-right #boxDescription,
+.campaign-image-right .campaign-box-description {
+	margin-left : 0;
+	margin-right: auto;
 }
 
-.boxDescription__text {
-    margin: 0;
-    font-size: 1rem;
-    line-height: 1.6;
-    color: inherit;
+/* =========================================================================
+   Typography inside the description box
+   ========================================================================= */
+.campaign-title {
+	margin     : 0 0 16px;
+	font-size  : var( --campaign-title-font-size );
+	font-weight: var( --campaign-title-font-weight );
+	color      : var( --campaign-box-color );
+	line-height: 1.25;
 }
 
-/* ── Mobile: < 460 px ────────────────────────────────────────────────────── */
-@media (max-width: 459px) {
-
-    /* Back to normal flow */
-    .campaign_container {
-        flex-direction: column;
-        min-height: unset;
-    }
-
-    .campaign_image-wrapper {
-        position: static;
-        width: 100%;
-        height: auto;
-        min-height: 200px;
-    }
-
-    .campaign_image {
-        width: 100%;
-        height: auto;
-        object-fit: cover;
-    }
-
-    .boxDescription,
-    .boxDescription.box-align-right,
-    .boxDescription.box-align-left {
-        width: 100%;
-        margin-left: 0;
-        margin-right: 0;
-    }
+.campaign-description {
+	margin      : 0;
+	font-size   : var( --campaign-desc-font-size );
+	line-height : var( --campaign-desc-line-height );
+	color       : var( --campaign-box-color );
 }
 
-/* ==========================================================================
-   Gutenberg editor styles only (.editor-styles-wrapper prefix)
-   ========================================================================== */
+/* =========================================================================
+   Mobile layout  (viewport width ≤ 460 px)
+   ========================================================================= */
+@media screen and ( max-width: 460px ) {
 
-/* Error fields */
-.bnpp-campaign__field--error .components-text-control__input,
-.bnpp-campaign__field--error .components-textarea-control__input {
-    border-color: #cc1818 !important;
-    box-shadow: 0 0 0 1px #cc1818 !important;
+	/* Container becomes full-width and auto-height */
+	#campaign_container,
+	.campaign-container {
+		width      : 100%;
+		min-height : 0;
+		overflow   : visible;
+	}
+
+	/* Image wrapper reverts to normal flow (no longer absolute) */
+	.campaign-image-wrapper {
+		position : relative;
+		top      : auto;
+		left     : auto;
+		right     : auto;
+		width    : 100%;
+		height   : auto;
+	}
+
+	/* Image fills full container width */
+	.campaign-image {
+		width      : 100%;
+		height     : auto;
+		max-width  : 100%;
+		object-fit : cover;
+	}
+
+	/* Description box fills full width and stacks below the image */
+	#boxDescription,
+	.campaign-box-description {
+		width      : 100%;
+		min-height : 0;
+		margin-top : 0;          /* No top margin in stacked layout            */
+		margin-left : 0;
+		margin-right: 0;
+	}
+
+	/* Override alignment variants so both sides behave identically on mobile */
+	.campaign-image-left #boxDescription,
+	.campaign-image-right #boxDescription,
+	.campaign-image-left .campaign-box-description,
+	.campaign-image-right .campaign-box-description {
+		margin-left : 0;
+		margin-right: 0;
+	}
 }
 
-/* Character count error message */
-.bnpp-campaign__notice--error {
-    color: #cc1818;
-    font-weight: 600;
-    font-size: 0.8125rem;
+/* =========================================================================
+   Accessibility – focus visible
+   ========================================================================= */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+	outline        : 3px solid #005fcc;
+	outline-offset : 2px;
 }
 
-/* Neutral character counter */
-.bnpp-campaign__char-count {
-    color: #757575;
-    font-size: 0.8125rem;
+/* =========================================================================
+   Editor-only styles
+   (scoped with .campaign-editor-preview so they don't leak to the front end)
+   ========================================================================= */
+
+/* Image placeholder shown when no image has been selected yet */
+.campaign-image-placeholder {
+	display          : flex;
+	align-items      : center;
+	justify-content  : center;
+	width            : var( --campaign-image-width );
+	height           : var( --campaign-image-height );
+	background-color : #e8e8e8;
+	border           : 2px dashed #b0b0b0;
+	color            : #606060;
+	font-size        : 0.875rem;
 }
 
-/* Image upload wrapper in panel */
-.bnpp-campaign__media-upload {
-    margin-top: 0.5rem;
+/* Inspector panel – character counter */
+.campaign-char-count {
+	font-size  : 0.75rem;
+	color      : #606060;
+	margin-top : 4px;
 }
 
-.bnpp-campaign__image-preview {
-    margin-bottom: 0.75rem;
+/* Character counter in warning state (limit reached) */
+.campaign-char-count--limit {
+	color      : #cc1818;
+	font-weight: 600;
 }
 
-/* Editor preview: preserve positioning */
-.wp-block-bnpp-campaign.campaign_container {
-    min-height: 300px;
+/* Media panel – image thumbnail preview */
+.campaign-image-thumb-wrapper {
+	margin-top     : 12px;
+	display        : flex;
+	flex-direction : column;
+	gap            : 8px;
+}
+
+.campaign-image-thumb {
+	width      : 100%;
+	height     : auto;
+	display    : block;
+	border     : 1px solid #ddd;
+	border-radius: 3px;
+}
+
+/* Media upload button */
+.campaign-media-button {
+	width      : 100%;
+	text-align : center;
+	margin-top : 4px;
+}
+
+/* Remove image link */
+.campaign-remove-image {
+	font-size : 0.8rem;
 }

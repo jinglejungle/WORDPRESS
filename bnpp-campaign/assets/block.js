@@ -1,230 +1,367 @@
 /**
- * Campaign Block – Gutenberg block (vanilla JS, no JSX/React build step).
+ * Campaign Block – Editor Script
  *
- * WP dependencies : wp-blocks, wp-block-editor, wp-components, wp-i18n, wp-element
+ * Registers the block using the @wordpress/blocks API with plain JavaScript
+ * (wp.element.createElement) – no JSX / React build step required.
+ *
+ * Structure
+ * ─────────
+ * • registerBlockType  – declares attributes + edit UI + save (dynamic block)
+ * • edit()             – Inspector controls rendered in the right-hand panel
+ * • save()             – returns null because rendering is handled server-side
+ *
+ * Character-limit rules
+ * ─────────────────────
+ * • Title       : 55 chars for Latin / non-Asian scripts; 25 for Asian scripts.
+ * • Description : 195 chars always.
+ *
+ * Asian script detection uses Unicode ranges for:
+ *   CJK Unified Ideographs, Hiragana, Katakana, Hangul, CJK Compatibility.
+ *
  */
-( function ( blocks, blockEditor, components, i18n, element ) {
-    'use strict';
 
-    var el            = element.createElement;
-    var __            = i18n.__;
-    var useState      = element.useState;
-    var useEffect     = element.useEffect;
+( function () {
+	'use strict';
 
-    var InspectorControls = blockEditor.InspectorControls;
-    var MediaUpload       = blockEditor.MediaUpload;
-    var MediaUploadCheck  = blockEditor.MediaUploadCheck;
-    var useBlockProps     = blockEditor.useBlockProps;
+	/* ------------------------------------------------------------------ */
+	/*  Destructure WordPress globals                                       */
+	/* ------------------------------------------------------------------ */
+	var registerBlockType = wp.blocks.registerBlockType;
+	var el                = wp.element.createElement;
+	var Fragment          = wp.element.Fragment;
+	var __                = wp.i18n.__;
+	var InspectorControls = wp.blockEditor.InspectorControls;
+	var MediaUpload       = wp.blockEditor.MediaUpload;
+	var MediaUploadCheck  = wp.blockEditor.MediaUploadCheck;
+	var PanelBody         = wp.components.PanelBody;
+	var TextControl       = wp.components.TextControl;
+	var TextareaControl   = wp.components.TextareaControl;
+	var RadioControl      = wp.components.RadioControl;
+	var Button            = wp.components.Button;
+	var Notice            = wp.components.Notice;
 
-    var PanelBody    = components.PanelBody;
-    var TextControl  = components.TextControl;
-    var TextareaControl = components.TextareaControl;
-    var RadioControl = components.RadioControl;
-    var Button       = components.Button;
-    var Notice       = components.Notice;
+	/* ------------------------------------------------------------------ */
+	/*  Constants                                                           */
+	/* ------------------------------------------------------------------ */
+	var TITLE_MAX_LATIN = 55;   // Maximum characters for non-Asian scripts.
+	var TITLE_MAX_ASIAN = 25;   // Maximum characters for Asian scripts.
+	var DESC_MAX        = 195;  // Maximum characters for the description.
 
-    /* ── Character limits ────────────────────────────────────────────── */
-    var TITLE_MAX_LATIN  = 55;
-    var TITLE_MAX_ASIAN  = 25;
-    var DESC_MAX         = 195;
+	/**
+	 * Detect whether a string contains Asian characters.
+	 *
+	 * Covers CJK Unified Ideographs, CJK Extension A, Hiragana,
+	 * Katakana, Hangul Syllables and CJK Compatibility Ideographs.
+	 *
+	 * @param  {string}  text - The string to inspect.
+	 * @return {boolean}      - True if Asian characters are detected.
+	 */
+	function containsAsianCharacters( text ) {
+		/* eslint-disable no-misleading-character-class */
+		return /[\u3000-\u303F\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF]/.test( text );
+		/* eslint-enable no-misleading-character-class */
+	}
 
-    /* Detects if the text contains CJK (Asian) characters */
-    function containsAsian( str ) {
-        return /[\u3000-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF\u3400-\u4DBF]/.test( str );
-    }
+	/**
+	 * Return the applicable title character limit for the current value.
+	 *
+	 * @param  {string} value - Current title string.
+	 * @return {number}       - 25 if Asian chars detected, 55 otherwise.
+	 */
+	function getTitleMax( value ) {
+		return containsAsianCharacters( value ) ? TITLE_MAX_ASIAN : TITLE_MAX_LATIN;
+	}
 
-    function getTitleMax( str ) {
-        return containsAsian( str ) ? TITLE_MAX_ASIAN : TITLE_MAX_LATIN;
-    }
+	/* ------------------------------------------------------------------ */
+	/*  Block registration                                                  */
+	/* ------------------------------------------------------------------ */
+	registerBlockType( 'campaign-block/campaign', {
 
-    /* ── Block registration ──────────────────────────────────────────── */
-    blocks.registerBlockType( 'bnpp/campaign', {
+		/* ---- Metadata ---- */
+		title:       __( 'Campaign Block', 'campaign-block' ),
+		description: __( 'Display a campaign with a title, description and an image.', 'campaign-block' ),
+		category:    'media',
+		icon:        'megaphone',
+		supports: {
+			html:              false,
+			reusable:          true,
+			anchor:            false,
+			align:             false,
+			customClassName:   false,
+		},
 
-        title:       __( 'Campaign Block', 'bnpp-campaign' ),
-        description: __( 'Campaign block with positioned image and description.', 'bnpp-campaign' ),
-        category:    'media',
-        icon:        'megaphone',
-        supports: {
-            html: false,
-        },
+		/* ---- Attributes (must mirror src/init.php) ---- */
+		attributes: {
+			title: {
+				type:    'string',
+				default: '',
+			},
+			description: {
+				type:    'string',
+				default: '',
+			},
+			imageId: {
+				type:    'integer',
+				default: 0,
+			},
+			imageUrl: {
+				type:    'string',
+				default: '',
+			},
+			imageAlt: {
+				type:    'string',
+				default: '',
+			},
+			imageAlignment: {
+				type:    'string',
+				default: 'left',
+			},
+		},
 
-        attributes: {
-            title:       { type: 'string',  default: '' },
-            description: { type: 'string',  default: '' },
-            imageUrl:    { type: 'string',  default: '' },
-            imageId:     { type: 'integer', default: 0  },
-            imageAlt:    { type: 'string',  default: '' },
-            imageAlign:  { type: 'string',  default: 'left' },
-        },
+		/* ---------------------------------------------------------------- */
+		/*  edit() – rendered inside the block editor                        */
+		/* ---------------------------------------------------------------- */
+		edit: function ( props ) {
+			var attributes = props.attributes;
+			var setAttributes = props.setAttributes;
 
-        /* ── EDIT ─────────────────────────────────────────────────────── */
-        edit: function ( props ) {
-            var attributes = props.attributes;
-            var setAttributes = props.setAttributes;
+			var title          = attributes.title;
+			var description    = attributes.description;
+			var imageUrl       = attributes.imageUrl;
+			var imageAlt       = attributes.imageAlt;
+			var imageAlignment = attributes.imageAlignment;
 
-            var title       = attributes.title;
-            var description = attributes.description;
-            var imageUrl    = attributes.imageUrl;
-            var imageId     = attributes.imageId;
-            var imageAlt    = attributes.imageAlt;
-            var imageAlign  = attributes.imageAlign;
+			/* Compute live character limits for the current title value. */
+			var titleMax     = getTitleMax( title );
+			var titleLen     = title.length;
+			var titleAtLimit = titleLen >= titleMax;
 
-            var titleMax    = getTitleMax( title );
-            var titleOver   = title.length > titleMax;
-            var descOver    = description.length > DESC_MAX;
+			var descLen     = description.length;
+			var descAtLimit = descLen >= DESC_MAX;
 
-            var blockProps = useBlockProps( {
-                className: 'campaign_container image-align-' + imageAlign,
-            } );
+			/* ---- Title change handler ---- */
+			function onTitleChange( newValue ) {
+				var max = getTitleMax( newValue );
+				// Block further input once the limit is reached.
+				if ( newValue.length <= max ) {
+					setAttributes( { title: newValue } );
+				}
+			}
 
-            var boxClass = imageAlign === 'left' ? 'boxDescription box-align-right' : 'boxDescription box-align-left';
+			/* ---- Description change handler ---- */
+			function onDescriptionChange( newValue ) {
+				if ( newValue.length <= DESC_MAX ) {
+					setAttributes( { description: newValue } );
+				}
+			}
 
-            /* Sidebar panel (InspectorControls) */
-            var inspector = el(
-                InspectorControls,
-                { key: 'inspector' },
+			/* ---- Media select handler ---- */
+			function onSelectImage( media ) {
+				setAttributes( {
+					imageId:  media.id,
+					imageUrl: media.url,
+					imageAlt: media.alt || '',
+				} );
+			}
 
-                el( PanelBody, { title: __( 'Content', 'bnpp-campaign' ), initialOpen: true },
+			/* ---- Image remove handler ---- */
+			function onRemoveImage() {
+				setAttributes( {
+					imageId:  0,
+					imageUrl: '',
+					imageAlt: '',
+				} );
+			}
 
-                    /* ── Title ── */
-                    el( TextControl, {
-                        label: __( 'Title', 'bnpp-campaign' ),
-                        help:  titleOver
-                            ? el( 'span', { className: 'bnpp-campaign__notice bnpp-campaign__notice--error' },
-                                __( 'Character limit reached: ' + titleMax + ' characters max.', 'bnpp-campaign' )
-                              )
-                            : el( 'span', { className: 'bnpp-campaign__char-count' },
-                                title.length + ' / ' + titleMax
-                              ),
-                        value:    title,
-                        onChange: function ( val ) {
-                            setAttributes( { title: val } );
-                        },
-                        className: titleOver ? 'bnpp-campaign__field--error' : '',
-                    } ),
+			/* ---- Preview inside the editor canvas ---- */
+			var containerClass = 'campaign-container campaign-image-' + imageAlignment + ' campaign-editor-preview';
 
-                    /* ── Description ── */
-                    el( TextareaControl, {
-                        label: __( 'Description', 'bnpp-campaign' ),
-                        help:  descOver
-                            ? el( 'span', { className: 'bnpp-campaign__notice bnpp-campaign__notice--error' },
-                                __( 'Character limit reached: ' + DESC_MAX + ' characters max.', 'bnpp-campaign' )
-                              )
-                            : el( 'span', { className: 'bnpp-campaign__char-count' },
-                                description.length + ' / ' + DESC_MAX
-                              ),
-                        value:    description,
-                        rows:     4,
-                        onChange: function ( val ) {
-                            setAttributes( { description: val } );
-                        },
-                        className: descOver ? 'bnpp-campaign__field--error' : '',
-                    } )
-                ),
+			var editorPreview = el(
+				'div',
+				{
+					id:        'campaign_container',
+					className: containerClass,
+					role:      'region',
+					'aria-label': __( 'Campaign preview', 'campaign-block' ),
+				},
+				/* Image wrapper */
+				imageUrl ? el(
+					'div',
+					{ className: 'campaign-image-wrapper' },
+					el( 'img', {
+						src:     imageUrl,
+						alt:     imageAlt,
+						className: 'campaign-image',
+						width:   700,
+						height:  500,
+					} )
+				) : el(
+					/* Placeholder when no image is selected */
+					'div',
+					{ className: 'campaign-image-placeholder', 'aria-hidden': 'true' },
+					el( 'span', {}, __( 'No image selected', 'campaign-block' ) )
+				),
+				/* Description box */
+				el(
+					'div',
+					{ id: 'boxDescription', className: 'campaign-box-description' },
+					title       ? el( 'h2', { className: 'campaign-title' }, title )             : null,
+					description ? el( 'p',  { className: 'campaign-description' }, description ) : null
+				)
+			);
 
-                el( PanelBody, { title: __( 'Image', 'bnpp-campaign' ), initialOpen: true },
+			/* ---- Inspector (right-hand panel) controls ---- */
+			var inspectorControls = el(
+				InspectorControls,
+				{},
 
-                    /* ── Image upload ── */
-                    el( MediaUploadCheck, null,
-                        el( MediaUpload, {
-                            onSelect: function ( media ) {
-                                setAttributes( {
-                                    imageUrl: media.url,
-                                    imageId:  media.id,
-                                    imageAlt: media.alt || '',
-                                } );
-                            },
-                            allowedTypes: [ 'image' ],
-                            value: imageId,
-                            render: function ( ref ) {
-                                var open = ref.open;
-                                return el(
-                                    'div',
-                                    { className: 'bnpp-campaign__media-upload' },
-                                    imageUrl
-                                        ? el( 'div', { className: 'bnpp-campaign__image-preview' },
-                                            el( 'img', {
-                                                src:   imageUrl,
-                                                alt:   imageAlt,
-                                                style: { maxWidth: '100%', height: 'auto', display: 'block', marginBottom: '8px' },
-                                            } ),
-                                            el( Button, {
-                                                onClick:    open,
-                                                variant:    'secondary',
-                                                isSmall:    true,
-                                            }, __( 'Replace image', 'bnpp-campaign' ) ),
-                                            el( Button, {
-                                                onClick: function () {
-                                                    setAttributes( { imageUrl: '', imageId: 0, imageAlt: '' } );
-                                                },
-                                                variant:     'link',
-                                                isDestructive: true,
-                                                isSmall:     true,
-                                                style:       { marginLeft: '8px' },
-                                            }, __( 'Remove', 'bnpp-campaign' ) )
-                                          )
-                                        : el( Button, {
-                                              onClick:  open,
-                                              variant:  'primary',
-                                              isSmall:  true,
-                                          }, __( 'Choose an image', 'bnpp-campaign' ) )
-                                );
-                            },
-                        } )
-                    ),
+				/* Panel: Content */
+				el(
+					PanelBody,
+					{
+						title:       __( 'Content', 'campaign-block' ),
+						initialOpen: true,
+					},
 
-                    /* ── Image alignment ── */
-                    el( RadioControl, {
-                        label:    __( 'Image position', 'bnpp-campaign' ),
-                        selected: imageAlign,
-                        options: [
-                            { label: __( 'Left', 'bnpp-campaign' ), value: 'left'  },
-                            { label: __( 'Right', 'bnpp-campaign' ), value: 'right' },
-                        ],
-                        onChange: function ( val ) {
-                            setAttributes( { imageAlign: val } );
-                        },
-                    } )
-                )
-            );
+					/* ---- Title field ---- */
+					el( TextControl, {
+						label:    __( 'Title', 'campaign-block' ),
+						value:    title,
+						onChange: onTitleChange,
+						help:     null, // help rendered separately below
+					} ),
+					/* Character counter / warning for title */
+					el(
+						'p',
+						{
+							className: 'campaign-char-count' + ( titleAtLimit ? ' campaign-char-count--limit' : '' ),
+							role:      titleAtLimit ? 'alert' : undefined,
+							'aria-live': 'polite',
+						},
+						titleAtLimit
+							? __( 'Maximum number of characters reached.', 'campaign-block' )
+							: ( titleLen + ' / ' + titleMax + ' ' + __( 'characters', 'campaign-block' ) )
+					),
 
-            /* Editor preview */
-            var preview = el(
-                'section',
-                Object.assign( {}, blockProps, { key: 'preview' } ),
+					/* ---- Description field ---- */
+					el( TextareaControl, {
+						label:    __( 'Description', 'campaign-block' ),
+						value:    description,
+						onChange: onDescriptionChange,
+						rows:     4,
+					} ),
+					/* Character counter / warning for description */
+					el(
+						'p',
+						{
+							className: 'campaign-char-count' + ( descAtLimit ? ' campaign-char-count--limit' : '' ),
+							role:      descAtLimit ? 'alert' : undefined,
+							'aria-live': 'polite',
+						},
+						descAtLimit
+							? __( 'Maximum number of characters reached.', 'campaign-block' )
+							: ( descLen + ' / ' + DESC_MAX + ' ' + __( 'characters', 'campaign-block' ) )
+					)
+				),
 
-                imageUrl && el(
-                    'div',
-                    {
-                        className:    'campaign_image-wrapper',
-                        'aria-hidden': 'true',
-                    },
-                    el( 'img', {
-                        src:     imageUrl,
-                        alt:     imageAlt,
-                        className: 'campaign_image',
-                    } )
-                ),
+				/* Panel: Image */
+				el(
+					PanelBody,
+					{
+						title:       __( 'Image', 'campaign-block' ),
+						initialOpen: true,
+					},
 
-                el( 'div', { className: boxClass },
-                    title && el( 'h2', { className: 'boxDescription__title' }, title ),
-                    description && el( 'p',  { className: 'boxDescription__text' }, description )
-                )
-            );
+					/* Media upload / replace / remove controls */
+					el(
+						MediaUploadCheck,
+						{},
+						el( MediaUpload, {
+							onSelect:    onSelectImage,
+							allowedTypes: [ 'image' ],
+							value:       attributes.imageId,
+							render: function ( obj ) {
+								return el(
+									Fragment,
+									{},
+									/* Open media library button */
+									el(
+										Button,
+										{
+											onClick:   obj.open,
+											variant:   'secondary',
+											className: 'campaign-media-button',
+										},
+										imageUrl
+											? __( 'Replace image', 'campaign-block' )
+											: __( 'Select / upload image', 'campaign-block' )
+									),
+									/* Preview thumbnail */
+									imageUrl ? el(
+										'div',
+										{ className: 'campaign-image-thumb-wrapper' },
+										el( 'img', {
+											src:       imageUrl,
+											alt:       imageAlt,
+											className: 'campaign-image-thumb',
+										} ),
+										/* Remove button */
+										el(
+											Button,
+											{
+												onClick:   onRemoveImage,
+												variant:   'link',
+												isDestructive: true,
+												className: 'campaign-remove-image',
+											},
+											__( 'Remove image', 'campaign-block' )
+										)
+									) : null
+								);
+							},
+						} )
+					),
 
-            return [ inspector, preview ];
-        },
+					/* Alt text field – only shown when an image is selected */
+					imageUrl ? el( TextControl, {
+						label:    __( 'Image alt text', 'campaign-block' ),
+						value:    imageAlt,
+						onChange: function ( val ) {
+							setAttributes( { imageAlt: val } );
+						},
+						help:     __( 'Describe the image for screen readers and SEO.', 'campaign-block' ),
+					} ) : null,
 
-        /* ── SAVE (PHP render via render_callback, returns null) ── */
-        save: function () {
-            return null;
-        },
-    } );
+					/* ---- Image alignment ---- */
+					el( RadioControl, {
+						label:    __( 'Image position', 'campaign-block' ),
+						selected: imageAlignment,
+						options: [
+							{ label: __( 'Left', 'campaign-block' ),  value: 'left'  },
+							{ label: __( 'Right', 'campaign-block' ), value: 'right' },
+						],
+						onChange: function ( val ) {
+							setAttributes( { imageAlignment: val } );
+						},
+					} )
+				)
+			);
 
-} (
-    window.wp.blocks,
-    window.wp.blockEditor,
-    window.wp.components,
-    window.wp.i18n,
-    window.wp.element
-) );
+			/* Return the combined output: Inspector + editor canvas preview */
+			return el(
+				Fragment,
+				{},
+				inspectorControls,
+				editorPreview
+			);
+		},
+
+		/* ---------------------------------------------------------------- */
+		/*  save() – null because the block uses a server-side render        */
+		/* ---------------------------------------------------------------- */
+		save: function () {
+			return null;
+		},
+	} );
+
+}() );

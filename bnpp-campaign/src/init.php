@@ -1,117 +1,165 @@
 <?php
 /**
- * Server-side block registration for Campaign Block.
+ * Block registration for the Campaign Block.
  *
- * @package CampaignBlock
+ * This file handles:
+ * - Registering the block type with WordPress
+ * - Enqueueing editor and front-end assets
+ * - Defining block attributes
+ * - Rendering the block on the front end
+ *
  */
 
-defined( 'ABSPATH' ) || exit;
-
-/**
- * Registers the Campaign Block and its assets.
- */
-function bnpp_campaign_register() {
-
-    wp_register_script(
-        'bnpp-campaign-editor',
-        plugin_dir_url( dirname( __FILE__ ) ) . 'assets/block.js',
-        array( 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-i18n', 'wp-element' ),
-        filemtime( plugin_dir_path( dirname( __FILE__ ) ) . 'assets/block.js' ),
-        true
-    );
-
-    wp_register_style(
-        'bnpp-campaign-editor-style',
-        plugin_dir_url( dirname( __FILE__ ) ) . 'assets/block.css',
-        array(),
-        filemtime( plugin_dir_path( dirname( __FILE__ ) ) . 'assets/block.css' )
-    );
-
-    wp_register_style(
-        'bnpp-campaign-style',
-        plugin_dir_url( dirname( __FILE__ ) ) . 'assets/block.css',
-        array(),
-        filemtime( plugin_dir_path( dirname( __FILE__ ) ) . 'assets/block.css' )
-    );
-
-    register_block_type( 'bnpp/campaign', array(
-        'editor_script'   => 'bnpp-campaign-editor',
-        'editor_style'    => 'bnpp-campaign-editor-style',
-        'style'           => 'bnpp-campaign-style',
-        'attributes'      => array(
-            'title'          => array(
-                'type'    => 'string',
-                'default' => '',
-            ),
-            'description'    => array(
-                'type'    => 'string',
-                'default' => '',
-            ),
-            'imageUrl'       => array(
-                'type'    => 'string',
-                'default' => '',
-            ),
-            'imageId'        => array(
-                'type'    => 'integer',
-                'default' => 0,
-            ),
-            'imageAlt'       => array(
-                'type'    => 'string',
-                'default' => '',
-            ),
-            'imageAlign'     => array(
-                'type'    => 'string',
-                'default' => 'left',
-            ),
-        ),
-        'render_callback' => 'bnpp_campaign_render',
-    ) );
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
-add_action( 'init', 'bnpp_campaign_register' );
 
 /**
- * Server-side render callback (PHP).
+ * Register the Campaign Block and enqueue its assets.
  *
- * @param array $attributes Block attributes.
- * @return string Block HTML output.
+ * @return void
  */
-function bnpp_campaign_render( $attributes ) {
+function campaign_block_register() {
 
-    $title       = isset( $attributes['title'] )      ? esc_html( $attributes['title'] )      : '';
-    $description = isset( $attributes['description'] ) ? esc_html( $attributes['description'] ) : '';
-    $image_url   = isset( $attributes['imageUrl'] )   ? esc_url( $attributes['imageUrl'] )    : '';
-    $image_alt   = isset( $attributes['imageAlt'] )   ? esc_attr( $attributes['imageAlt'] )   : '';
-    $image_align = isset( $attributes['imageAlign'] ) && $attributes['imageAlign'] === 'right' ? 'right' : 'left';
+	// -----------------------------------------------------------------
+	// 1. Enqueue the block editor script (only in the editor context).
+	// -----------------------------------------------------------------
+	wp_register_script(
+		'campaign-block-editor-js',
+		plugin_dir_url( dirname( __FILE__ ) ) . 'assets/block.js',
+		array( 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n', 'wp-block-editor', 'wp-data' ),
+		filemtime( plugin_dir_path( dirname( __FILE__ ) ) . 'assets/block.js' ),
+		true
+	);
 
-    $container_class   = 'campaign_container image-align-' . $image_align;
-    $box_align_class   = $image_align === 'left' ? 'box-align-right' : 'box-align-left';
+	// -----------------------------------------------------------------
+	// 2. Enqueue the shared stylesheet (editor + front end).
+	// -----------------------------------------------------------------
+	wp_register_style(
+		'campaign-block-style',
+		plugin_dir_url( dirname( __FILE__ ) ) . 'assets/block.css',
+		array(),
+		filemtime( plugin_dir_path( dirname( __FILE__ ) ) . 'assets/block.css' )
+	);
 
-    ob_start();
-    ?>
-    <section class="<?php echo esc_attr( $container_class ); ?>" aria-label="<?php esc_attr_e( 'Campaign section', 'bnpp-campaign' ); ?>">
+	// -----------------------------------------------------------------
+	// 3. Register the block type with its attributes and callbacks.
+	// -----------------------------------------------------------------
+	register_block_type(
+		'campaign-block/campaign',
+		array(
+			/* ---- Block attributes ---- */
+			'attributes'      => array(
 
-        <?php if ( $image_url ) : ?>
-            <div class="campaign_image-wrapper" aria-hidden="true">
-                <img
-                    src="<?php echo $image_url; ?>"
-                    alt="<?php echo $image_alt; ?>"
-                    class="campaign_image"
-                    loading="lazy"
-                    decoding="async"
-                />
-            </div>
-        <?php endif; ?>
+				// Campaign title (max 55 characters; max 25 for Asian scripts).
+				'title'          => array(
+					'type'    => 'string',
+					'default' => '',
+				),
 
-        <div class="boxDescription <?php echo esc_attr( $box_align_class ); ?>">
-            <?php if ( $title ) : ?>
-                <h2 class="boxDescription__title"><?php echo $title; ?></h2>
-            <?php endif; ?>
-            <?php if ( $description ) : ?>
-                <p class="boxDescription__text"><?php echo $description; ?></p>
-            <?php endif; ?>
-        </div>
+				// Campaign description (max 195 characters).
+				'description'    => array(
+					'type'    => 'string',
+					'default' => '',
+				),
 
-    </section>
-    <?php
-    return ob_get_clean();
+				// Media-library image ID.
+				'imageId'        => array(
+					'type'    => 'integer',
+					'default' => 0,
+				),
+
+				// Full URL of the selected image.
+				'imageUrl'       => array(
+					'type'    => 'string',
+					'default' => '',
+				),
+
+				// Accessible alt text for the image.
+				'imageAlt'       => array(
+					'type'    => 'string',
+					'default' => '',
+				),
+
+				// Image alignment inside campaign_container: 'left' | 'right'.
+				'imageAlignment' => array(
+					'type'    => 'string',
+					'default' => 'left',
+				),
+			),
+
+			/* ---- Asset handles ---- */
+			'editor_script'   => 'campaign-block-editor-js',
+			'editor_style'    => 'campaign-block-style',
+			'style'           => 'campaign-block-style',
+
+			/* ---- Server-side render callback ---- */
+			'render_callback' => 'campaign_block_render',
+		)
+	);
+}
+add_action( 'init', 'campaign_block_register' );
+
+
+/**
+ * Server-side render callback for the Campaign Block.
+ *
+ * Outputs accessible, W3C-valid HTML for the block on the front end.
+ *
+ * @param array $attributes Block attributes saved in the database.
+ * @return string           HTML markup for the block.
+ */
+function campaign_block_render( $attributes ) {
+
+	// Sanitize all attribute values before output.
+	$title          = isset( $attributes['title'] )          ? sanitize_text_field( $attributes['title'] )         : '';
+	$description    = isset( $attributes['description'] )    ? sanitize_textarea_field( $attributes['description'] ) : '';
+	$image_url      = isset( $attributes['imageUrl'] )       ? esc_url( $attributes['imageUrl'] )                  : '';
+	$image_alt      = isset( $attributes['imageAlt'] )       ? sanitize_text_field( $attributes['imageAlt'] )      : '';
+	$image_alignment = isset( $attributes['imageAlignment'] ) ? sanitize_text_field( $attributes['imageAlignment'] ) : 'left';
+
+	// Validate alignment value to prevent unexpected output.
+	if ( ! in_array( $image_alignment, array( 'left', 'right' ), true ) ) {
+		$image_alignment = 'left';
+	}
+
+	// Build CSS modifier class: image-left places description on the right, and vice-versa.
+	$container_class = 'campaign-container campaign-image-' . esc_attr( $image_alignment );
+
+	// Open the outer container.
+	$html  = '<div id="campaign_container" class="' . $container_class . '" role="region" aria-label="' . esc_attr__( 'Campaign', 'campaign-block' ) . '">';
+
+	// ---- Image element (rendered as <img>, NOT as background-image) ----
+	if ( $image_url ) {
+		$html .= '<div class="campaign-image-wrapper" aria-hidden="false">';
+		$html .= '<img';
+		$html .= ' src="' . esc_url( $image_url ) . '"';
+		$html .= ' alt="' . esc_attr( $image_alt ) . '"';
+		$html .= ' class="campaign-image"';
+		$html .= ' width="700"';
+		$html .= ' height="500"';
+		$html .= ' loading="lazy"';
+		$html .= ' decoding="async"';
+		$html .= ' />';
+		$html .= '</div>';
+	}
+
+	// ---- Description box ----
+	$html .= '<div id="boxDescription" class="campaign-box-description">';
+
+	if ( $title ) {
+		// Use h2 for semantic heading; adjust to your document outline as needed.
+		$html .= '<h2 class="campaign-title">' . esc_html( $title ) . '</h2>';
+	}
+
+	if ( $description ) {
+		$html .= '<p class="campaign-description">' . esc_html( $description ) . '</p>';
+	}
+
+	$html .= '</div>';// #boxDescription
+
+	$html .= '</div>';// #campaign_container
+
+	return $html;
 }
