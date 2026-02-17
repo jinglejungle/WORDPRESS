@@ -324,14 +324,24 @@ button:focus-visible,
 .campaign-char-count--inline {
 	display      : block;
 	font-size    : 0.7rem;
-	color        : rgba( 255, 255, 255, 0.75 );   /* Readable on green background */
+	/*
+	 * Color is now driven by inline style set in block.js (hexToRgba of the
+	 * chosen text color at 70% opacity). The CSS value below is only a
+	 * fallback in case JS has not yet run or the style attribute is absent.
+	 */
+	color        : rgba( 255, 255, 255, 0.7 );
 	margin-top   : 2px;
 	margin-bottom: 8px;
 	font-style   : italic;
 }
 
 .campaign-char-count--inline.campaign-char-count--limit {
-	color      : #ffcccc;   /* Soft red on green – maintains readability */
+	/*
+	 * When the limit is reached the inline style from JS is still present,
+	 * but we override with a bright warning tone via !important so it is
+	 * always clearly visible regardless of the chosen palette color.
+	 */
+	color      : #ff6b6b !important;
 	font-weight: 600;
 	font-style : normal;
 }

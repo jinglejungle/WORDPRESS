@@ -129,6 +129,34 @@ add_action( 'init', 'campaign_block_register' );
  * @param array $attributes Block attributes saved in the database.
  * @return string           HTML markup for the block.
  */
+/**
+ * Convert a hex color to an rgba() CSS string.
+ *
+ * Used to compute the image border color (background color at 30 % opacity).
+ *
+ * @param  string $hex     Hex color, e.g. '#008252' or '#abc'.
+ * @param  float  $opacity Opacity between 0 and 1.
+ * @return string          CSS rgba() value, e.g. 'rgba(0,130,82,0.3)'.
+ */
+function campaign_block_hex_to_rgba( $hex, $opacity ) {
+	$hex = ltrim( $hex, '#' );
+
+	// Expand shorthand #rgb to #rrggbb.
+	if ( 3 === strlen( $hex ) ) {
+		$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+	}
+
+	if ( 6 !== strlen( $hex ) ) {
+		return 'rgba(0,0,0,' . (float) $opacity . ')';
+	}
+
+	$r = hexdec( substr( $hex, 0, 2 ) );
+	$g = hexdec( substr( $hex, 2, 2 ) );
+	$b = hexdec( substr( $hex, 4, 2 ) );
+
+	return 'rgba(' . $r . ',' . $g . ',' . $b . ',' . (float) $opacity . ')';
+}
+
 function campaign_block_render( $attributes ) {
 
 	// Sanitize all attribute values before output.
@@ -143,6 +171,9 @@ function campaign_block_render( $attributes ) {
 	// Fallback to defaults if sanitize_hex_color returns empty (invalid value).
 	if ( ! $box_bg_color )   { $box_bg_color   = '#008252'; }
 	if ( ! $box_text_color ) { $box_text_color = '#ffffff'; }
+
+	// Border color for the image: background color at 30 % opacity.
+	$image_border_color = campaign_block_hex_to_rgba( $box_bg_color, 0.3 );
 
 	// Validate alignment value to prevent unexpected output.
 	if ( ! in_array( $image_alignment, array( 'left', 'right' ), true ) ) {
@@ -160,7 +191,7 @@ function campaign_block_render( $attributes ) {
 
 	// ---- Image element (rendered as <img>, NOT as background-image) ----
 	if ( $image_url ) {
-		$html .= '<div class="campaign-image-wrapper" aria-hidden="false">';
+		$html .= '<div class="campaign-image-wrapper" aria-hidden="false" style="border:3px solid ' . esc_attr( $image_border_color ) . ';">';
 		$html .= '<img';
 		$html .= ' src="' . esc_url( $image_url ) . '"';
 		$html .= ' alt="' . esc_attr( $image_alt ) . '"';

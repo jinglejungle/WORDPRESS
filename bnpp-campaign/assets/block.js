@@ -94,6 +94,27 @@
 		return containsAsianCharacters( value ) ? TITLE_MAX_ASIAN : TITLE_MAX_LATIN;
 	}
 
+	/**
+	 * Convert a hex color string (#rrggbb or #rgb) to an rgba() CSS value.
+	 * Used to compute the image border color (boxBgColor at 30% opacity).
+	 *
+	 * @param  {string} hex     - Hex color, e.g. '#008252'.
+	 * @param  {number} opacity - Opacity between 0 and 1.
+	 * @return {string}         - CSS rgba() string, e.g. 'rgba(0,130,82,0.3)'.
+	 */
+	function hexToRgba( hex, opacity ) {
+		// Expand shorthand #rgb to #rrggbb.
+		var full = hex.replace( /^#([a-f\d])([a-f\d])([a-f\d])$/i, '#$1$1$2$2$3$3' );
+		var r = parseInt( full.slice( 1, 3 ), 16 );
+		var g = parseInt( full.slice( 3, 5 ), 16 );
+		var b = parseInt( full.slice( 5, 7 ), 16 );
+		// Guard against NaN if hex is malformed.
+		if ( isNaN( r ) || isNaN( g ) || isNaN( b ) ) {
+			return 'rgba(0,0,0,' + opacity + ')';
+		}
+		return 'rgba(' + r + ',' + g + ',' + b + ',' + opacity + ')';
+	}
+
 	/* ------------------------------------------------------------------ */
 	/*  Block registration                                                  */
 	/* ------------------------------------------------------------------ */
@@ -137,6 +158,9 @@
 			var imageAlignment = attributes.imageAlignment;
 			var boxBgColor     = attributes.boxBgColor   || DEFAULT_BG;
 			var boxTextColor   = attributes.boxTextColor || DEFAULT_COLOR;
+
+			/* Border color for the image: boxBgColor at 30% opacity. */
+			var imageBorderColor = hexToRgba( boxBgColor, 0.3 );
 
 			var titleMax     = getTitleMax( title );
 			var titleLen     = title.length;
@@ -214,6 +238,8 @@
 							tabIndex:     0,
 							title:        __( 'Click to edit image settings', 'campaign-block' ),
 							'aria-label': __( 'Edit image – opens image settings panel', 'campaign-block' ),
+							/* Border reflects the selected palette color at 30% opacity. */
+							style:        { border: '3px solid ' + imageBorderColor },
 							onKeyDown: function ( e ) {
 								if ( e.key === 'Enter' || e.key === ' ' ) { e.preventDefault(); onImageClick(); }
 							},
@@ -238,6 +264,8 @@
 							role:         'button',
 							tabIndex:     0,
 							'aria-label': __( 'Select an image – opens image settings panel', 'campaign-block' ),
+							/* Border matches the palette color at 30% opacity on the placeholder too. */
+							style:        { border: '3px solid ' + imageBorderColor },
 							onKeyDown: function ( e ) {
 								if ( e.key === 'Enter' || e.key === ' ' ) { e.preventDefault(); onImageClick(); }
 							},
@@ -272,6 +300,9 @@
 							className:   'campaign-char-count campaign-char-count--inline' + ( titleAtLimit ? ' campaign-char-count--limit' : '' ),
 							role:        titleAtLimit ? 'alert' : undefined,
 							'aria-live': 'polite',
+							/* Inherit text color from the chosen palette, with reduced opacity
+							   so it is visually secondary to the actual content. */
+							style:       { color: hexToRgba( boxTextColor, 0.7 ) },
 						},
 						titleAtLimit
 							? __( 'Maximum number of characters reached.', 'campaign-block' )
@@ -296,6 +327,8 @@
 							className:   'campaign-char-count campaign-char-count--inline' + ( descAtLimit ? ' campaign-char-count--limit' : '' ),
 							role:        descAtLimit ? 'alert' : undefined,
 							'aria-live': 'polite',
+							/* Same color logic as the title counter. */
+							style:       { color: hexToRgba( boxTextColor, 0.7 ) },
 						},
 						descAtLimit
 							? __( 'Maximum number of characters reached.', 'campaign-block' )
