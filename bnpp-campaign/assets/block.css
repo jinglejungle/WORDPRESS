@@ -180,20 +180,42 @@
 
 /* =========================================================================
    Typography inside the description box
+   =========================================================================
+   The !important overrides are intentional: Gutenberg's editor stylesheet
+   injects margin-block-start / margin-block-end on heading elements and
+   wraps RichText fields in extra divs that also carry default margins.
+   Without these resets, a large gap appears above the title in the editor.
+   Resets are scoped tightly to .campaign-box-description so they never
+   affect other blocks or the surrounding theme.
    ========================================================================= */
-.campaign-title {
-	margin     : 0 0 16px;
-	font-size  : var( --campaign-title-font-size );
-	font-weight: var( --campaign-title-font-weight );
-	color      : var( --campaign-box-color );
-	line-height: 1.25;
+
+/* Neutralise the top margin on any direct child wrapper Gutenberg adds
+   around a RichText (the div.rich-text or the placeholder wrapper)       */
+.campaign-box-description > *:first-child {
+	margin-top         : 0 !important;
+	margin-block-start : 0 !important;
+	padding-top        : 0 !important;
+}
+
+.campaign-title,
+h2.campaign-title {
+	margin             : 0 0 16px !important;
+	margin-block-start : 0 !important;
+	margin-block-end   : 16px !important;
+	padding-top        : 0 !important;
+	font-size          : var( --campaign-title-font-size );
+	font-weight        : var( --campaign-title-font-weight );
+	color              : var( --campaign-box-color );
+	line-height        : 1.25;
 }
 
 .campaign-description {
-	margin      : 0;
-	font-size   : var( --campaign-desc-font-size );
-	line-height : var( --campaign-desc-line-height );
-	color       : var( --campaign-box-color );
+	margin             : 0;
+	margin-block-start : 0 !important;
+	padding-top        : 0 !important;
+	font-size          : var( --campaign-desc-font-size );
+	line-height        : var( --campaign-desc-line-height );
+	color              : var( --campaign-box-color );
 }
 
 /* =========================================================================
@@ -291,6 +313,27 @@ button:focus-visible,
 .campaign-char-count--limit {
 	color      : #cc1818;
 	font-weight: 600;
+}
+
+/*
+ * Inline character counters – displayed inside the green boxDescription
+ * in the editor canvas, below each RichText field.
+ * display:block ensures they sit on their own line.
+ * They are editor-only (not output in the server-side render).
+ */
+.campaign-char-count--inline {
+	display      : block;
+	font-size    : 0.7rem;
+	color        : rgba( 255, 255, 255, 0.75 );   /* Readable on green background */
+	margin-top   : 2px;
+	margin-bottom: 8px;
+	font-style   : italic;
+}
+
+.campaign-char-count--inline.campaign-char-count--limit {
+	color      : #ffcccc;   /* Soft red on green – maintains readability */
+	font-weight: 600;
+	font-style : normal;
 }
 
 /* Media panel – image thumbnail preview */

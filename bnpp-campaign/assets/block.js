@@ -39,6 +39,7 @@
 	var Fragment          = wp.element.Fragment;
 	var __                = wp.i18n.__;
 	var InspectorControls = wp.blockEditor.InspectorControls;
+	var RichText          = wp.blockEditor.RichText;
 	var MediaUpload       = wp.blockEditor.MediaUpload;
 	var MediaUploadCheck  = wp.blockEditor.MediaUploadCheck;
 	var PanelBody         = wp.components.PanelBody;
@@ -46,7 +47,6 @@
 	var TextareaControl   = wp.components.TextareaControl;
 	var RadioControl      = wp.components.RadioControl;
 	var Button            = wp.components.Button;
-	var Notice            = wp.components.Notice;
 
 	/* ------------------------------------------------------------------ */
 	/*  Constants                                                           */
@@ -213,12 +213,60 @@
 					{ className: 'campaign-image-placeholder', 'aria-hidden': 'true' },
 					el( 'span', {}, __( 'No image selected', 'campaign-block' ) )
 				),
-				/* Description box */
+				/* Description box – title and description are inline-editable via RichText */
 				el(
 					'div',
 					{ id: 'boxDescription', className: 'campaign-box-description' },
-					title       ? el( 'h2', { className: 'campaign-title' }, title )             : null,
-					description ? el( 'p',  { className: 'campaign-description' }, description ) : null
+
+					/* ---- Inline editable title ---- */
+					el( RichText, {
+						tagName:          'h2',
+						className:        'campaign-title',
+						value:            title,
+						onChange:         onTitleChange,
+						placeholder:      __( 'Campaign title…', 'campaign-block' ),
+						allowedFormats:   [],          // Plain text only – no bold/italic/links.
+						withoutInteractiveFormatting: true,
+						'aria-label':     __( 'Campaign title', 'campaign-block' ),
+					} ),
+
+					/* Character counter for the inline title */
+					el(
+						'span',
+						{
+							className:   'campaign-char-count campaign-char-count--inline' + ( titleAtLimit ? ' campaign-char-count--limit' : '' ),
+							role:        titleAtLimit ? 'alert' : undefined,
+							'aria-live': 'polite',
+						},
+						titleAtLimit
+							? __( 'Maximum number of characters reached.', 'campaign-block' )
+							: ( titleLen + ' / ' + titleMax + ' ' + __( 'characters', 'campaign-block' ) )
+					),
+
+					/* ---- Inline editable description ---- */
+					el( RichText, {
+						tagName:          'p',
+						className:        'campaign-description',
+						value:            description,
+						onChange:         onDescriptionChange,
+						placeholder:      __( 'Campaign description…', 'campaign-block' ),
+						allowedFormats:   [],          // Plain text only.
+						withoutInteractiveFormatting: true,
+						'aria-label':     __( 'Campaign description', 'campaign-block' ),
+					} ),
+
+					/* Character counter for the inline description */
+					el(
+						'span',
+						{
+							className:   'campaign-char-count campaign-char-count--inline' + ( descAtLimit ? ' campaign-char-count--limit' : '' ),
+							role:        descAtLimit ? 'alert' : undefined,
+							'aria-live': 'polite',
+						},
+						descAtLimit
+							? __( 'Maximum number of characters reached.', 'campaign-block' )
+							: ( descLen + ' / ' + DESC_MAX + ' ' + __( 'characters', 'campaign-block' ) )
+					)
 				)
 			);
 
