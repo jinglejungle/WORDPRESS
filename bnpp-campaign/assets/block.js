@@ -10,6 +10,13 @@
  * • edit()             – Inspector controls rendered in the right-hand panel
  * • save()             – returns null because rendering is handled server-side
  *
+ * Container layout
+ * ────────────────
+ * • width: 100% (fluid), max-width: 1130 px.
+ * • Image (700 × 500 px) and boxDescription (590 × min 360 px) keep fixed sizes above 460 px.
+ * • As the container narrows below 1130 px, boxDescription slides toward the left edge.
+ * • Below 460 px: mobile layout – image full-width on top, description below.
+ *
  * Character-limit rules
  * ─────────────────────
  * • Title       : 55 chars for Latin / non-Asian scripts; 25 for Asian scripts.
@@ -18,6 +25,7 @@
  * Asian script detection uses Unicode ranges for:
  *   CJK Unified Ideographs, Hiragana, Katakana, Hangul, CJK Compatibility.
  *
+ * @package CampaignBlock
  */
 
 ( function () {
@@ -183,6 +191,10 @@
 					className: containerClass,
 					role:      'region',
 					'aria-label': __( 'Campaign preview', 'campaign-block' ),
+					style: {
+						width    : '100%',
+						maxWidth : '1130px',
+					},
 				},
 				/* Image wrapper */
 				imageUrl ? el(

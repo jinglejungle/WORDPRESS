@@ -5,22 +5,35 @@
  *
  * Layout overview
  * ───────────────
- * #campaign_container  : 808 px wide, min 500 px tall, uses CSS position to allow
- *                        the image to sit behind .campaign-box-description on the
- *                        same stacking context (z-index) without using background-image.
+ * #campaign_container  : max-width 1130 px, width 100% (fluid). min-height 500 px.
+ *                        Uses CSS position to allow the image to sit behind
+ *                        .campaign-box-description without using background-image.
  *
- * .campaign-image-wrapper : absolutely positioned, so the image is visually "behind"
- *                           the description box on the same stacking plane.
+ * .campaign-image-wrapper : absolutely positioned, z-index 1.
+ *                           Fixed size: 700 × 500 px. Does NOT resize.
  *
- * .campaign-image         : 700 × 500 px.
+ * .campaign-image         : 700 × 500 px. Fixed. Does NOT resize.
  *
- * #boxDescription         : 590 px wide, min 360 px tall, green background, white text,
- *                           margin-top: 70 px, z-index above the image.
+ * #boxDescription         : 590 px wide (fixed), min 360 px tall, green background,
+ *                           white text, margin-top: 70 px, z-index 2.
+ *                           As the container narrows below 1130 px the box slides
+ *                           toward the left edge of the container while keeping its
+ *                           fixed dimensions. It never resizes until mobile breakpoint.
  *
- * Alignment variants
- * ──────────────────
- * .campaign-image-left   : image pinned to the left  → boxDescription floated right.
- * .campaign-image-right  : image pinned to the right → boxDescription floated left.
+ * Alignment variants (> 460 px)
+ * ─────────────────────────────
+ * .campaign-image-left   : image pinned to left  → boxDescription aligned to right.
+ *                          When container shrinks, box slides left (margin-right: 0,
+ *                          margin-left: auto collapses).
+ * .campaign-image-right  : image pinned to right → boxDescription aligned to left.
+ *                          When container shrinks, box stays left (margin-left: 0).
+ *
+ * Shrink behaviour (461 px – 1130 px)
+ * ─────────────────────────────────────
+ * The container becomes narrower than 1130 px naturally (width: 100%).
+ * The image stays absolutely positioned at its fixed size (may overflow / clip).
+ * boxDescription keeps its fixed 590 px width and slides toward the left because
+ * margin-left collapses first (auto → 0) while margin-right stays 0.
  *
  * Mobile (≤ 460 px)
  * ─────────────────
@@ -30,13 +43,14 @@
  * ─────────────
  * Focus outlines are preserved. High-contrast colour pairs meet WCAG AA.
  *
+ * @package CampaignBlock
  */
 
 /* =========================================================================
    CSS Custom Properties
    ========================================================================= */
 :root {
-	--campaign-container-width  : 808px;
+	--campaign-container-max-w  : 1130px;  /* Maximum container width (fluid below) */
 	--campaign-container-min-h  : 500px;
 
 	--campaign-image-width      : 700px;
@@ -54,19 +68,24 @@
 	--campaign-desc-font-size   : 1rem;
 	--campaign-desc-line-height : 1.6;
 
-	--campaign-image-z          : 1;   /* Image layer */
-	--campaign-box-z            : 2;   /* Description on top of image */
+	--campaign-image-z          : 1;   /* Image layer  */
+	--campaign-box-z            : 2;   /* Description above image */
 }
 
 /* =========================================================================
    Container  (#campaign_container)
+   =========================================================================
+   width: 100%        → fluid, adapts to its parent column.
+   max-width: 1130px  → never exceeds 1130 px.
+   overflow: hidden   → clips the fixed-size image when container is narrower.
    ========================================================================= */
 #campaign_container,
 .campaign-container {
-	position   : relative;       /* Establishes stacking context for children  */
-	width      : var( --campaign-container-width );
+	position   : relative;
+	width      : 100%;
+	max-width  : var( --campaign-container-max-w );
 	min-height : var( --campaign-container-min-h );
-	overflow   : hidden;         /* Clips any image overflow                   */
+	overflow   : hidden;
 	box-sizing : border-box;
 
 	/* Centre the block within its parent column */
@@ -76,24 +95,28 @@
 
 /* =========================================================================
    Image wrapper & image
+   =========================================================================
+   Absolutely positioned so the image floats behind the description box.
+   The image is NOT a background-image; it is a real <img> element.
+   Its fixed dimensions never change between 461 px and 1130 px.
+   When the container is narrower than 700 px the image overflows and is
+   clipped by the container's overflow: hidden.
    ========================================================================= */
 .campaign-image-wrapper {
-	position : absolute;         /* Sits behind boxDescription                 */
+	position : absolute;
 	top      : 0;
 	z-index  : var( --campaign-image-z );
-
-	/* Width & height match the image itself */
-	width  : var( --campaign-image-width );
-	height : var( --campaign-image-height );
+	width    : var( --campaign-image-width );
+	height   : var( --campaign-image-height );
 }
 
-/* Left-aligned: image pinned to left edge */
+/* Left-aligned variant: image pinned to the left edge */
 .campaign-image-left .campaign-image-wrapper {
 	left  : 0;
 	right : auto;
 }
 
-/* Right-aligned: image pinned to right edge */
+/* Right-aligned variant: image pinned to the right edge */
 .campaign-image-right .campaign-image-wrapper {
 	right : 0;
 	left  : auto;
@@ -103,16 +126,21 @@
 	display    : block;
 	width      : var( --campaign-image-width );
 	height     : var( --campaign-image-height );
-	object-fit : cover;          /* Preserves aspect ratio while filling slot  */
-	max-width  : none;           /* Override theme resets that cap img width   */
+	object-fit : cover;
+	max-width  : none;   /* Prevent theme resets from capping the image width */
 }
 
 /* =========================================================================
    Description box  (#boxDescription / .campaign-box-description)
+   =========================================================================
+   position: relative  → sits above the absolutely-placed image (z-index 2).
+   width: 590 px       → fixed, never resizes between 461 px and 1130 px.
+   margin auto logic   → as the container shrinks, margin-left collapses first
+                         (auto becomes 0), pushing the box toward the left edge.
    ========================================================================= */
 #boxDescription,
 .campaign-box-description {
-	position   : relative;       /* Rises above the absolutely-placed image    */
+	position   : relative;
 	z-index    : var( --campaign-box-z );
 
 	width      : var( --campaign-box-width );
@@ -125,18 +153,29 @@
 	color            : var( --campaign-box-color );
 }
 
-/* Left image → description sits on the right */
+/* ─── Image LEFT → description pushed to the right ───────────────────────
+   At full width (1130 px): margin-left: auto fills the gap and the box
+   sits on the right side, overlapping the right portion of the image.
+   As the container narrows: margin-left reduces (auto collapses),
+   the box slides progressively toward the left.
+   margin-right: 0 ensures the box hugs the right edge of available space
+   and only the left margin absorbs the shrinkage.
+   ─────────────────────────────────────────────────────────────────────── */
 .campaign-image-left #boxDescription,
 .campaign-image-left .campaign-box-description {
-	margin-left : auto;
-	margin-right: 0;
+	margin-left  : auto;
+	margin-right : 0;
 }
 
-/* Right image → description sits on the left */
+/* ─── Image RIGHT → description stays on the left ────────────────────────
+   margin-left: 0 keeps the box anchored to the left edge at all widths.
+   As the container narrows the box stays at the left, and the image
+   (pinned to the right) scrolls out of view under overflow: hidden.
+   ─────────────────────────────────────────────────────────────────────── */
 .campaign-image-right #boxDescription,
 .campaign-image-right .campaign-box-description {
-	margin-left : 0;
-	margin-right: auto;
+	margin-left  : 0;
+	margin-right : auto;
 }
 
 /* =========================================================================
@@ -159,28 +198,33 @@
 
 /* =========================================================================
    Mobile layout  (viewport width ≤ 460 px)
+   =========================================================================
+   Both elements revert to normal document flow and stack vertically.
+   The image takes 100 % of the container width.
+   boxDescription is displayed below the image, also full-width.
    ========================================================================= */
 @media screen and ( max-width: 460px ) {
 
-	/* Container becomes full-width and auto-height */
+	/* Container: full-width, no fixed height, content visible */
 	#campaign_container,
 	.campaign-container {
 		width      : 100%;
+		max-width  : none;
 		min-height : 0;
 		overflow   : visible;
 	}
 
-	/* Image wrapper reverts to normal flow (no longer absolute) */
+	/* Image wrapper: back in normal flow, no absolute positioning */
 	.campaign-image-wrapper {
 		position : relative;
 		top      : auto;
 		left     : auto;
-		right     : auto;
+		right    : auto;
 		width    : 100%;
 		height   : auto;
 	}
 
-	/* Image fills full container width */
+	/* Image: full container width, height scales proportionally */
 	.campaign-image {
 		width      : 100%;
 		height     : auto;
@@ -188,23 +232,23 @@
 		object-fit : cover;
 	}
 
-	/* Description box fills full width and stacks below the image */
+	/* Description box: full width, stacked below the image */
 	#boxDescription,
 	.campaign-box-description {
 		width      : 100%;
 		min-height : 0;
-		margin-top : 0;          /* No top margin in stacked layout            */
+		margin-top : 0;
 		margin-left : 0;
 		margin-right: 0;
 	}
 
-	/* Override alignment variants so both sides behave identically on mobile */
-	.campaign-image-left #boxDescription,
+	/* Override alignment margins so both variants behave identically */
+	.campaign-image-left  #boxDescription,
 	.campaign-image-right #boxDescription,
-	.campaign-image-left .campaign-box-description,
+	.campaign-image-left  .campaign-box-description,
 	.campaign-image-right .campaign-box-description {
-		margin-left : 0;
-		margin-right: 0;
+		margin-left  : 0;
+		margin-right : 0;
 	}
 }
 

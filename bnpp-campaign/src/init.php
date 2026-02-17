@@ -8,6 +8,13 @@
  * - Defining block attributes
  * - Rendering the block on the front end
  *
+ * Container layout:
+ * - width: 100% (fluid), max-width: 1130 px.
+ * - Image (700 × 500 px) and boxDescription (590 px wide) keep fixed sizes above 460 px.
+ * - As the container narrows, boxDescription slides toward the left edge.
+ * - Below 460 px: mobile stacked layout (image full-width on top, description below).
+ *
+ * @package CampaignBlock
  */
 
 // Exit if accessed directly.
