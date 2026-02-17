@@ -238,8 +238,6 @@
 							tabIndex:     0,
 							title:        __( 'Click to edit image settings', 'campaign-block' ),
 							'aria-label': __( 'Edit image – opens image settings panel', 'campaign-block' ),
-							/* Border reflects the selected palette color at 30% opacity. */
-							style:        { border: '3px solid ' + imageBorderColor },
 							onKeyDown: function ( e ) {
 								if ( e.key === 'Enter' || e.key === ' ' ) { e.preventDefault(); onImageClick(); }
 							},
@@ -250,6 +248,13 @@
 							className: 'campaign-image',
 							width:     700,
 							height:    500,
+							/*
+							 * outline is used instead of border so the stroke draws
+							 * on top of the image itself (outside the box model) and
+							 * is never clipped or hidden by the absolute positioning
+							 * of the wrapper.
+							 */
+							style:     { outline: '3px solid ' + imageBorderColor, outlineOffset: '-3px' },
 						} ),
 						/* Hover overlay hint */
 						el( 'span', { className: 'campaign-image-edit-hint', 'aria-hidden': 'true' },
@@ -264,8 +269,8 @@
 							role:         'button',
 							tabIndex:     0,
 							'aria-label': __( 'Select an image – opens image settings panel', 'campaign-block' ),
-							/* Border matches the palette color at 30% opacity on the placeholder too. */
-							style:        { border: '3px solid ' + imageBorderColor },
+							/* outline instead of border: consistent with the image variant. */
+							style:        { outline: '3px solid ' + imageBorderColor, outlineOffset: '-3px' },
 							onKeyDown: function ( e ) {
 								if ( e.key === 'Enter' || e.key === ' ' ) { e.preventDefault(); onImageClick(); }
 							},

@@ -191,11 +191,16 @@ function campaign_block_render( $attributes ) {
 
 	// ---- Image element (rendered as <img>, NOT as background-image) ----
 	if ( $image_url ) {
-		$html .= '<div class="campaign-image-wrapper" aria-hidden="false" style="border:3px solid ' . esc_attr( $image_border_color ) . ';">';
+		// outline on <img> instead of border on the wrapper:
+		// outline draws on top of the image (outside the box model) so it is
+		// never hidden by the absolutely-positioned wrapper's overflow.
+		$img_outline_style = 'outline:3px solid ' . esc_attr( $image_border_color ) . ';outline-offset:-3px;';
+		$html .= '<div class="campaign-image-wrapper" aria-hidden="false">';
 		$html .= '<img';
 		$html .= ' src="' . esc_url( $image_url ) . '"';
 		$html .= ' alt="' . esc_attr( $image_alt ) . '"';
 		$html .= ' class="campaign-image"';
+		$html .= ' style="' . $img_outline_style . '"';
 		$html .= ' width="700"';
 		$html .= ' height="500"';
 		$html .= ' loading="lazy"';

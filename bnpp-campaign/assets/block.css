@@ -128,6 +128,13 @@
 	height     : var( --campaign-image-height );
 	object-fit : cover;
 	max-width  : none;   /* Prevent theme resets from capping the image width */
+	/*
+	 * outline is set via inline style (computed from boxBgColor at 30 % opacity).
+	 * We declare outline here only to prevent theme resets (e.g. img { outline: 0 })
+	 * from wiping the inline value. The actual color and width come from JS / PHP.
+	 */
+	outline        : 3px solid transparent;
+	outline-offset : -3px;
 }
 
 /* =========================================================================
