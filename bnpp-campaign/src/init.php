@@ -94,6 +94,18 @@ function campaign_block_register() {
 					'type'    => 'string',
 					'default' => 'left',
 				),
+
+				// Background color of the description box (hex value from the palette).
+				'boxBgColor'     => array(
+					'type'    => 'string',
+					'default' => '#008252',
+				),
+
+				// Text color applied to title and description (hex value).
+				'boxTextColor'   => array(
+					'type'    => 'string',
+					'default' => '#ffffff',
+				),
 			),
 
 			/* ---- Asset handles ---- */
@@ -120,11 +132,17 @@ add_action( 'init', 'campaign_block_register' );
 function campaign_block_render( $attributes ) {
 
 	// Sanitize all attribute values before output.
-	$title          = isset( $attributes['title'] )          ? sanitize_text_field( $attributes['title'] )         : '';
-	$description    = isset( $attributes['description'] )    ? sanitize_textarea_field( $attributes['description'] ) : '';
-	$image_url      = isset( $attributes['imageUrl'] )       ? esc_url( $attributes['imageUrl'] )                  : '';
-	$image_alt      = isset( $attributes['imageAlt'] )       ? sanitize_text_field( $attributes['imageAlt'] )      : '';
-	$image_alignment = isset( $attributes['imageAlignment'] ) ? sanitize_text_field( $attributes['imageAlignment'] ) : 'left';
+	$title           = isset( $attributes['title'] )          ? sanitize_text_field( $attributes['title'] )           : '';
+	$description     = isset( $attributes['description'] )    ? sanitize_textarea_field( $attributes['description'] ) : '';
+	$image_url       = isset( $attributes['imageUrl'] )       ? esc_url( $attributes['imageUrl'] )                    : '';
+	$image_alt       = isset( $attributes['imageAlt'] )       ? sanitize_text_field( $attributes['imageAlt'] )        : '';
+	$image_alignment = isset( $attributes['imageAlignment'] ) ? sanitize_text_field( $attributes['imageAlignment'] )  : 'left';
+	$box_bg_color    = isset( $attributes['boxBgColor'] )     ? sanitize_hex_color( $attributes['boxBgColor'] )       : '#008252';
+	$box_text_color  = isset( $attributes['boxTextColor'] )   ? sanitize_hex_color( $attributes['boxTextColor'] )     : '#ffffff';
+
+	// Fallback to defaults if sanitize_hex_color returns empty (invalid value).
+	if ( ! $box_bg_color )   { $box_bg_color   = '#008252'; }
+	if ( ! $box_text_color ) { $box_text_color = '#ffffff'; }
 
 	// Validate alignment value to prevent unexpected output.
 	if ( ! in_array( $image_alignment, array( 'left', 'right' ), true ) ) {
@@ -133,6 +151,9 @@ function campaign_block_render( $attributes ) {
 
 	// Build CSS modifier class: image-left places description on the right, and vice-versa.
 	$container_class = 'campaign-container campaign-image-' . esc_attr( $image_alignment );
+
+	// Inline style for the description box – applies the chosen palette colors.
+	$box_style = 'background-color:' . esc_attr( $box_bg_color ) . ';color:' . esc_attr( $box_text_color ) . ';';
 
 	// Open the outer container.
 	$html  = '<div id="campaign_container" class="' . $container_class . '" role="region" aria-label="' . esc_attr__( 'Campaign', 'campaign-block' ) . '">';
@@ -152,16 +173,16 @@ function campaign_block_render( $attributes ) {
 		$html .= '</div>';
 	}
 
-	// ---- Description box ----
-	$html .= '<div id="boxDescription" class="campaign-box-description">';
+	// ---- Description box (inline style applies the selected palette colors) ----
+	$html .= '<div id="boxDescription" class="campaign-box-description" style="' . $box_style . '">';
 
 	if ( $title ) {
 		// Use h2 for semantic heading; adjust to your document outline as needed.
-		$html .= '<h2 class="campaign-title">' . esc_html( $title ) . '</h2>';
+		$html .= '<h2 class="campaign-title" style="color:' . esc_attr( $box_text_color ) . ';">' . esc_html( $title ) . '</h2>';
 	}
 
 	if ( $description ) {
-		$html .= '<p class="campaign-description">' . esc_html( $description ) . '</p>';
+		$html .= '<p class="campaign-description" style="color:' . esc_attr( $box_text_color ) . ';">' . esc_html( $description ) . '</p>';
 	}
 
 	$html .= '</div>';// #boxDescription

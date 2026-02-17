@@ -363,3 +363,111 @@ button:focus-visible,
 .campaign-remove-image {
 	font-size : 0.8rem;
 }
+
+/* =========================================================================
+   Color palette – Appearance panel
+   ========================================================================= */
+
+/* Label above the swatches */
+.campaign-palette-label {
+	font-size      : 0.75rem;
+	font-weight    : 600;
+	color          : #1e1e1e;
+	margin         : 0 0 8px;
+	text-transform : uppercase;
+	letter-spacing : 0.04em;
+}
+
+/* Swatch grid */
+.campaign-palette {
+	display               : grid;
+	grid-template-columns : repeat( 6, 1fr );
+	gap                   : 6px;
+	margin-bottom         : 12px;
+}
+
+/* Individual swatch button */
+.campaign-palette__swatch {
+	display      : block;
+	width        : 100%;
+	aspect-ratio : 1;
+	border-radius: 4px;
+	border       : 2px solid transparent;
+	cursor       : pointer;
+	padding      : 0;
+	transition   : transform 0.1s ease, border-color 0.1s ease;
+	outline      : none;
+}
+
+.campaign-palette__swatch:hover {
+	transform    : scale( 1.12 );
+	border-color : #555;
+}
+
+.campaign-palette__swatch:focus-visible {
+	outline        : 3px solid #005fcc;
+	outline-offset : 2px;
+}
+
+/* Selected state – white ring + dark outer border */
+.campaign-palette__swatch.is-selected {
+	border-color : #1e1e1e;
+	box-shadow   : inset 0 0 0 2px #ffffff;
+	transform    : scale( 1.1 );
+}
+
+/* Small live preview chip below the swatches */
+.campaign-palette-preview {
+	padding       : 8px 12px;
+	border-radius : 4px;
+	font-size     : 0.8rem;
+	font-weight   : 600;
+	margin-top    : 4px;
+	transition    : background-color 0.15s ease, color 0.15s ease;
+}
+
+/* =========================================================================
+   Image click – hover overlay hint (editor canvas only)
+   ========================================================================= */
+
+/* Make the clickable wrapper a positioning context */
+.campaign-image-wrapper--clickable {
+	cursor : pointer;
+}
+
+/* The hint label that fades in on hover */
+.campaign-image-edit-hint {
+	position         : absolute;
+	top              : 50%;
+	left             : 50%;
+	transform        : translate( -50%, -50% );
+	background-color : rgba( 0, 0, 0, 0.55 );
+	color            : #ffffff;
+	font-size        : 0.85rem;
+	font-weight      : 600;
+	padding          : 8px 14px;
+	border-radius    : 4px;
+	white-space      : nowrap;
+	opacity          : 0;
+	transition       : opacity 0.2s ease;
+	pointer-events   : none;
+}
+
+.campaign-image-wrapper--clickable:hover  .campaign-image-edit-hint,
+.campaign-image-wrapper--clickable:focus  .campaign-image-edit-hint {
+	opacity : 1;
+}
+
+/* Subtle tint overlay on hover */
+.campaign-image-wrapper--clickable::after {
+	content          : '';
+	position         : absolute;
+	inset            : 0;
+	background-color : rgba( 0, 0, 0, 0 );
+	transition       : background-color 0.2s ease;
+	pointer-events   : none;
+}
+
+.campaign-image-wrapper--clickable:hover::after {
+	background-color : rgba( 0, 0, 0, 0.18 );
+}
