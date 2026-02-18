@@ -597,3 +597,58 @@ a.campaign-button-preview {
 .campaign-button-inspector-preview {
 	margin-top : 12px;
 }
+
+/* =========================================================================
+   Inspector – Toggle button groups (Open in / Button style)
+   ========================================================================= */
+
+.campaign-toggle-group-wrap {
+	margin-bottom : 16px;
+}
+
+.campaign-toggle-group-label {
+	font-size      : 0.75rem;
+	font-weight    : 600;
+	color          : #1e1e1e;
+	margin         : 0 0 8px;
+	text-transform : uppercase;
+	letter-spacing : 0.04em;
+}
+
+.campaign-toggle-group {
+	display   : flex;
+	flex-wrap : wrap;
+	gap       : 6px;
+}
+
+.campaign-toggle-btn {
+	flex            : 1 1 auto;
+	padding         : 7px 12px;
+	font-size       : 0.8rem;
+	font-weight     : 500;
+	border          : 1.5px solid #949494;
+	border-radius   : 4px;
+	background      : #ffffff;
+	color           : #3c3c3c;
+	cursor          : pointer;
+	text-align      : center;
+	transition      : background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+	white-space     : nowrap;
+}
+
+.campaign-toggle-btn:hover {
+	border-color : #1e1e1e;
+	color        : #1e1e1e;
+}
+
+.campaign-toggle-btn.is-active {
+	background   : #1e1e1e;
+	color        : #ffffff;
+	border-color : #1e1e1e;
+	font-weight  : 600;
+}
+
+.campaign-toggle-btn:focus-visible {
+	outline        : 3px solid #005fcc;
+	outline-offset : 2px;
+}

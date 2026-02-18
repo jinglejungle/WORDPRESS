@@ -603,44 +603,41 @@
 							help:     __( 'The button is hidden if the URL is empty or the text is still the default.', 'campaign-block' ),
 						} ),
 
-						el( RadioControl, {
-							label:    __( 'Open in', 'campaign-block' ),
-							selected: buttonTarget ? '_blank' : '_self',
-							options: [
-								{ label: __( 'Same tab', 'campaign-block' ),  value: '_self'  },
-								{ label: __( 'New tab', 'campaign-block' ),   value: '_blank' },
-							],
-							onChange: function ( val ) { setAttributes( { buttonTarget: val === '_blank' } ); },
-						} ),
-
-						el( RadioControl, {
-							label:    __( 'Button style', 'campaign-block' ),
-							selected: buttonStyle,
-							options:  BUTTON_STYLES,
-							onChange: function ( val ) { setAttributes( { buttonStyle: val } ); },
-						} ),
-
-						/* Live preview chip */
-						( buttonUrl && buttonText && buttonText !== 'Button content...' )
-							? el(
-								'div',
-								{ className: 'campaign-button-inspector-preview' },
-								el( 'p', { className: 'campaign-palette-label' }, __( 'Preview', 'campaign-block' ) ),
-								el(
-									'a',
-									{
-										href:      '#',
-										className: 'bnpp-custom ' + buttonStyle + ( boxTextColor === '#ffffff' ? ' dark' : '' ),
-										onClick:   function ( e ) { e.preventDefault(); },
-									},
-									buttonText
-								)
+						/* ==== Open in – custom toggle group ==== */
+						el( 'div', { className: 'campaign-toggle-group-wrap' },
+							el( 'p', { className: 'campaign-toggle-group-label' }, __( 'Open in', 'campaign-block' ) ),
+							el( 'div', { className: 'campaign-toggle-group', role: 'group', 'aria-label': __( 'Open in', 'campaign-block' ) },
+								[ { label: __( 'Same tab', 'campaign-block' ), value: '_self' },
+								  { label: __( 'New tab',  'campaign-block' ), value: '_blank' } ]
+								.map( function( opt ) {
+									var isActive = ( buttonTarget ? '_blank' : '_self' ) === opt.value;
+									return el( 'button', {
+										key:           opt.value,
+										type:          'button',
+										className:     'campaign-toggle-btn' + ( isActive ? ' is-active' : '' ),
+										'aria-pressed': isActive,
+										onClick: function() { setAttributes( { buttonTarget: opt.value === '_blank' } ); },
+									}, opt.label );
+								} )
 							)
-							: el(
-								'p',
-								{ className: 'campaign-char-count' },
-								__( 'Fill in the URL and change the button text to display the button.', 'campaign-block' )
+						),
+
+						/* ==== Button style – custom toggle group ==== */
+						el( 'div', { className: 'campaign-toggle-group-wrap' },
+							el( 'p', { className: 'campaign-toggle-group-label' }, __( 'Button style', 'campaign-block' ) ),
+							el( 'div', { className: 'campaign-toggle-group', role: 'group', 'aria-label': __( 'Button style', 'campaign-block' ) },
+								BUTTON_STYLES.map( function( opt ) {
+									var isActive = buttonStyle === opt.value;
+									return el( 'button', {
+										key:            opt.value,
+										type:           'button',
+										className:      'campaign-toggle-btn' + ( isActive ? ' is-active' : '' ),
+										'aria-pressed': isActive,
+										onClick: function() { setAttributes( { buttonStyle: opt.value } ); },
+									}, opt.label );
+								} )
 							)
+						)
 					)
 				)
 			);
