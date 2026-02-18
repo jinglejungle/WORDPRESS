@@ -125,27 +125,6 @@
 		return 'rgba(' + r + ',' + g + ',' + b + ',' + opacity + ')';
 	}
 
-	function LimitedRichText( props ) {
-		var value = props.value || '';
-		var onChange = props.onChange;
-		var maxLength = props.maxLength || 999999;
-
-		function handleChange( newValue ) {
-			if ( newValue.length > maxLength ) {
-				onChange( newValue.substring( 0, maxLength ) );
-			} else {
-				onChange( newValue );
-			}
-		}
-
-		var richTextProps = Object.assign( {}, props, {
-			value: value,
-			onChange: handleChange
-		} );
-
-		return el( RichText, richTextProps );
-	}
-
 	/* ------------------------------------------------------------------ */
 	/*  Block registration                                                  */
 	/* ------------------------------------------------------------------ */
@@ -233,16 +212,16 @@
 
 			/* ---- Handlers ---- */
 			function onTitleChange( newValue ) {
+				/* Bloquer au-delà de la limite, autoriser jusqu'à la limite incluse */
 				var max = getTitleMax( newValue );
-				if ( newValue.length <= max ) {
-					setAttributes( { title: newValue } );
-				}
+				var truncated = newValue.length > max ? newValue.substring( 0, max ) : newValue;
+				setAttributes( { title: truncated } );
 			}
 
 			function onDescriptionChange( newValue ) {
-				if ( newValue.length <= DESC_MAX ) {
-					setAttributes( { description: newValue } );
-				}
+				/* Bloquer au-delà de la limite, autoriser jusqu'à la limite incluse */
+				var truncated = newValue.length > DESC_MAX ? newValue.substring( 0, DESC_MAX ) : newValue;
+				setAttributes( { description: truncated } );
 			}
 
 			function onSelectImage( media ) {
@@ -354,12 +333,11 @@
 					},
 
 					/* Inline title */
-					el( LimitedRichText, {
+					el( RichText, {
 						tagName:                      'h2',
 						className:                    'campaign-title',
 						value:                        title,
 						onChange:                     onTitleChange,
-						maxLength:                    titleMax,
 						placeholder:                  __( 'Campaign title…', 'campaign-block' ),
 						allowedFormats:               [],
 						withoutInteractiveFormatting: true,
@@ -382,12 +360,11 @@
 					),
 
 					/* Inline description */
-					el( LimitedRichText, {
+					el( RichText, {
 						tagName:                      'p',
 						className:                    'campaign-description',
 						value:                        description,
 						onChange:                     onDescriptionChange,
-						maxLength:                    DESC_MAX,
 						placeholder:                  __( 'Campaign description…', 'campaign-block' ),
 						allowedFormats:               [],
 						withoutInteractiveFormatting: true,
