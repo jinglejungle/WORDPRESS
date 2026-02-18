@@ -366,7 +366,7 @@
 						placeholder: __( 'Campaign description…', 'campaign-block' ),
 						maxLength: DESC_MAX,
 						'aria-label': __( 'Campaign description', 'campaign-block' ),
-						style: { color: boxTextColor, width: '100%', border: 'none', padding: 0, fontSize: 'inherit', resize: 'none' },
+						style: { color: boxTextColor, backgroundColor: boxBgColor, width: '100%', border: 'none', padding: 0, fontSize: 'inherit', resize: 'none', fontFamily: 'inherit' },
 						rows: 5,
 					} ),
 					el(
