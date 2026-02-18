@@ -183,9 +183,9 @@
 
 			var titleMax     = getTitleMax( title );
 			var titleLen     = title.length;
-			var titleAtLimit = titleLen >= titleMax;
+			var titleAtLimit = titleLen > titleMax;
 			var descLen      = description.length;
-			var descAtLimit  = descLen >= DESC_MAX;
+			var descAtLimit  = descLen > DESC_MAX;
 
 			/*
 			 * imagePanelOpen controls the Image PanelBody open/closed state.
