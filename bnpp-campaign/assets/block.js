@@ -47,7 +47,6 @@
 	var Fragment           = wp.element.Fragment;
 	var useRef             = wp.element.useRef;
 	var useState           = wp.element.useState;
-	var useEffect          = wp.element.useEffect;
 	var __                 = wp.i18n.__;
 	var InspectorControls  = wp.blockEditor.InspectorControls;
 	var RichText           = wp.blockEditor.RichText;
@@ -213,15 +212,16 @@
 			/* ---- Handlers ---- */
 			function onTitleChange( newValue ) {
 				/* Bloquer au-delà de la limite, autoriser jusqu'à la limite incluse */
-				var max = getTitleMax( newValue );
-				var truncated = newValue.length > max ? newValue.substring( 0, max ) : newValue;
-				setAttributes( { title: truncated } );
+				if ( newValue.length <= getTitleMax( newValue ) ) {
+					setAttributes( { title: newValue } );
+				}
 			}
 
 			function onDescriptionChange( newValue ) {
 				/* Bloquer au-delà de la limite, autoriser jusqu'à la limite incluse */
-				var truncated = newValue.length > DESC_MAX ? newValue.substring( 0, DESC_MAX ) : newValue;
-				setAttributes( { description: truncated } );
+				if ( newValue.length <= DESC_MAX ) {
+					setAttributes( { description: newValue } );
+				}
 			}
 
 			function onSelectImage( media ) {
@@ -333,16 +333,15 @@
 					},
 
 					/* Inline title */
-					el( RichText, {
-						tagName:                      'h2',
-						className:                    'campaign-title',
-						value:                        title,
-						onChange:                     onTitleChange,
-						placeholder:                  __( 'Campaign title…', 'campaign-block' ),
-						allowedFormats:               [],
-						withoutInteractiveFormatting: true,
-						'aria-label':                 __( 'Campaign title', 'campaign-block' ),
-						style:                        { color: boxTextColor },
+					el( 'input', {
+						type: 'text',
+						className: 'campaign-title',
+						value: title,
+						onChange: function ( e ) { onTitleChange( e.target.value ); },
+						placeholder: __( 'Campaign title…', 'campaign-block' ),
+						maxLength: titleMax,
+						'aria-label': __( 'Campaign title', 'campaign-block' ),
+						style: { color: boxTextColor, width: '100%', border: 'none', padding: 0, fontSize: 'inherit', fontWeight: 'bold' },
 					} ),
 					el(
 						'span',
@@ -360,16 +359,15 @@
 					),
 
 					/* Inline description */
-					el( RichText, {
-						tagName:                      'p',
-						className:                    'campaign-description',
-						value:                        description,
-						onChange:                     onDescriptionChange,
-						placeholder:                  __( 'Campaign description…', 'campaign-block' ),
-						allowedFormats:               [],
-						withoutInteractiveFormatting: true,
-						'aria-label':                 __( 'Campaign description', 'campaign-block' ),
-						style:                        { color: boxTextColor },
+					el( 'textarea', {
+						className: 'campaign-description',
+						value: description,
+						onChange: function ( e ) { onDescriptionChange( e.target.value ); },
+						placeholder: __( 'Campaign description…', 'campaign-block' ),
+						maxLength: DESC_MAX,
+						'aria-label': __( 'Campaign description', 'campaign-block' ),
+						style: { color: boxTextColor, width: '100%', border: 'none', padding: 0, fontSize: 'inherit', resize: 'none' },
+						rows: 5,
 					} ),
 					el(
 						'span',
