@@ -564,15 +564,24 @@
 							help:     __( 'Describe the image for screen readers and SEO.', 'campaign-block' ),
 						} ) : null,
 
-						el( RadioControl, {
-							label:    __( 'Image position', 'campaign-block' ),
-							selected: imageAlignment,
-							options: [
-								{ label: __( 'Left', 'campaign-block' ),  value: 'left'  },
-								{ label: __( 'Right', 'campaign-block' ), value: 'right' },
-							],
-							onChange: function ( val ) { setAttributes( { imageAlignment: val } ); },
-						} )
+						/* Image position – toggle group */
+						el( 'div', { className: 'campaign-toggle-group-wrap' },
+							el( 'p', { className: 'campaign-toggle-group-label' }, __( 'Image position', 'campaign-block' ) ),
+							el( 'div', { className: 'campaign-toggle-group', role: 'group', 'aria-label': __( 'Image position', 'campaign-block' ) },
+								[ { label: __( 'Left',  'campaign-block' ), value: 'left'  },
+								  { label: __( 'Right', 'campaign-block' ), value: 'right' } ]
+								.map( function( opt ) {
+									var isActive = imageAlignment === opt.value;
+									return el( 'button', {
+										key:            opt.value,
+										type:           'button',
+										className:      'campaign-toggle-btn' + ( isActive ? ' is-active' : '' ),
+										'aria-pressed': isActive,
+										onClick: function() { setAttributes( { imageAlignment: opt.value } ); },
+									}, opt.label );
+								} )
+							)
+						)
 					)
 				),
 
@@ -592,6 +601,16 @@
 							label:    __( 'Button text', 'campaign-block' ),
 							value:    buttonText,
 							onChange: function ( val ) { setAttributes( { buttonText: val } ); },
+							onFocus:  function ( e ) {
+								if ( e.target.value === 'Button content...' ) {
+									setAttributes( { buttonText: '' } );
+								}
+							},
+							onBlur:   function ( e ) {
+								if ( e.target.value.trim() === '' ) {
+									setAttributes( { buttonText: 'Button content...' } );
+								}
+							},
 							help:     __( 'Default: "Button content…". Change this text to display the button.', 'campaign-block' ),
 						} ),
 
