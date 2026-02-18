@@ -66,6 +66,15 @@
 	var DESC_MAX        = 195;
 
 	/* ------------------------------------------------------------------ */
+	/*  Button style options                                                */
+	/* ------------------------------------------------------------------ */
+	var BUTTON_STYLES = [
+		{ value: 'primary',   label: 'Primary'   },
+		{ value: 'secondary', label: 'Secondary' },
+		{ value: 'tertiary',  label: 'Tertiary'  },
+	];
+
+	/* ------------------------------------------------------------------ */
 	/*  Predefined color palette for the description box                   */
 	/* ------------------------------------------------------------------ */
 	var COLOR_PALETTE = [
@@ -142,6 +151,11 @@
 			imageAlignment: { type: 'string',  default: 'left' },
 			boxBgColor:     { type: 'string',  default: DEFAULT_BG    },
 			boxTextColor:   { type: 'string',  default: DEFAULT_COLOR },
+			// Button attributes
+			buttonUrl:      { type: 'string',  default: '' },
+			buttonText:     { type: 'string',  default: 'Button content...' },
+			buttonTarget:   { type: 'boolean', default: false },
+			buttonStyle:    { type: 'string',  default: 'primary' },
 		},
 
 		/* ---------------------------------------------------------------- */
@@ -158,6 +172,11 @@
 			var imageAlignment = attributes.imageAlignment;
 			var boxBgColor     = attributes.boxBgColor   || DEFAULT_BG;
 			var boxTextColor   = attributes.boxTextColor || DEFAULT_COLOR;
+			// Button
+			var buttonUrl    = attributes.buttonUrl    || '';
+			var buttonText   = attributes.buttonText   || 'Button content...';
+			var buttonTarget = attributes.buttonTarget || false;
+			var buttonStyle  = attributes.buttonStyle  || 'primary';
 
 			/* Border color for the image: boxBgColor at 30% opacity. */
 			var imageBorderColor = hexToRgba( boxBgColor, 0.3 );
@@ -178,6 +197,17 @@
 
 			/* Ref for the div wrapping the Image PanelBody – used to scroll. */
 			var imagePanelRef = useRef( null );
+
+			/*
+			 * buttonPanelOpen controls the Button PanelBody open/closed state.
+			 * Clicking the button in the canvas forces it open and scrolls to it.
+			 */
+			var buttonPanelState   = useState( true );
+			var buttonPanelOpen    = buttonPanelState[ 0 ];
+			var setButtonPanelOpen = buttonPanelState[ 1 ];
+
+			/* Ref for the div wrapping the Button PanelBody – used to scroll. */
+			var buttonPanelRef = useRef( null );
 
 			/* ---- Handlers ---- */
 			function onTitleChange( newValue ) {
@@ -208,6 +238,19 @@
 				setTimeout( function () {
 					if ( imagePanelRef.current ) {
 						imagePanelRef.current.scrollIntoView( { behavior: 'smooth', block: 'start' } );
+					}
+				}, 150 );
+			}
+
+			/**
+			 * Click on the canvas button → open Button panel + scroll sidebar to it.
+			 */
+			function onButtonClick( e ) {
+				e.preventDefault();
+				setButtonPanelOpen( true );
+				setTimeout( function () {
+					if ( buttonPanelRef.current ) {
+						buttonPanelRef.current.scrollIntoView( { behavior: 'smooth', block: 'start' } );
 					}
 				}, 150 );
 			}
@@ -338,6 +381,34 @@
 						descAtLimit
 							? __( 'Maximum number of characters reached.', 'campaign-block' )
 							: ( descLen + ' / ' + DESC_MAX + ' ' + __( 'characters', 'campaign-block' ) )
+					),
+
+				/* ---- Button preview inside boxDescription ---- */
+				( buttonUrl && buttonText && buttonText !== 'Button content...' )
+					? el(
+						'a',
+						{
+							href:         '#',
+							className:    'bnpp-custom ' + buttonStyle + ( boxTextColor === '#ffffff' ? ' dark' : '' ) + ' campaign-button-preview',
+							onClick:      onButtonClick,
+							title:        __( 'Click to edit button settings', 'campaign-block' ),
+							'aria-label': __( 'Edit button – opens button settings panel', 'campaign-block' ),
+						},
+						buttonText
+					)
+					: el(
+						'div',
+						{
+							className:    'campaign-button-placeholder',
+							onClick:      onButtonClick,
+							role:         'button',
+							tabIndex:     0,
+							'aria-label': __( 'Configure button – opens button settings panel', 'campaign-block' ),
+							onKeyDown: function ( e ) {
+								if ( e.key === 'Enter' || e.key === ' ' ) { e.preventDefault(); onButtonClick( e ); }
+							},
+						},
+						__( '＋ Add a button', 'campaign-block' )
 					)
 				)
 			);
@@ -502,6 +573,74 @@
 							],
 							onChange: function ( val ) { setAttributes( { imageAlignment: val } ); },
 						} )
+					)
+				),
+
+				/* ==== Button panel ==== */
+				el(
+					'div',
+					{ ref: buttonPanelRef },
+					el(
+						PanelBody,
+						{
+							title:    __( 'Button', 'campaign-block' ),
+							opened:   buttonPanelOpen,
+							onToggle: function ( next ) { setButtonPanelOpen( next ); },
+						},
+
+						el( TextControl, {
+							label:    __( 'Button text', 'campaign-block' ),
+							value:    buttonText,
+							onChange: function ( val ) { setAttributes( { buttonText: val } ); },
+							help:     __( 'Default: "Button content…". Change this text to display the button.', 'campaign-block' ),
+						} ),
+
+						el( TextControl, {
+							label:    __( 'Button URL', 'campaign-block' ),
+							value:    buttonUrl,
+							onChange: function ( val ) { setAttributes( { buttonUrl: val } ); },
+							type:     'url',
+							help:     __( 'The button is hidden if the URL is empty or the text is still the default.', 'campaign-block' ),
+						} ),
+
+						el( RadioControl, {
+							label:    __( 'Open in', 'campaign-block' ),
+							selected: buttonTarget ? '_blank' : '_self',
+							options: [
+								{ label: __( 'Same tab', 'campaign-block' ),  value: '_self'  },
+								{ label: __( 'New tab', 'campaign-block' ),   value: '_blank' },
+							],
+							onChange: function ( val ) { setAttributes( { buttonTarget: val === '_blank' } ); },
+						} ),
+
+						el( RadioControl, {
+							label:    __( 'Button style', 'campaign-block' ),
+							selected: buttonStyle,
+							options:  BUTTON_STYLES,
+							onChange: function ( val ) { setAttributes( { buttonStyle: val } ); },
+						} ),
+
+						/* Live preview chip */
+						( buttonUrl && buttonText && buttonText !== 'Button content...' )
+							? el(
+								'div',
+								{ className: 'campaign-button-inspector-preview' },
+								el( 'p', { className: 'campaign-palette-label' }, __( 'Preview', 'campaign-block' ) ),
+								el(
+									'a',
+									{
+										href:      '#',
+										className: 'bnpp-custom ' + buttonStyle + ( boxTextColor === '#ffffff' ? ' dark' : '' ),
+										onClick:   function ( e ) { e.preventDefault(); },
+									},
+									buttonText
+								)
+							)
+							: el(
+								'p',
+								{ className: 'campaign-char-count' },
+								__( 'Fill in the URL and change the button text to display the button.', 'campaign-block' )
+							)
 					)
 				)
 			);

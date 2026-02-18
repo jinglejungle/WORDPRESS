@@ -106,6 +106,30 @@ function campaign_block_register() {
 					'type'    => 'string',
 					'default' => '#ffffff',
 				),
+
+				// Button URL.
+				'buttonUrl'    => array(
+					'type'    => 'string',
+					'default' => '',
+				),
+
+				// Button label text.
+				'buttonText'   => array(
+					'type'    => 'string',
+					'default' => 'Button content...',
+				),
+
+				// Whether the link opens in a new tab.
+				'buttonTarget' => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
+
+				// Button style: 'primary' | 'secondary' | 'tertiary'.
+				'buttonStyle'  => array(
+					'type'    => 'string',
+					'default' => 'primary',
+				),
 			),
 
 			/* ---- Asset handles ---- */
@@ -167,10 +191,25 @@ function campaign_block_render( $attributes ) {
 	$image_alignment = isset( $attributes['imageAlignment'] ) ? sanitize_text_field( $attributes['imageAlignment'] )  : 'left';
 	$box_bg_color    = isset( $attributes['boxBgColor'] )     ? sanitize_hex_color( $attributes['boxBgColor'] )       : '#008252';
 	$box_text_color  = isset( $attributes['boxTextColor'] )   ? sanitize_hex_color( $attributes['boxTextColor'] )     : '#ffffff';
+	$button_url      = isset( $attributes['buttonUrl'] )      ? esc_url( $attributes['buttonUrl'] )                   : '';
+	$button_text     = isset( $attributes['buttonText'] )     ? sanitize_text_field( $attributes['buttonText'] )      : 'Button content...';
+	$button_target   = isset( $attributes['buttonTarget'] )   ? (bool) $attributes['buttonTarget']                    : false;
+	$button_style    = isset( $attributes['buttonStyle'] )    ? sanitize_text_field( $attributes['buttonStyle'] )     : 'primary';
 
 	// Fallback to defaults if sanitize_hex_color returns empty (invalid value).
 	if ( ! $box_bg_color )   { $box_bg_color   = '#008252'; }
 	if ( ! $box_text_color ) { $box_text_color = '#ffffff'; }
+
+	// Validate button style.
+	if ( ! in_array( $button_style, array( 'primary', 'secondary', 'tertiary' ), true ) ) {
+		$button_style = 'primary';
+	}
+
+	// Determine if the dark class should be added (when text color is white).
+	$button_dark_class = ( '#ffffff' === $box_text_color ) ? ' dark' : '';
+
+	// The button is only rendered if a URL has been set AND the text differs from the default.
+	$show_button = ( ! empty( $button_url ) && ! empty( $button_text ) && 'Button content...' !== $button_text );
 
 	// Border color for the image: background color at 30 % opacity.
 	$image_border_color = campaign_block_hex_to_rgba( $box_bg_color, 0.3 );
@@ -219,6 +258,13 @@ function campaign_block_render( $attributes ) {
 
 	if ( $description ) {
 		$html .= '<p class="campaign-description" style="color:' . esc_attr( $box_text_color ) . ';">' . esc_html( $description ) . '</p>';
+	}
+
+	// ---- Button (only when URL is set and text has been changed from default) ----
+	if ( $show_button ) {
+		$btn_class  = 'bnpp-custom ' . esc_attr( $button_style ) . $button_dark_class;
+		$btn_target = $button_target ? ' target="_blank" rel="noopener noreferrer"' : '';
+		$html .= '<a href="' . esc_url( $button_url ) . '" class="' . $btn_class . '"' . $btn_target . '>' . esc_html( $button_text ) . '</a>';
 	}
 
 	$html .= '</div>';// #boxDescription

@@ -488,3 +488,112 @@ button:focus-visible,
 .campaign-image-wrapper--clickable:hover::after {
 	background-color : rgba( 0, 0, 0, 0.18 );
 }
+
+/* =========================================================================
+   Campaign Button  (.bnpp-custom)
+   =========================================================================
+   Three style variants: primary, secondary, tertiary.
+   The optional .dark class is added when the description box uses white text
+   (dark background), and removed when the box uses black text.
+
+   primary   : green background + white text
+   secondary : white background + green text + green border
+   tertiary  : white background + black text + orange border
+   ========================================================================= */
+
+/* Base button reset & shared layout */
+a.bnpp-custom,
+.bnpp-custom {
+	display          : inline-block;
+	padding          : 10px 24px;
+	border-radius    : 4px;
+	font-size        : 0.9rem;
+	font-weight      : 600;
+	text-decoration  : none;
+	cursor           : pointer;
+	border           : 2px solid transparent;
+	transition       : opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+	margin-top       : 20px;
+	line-height      : 1.4;
+}
+
+a.bnpp-custom:hover,
+.bnpp-custom:hover {
+	opacity : 0.85;
+}
+
+/* ---- Primary ---- */
+a.bnpp-custom.primary,
+.bnpp-custom.primary {
+	background-color : #008252;
+	color            : #ffffff;
+	border-color     : #008252;
+}
+
+/* ---- Secondary ---- */
+a.bnpp-custom.secondary,
+.bnpp-custom.secondary {
+	background-color : #ffffff;
+	color            : #008252;
+	border-color     : #008252;
+}
+
+/* ---- Tertiary ---- */
+a.bnpp-custom.tertiary,
+.bnpp-custom.tertiary {
+	background-color : #ffffff;
+	color            : #000000;
+	border-color     : #e87722;  /* BNPP orange */
+}
+
+/*
+ * .dark modifier – applied when the description box text color is #ffffff.
+ * Adjusts contrast so the button is readable on a dark background.
+ * primary stays green (already works).
+ * secondary/tertiary invert their background to transparent so the box color shows through.
+ */
+a.bnpp-custom.secondary.dark,
+.bnpp-custom.secondary.dark {
+	background-color : transparent;
+	color            : #ffffff;
+	border-color     : #ffffff;
+}
+
+a.bnpp-custom.tertiary.dark,
+.bnpp-custom.tertiary.dark {
+	background-color : transparent;
+	color            : #ffffff;
+	border-color     : #e87722;
+}
+
+/* =========================================================================
+   Editor-only – button placeholder and inspector preview
+   ========================================================================= */
+
+/* Placeholder shown in the canvas when no button is configured yet */
+.campaign-button-placeholder {
+	display          : inline-block;
+	margin-top       : 16px;
+	padding          : 8px 16px;
+	border           : 2px dashed rgba( 255, 255, 255, 0.5 );
+	border-radius    : 4px;
+	font-size        : 0.8rem;
+	color            : rgba( 255, 255, 255, 0.7 );
+	cursor           : pointer;
+	transition       : border-color 0.15s ease, color 0.15s ease;
+}
+
+.campaign-button-placeholder:hover {
+	border-color : rgba( 255, 255, 255, 0.9 );
+	color        : #ffffff;
+}
+
+/* Button preview in the editor canvas */
+a.campaign-button-preview {
+	pointer-events : auto;  /* allow click to open panel */
+}
+
+/* Preview area inside the Inspector Button panel */
+.campaign-button-inspector-preview {
+	margin-top : 12px;
+}
