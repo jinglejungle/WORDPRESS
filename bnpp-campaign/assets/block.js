@@ -557,13 +557,6 @@
 							} )
 						),
 
-						imageUrl ? el( TextControl, {
-							label:    __( 'Image alt text', 'campaign-block' ),
-							value:    imageAlt,
-							onChange: function ( val ) { setAttributes( { imageAlt: val } ); },
-							help:     __( 'Describe the image for screen readers and SEO.', 'campaign-block' ),
-						} ) : null,
-
 						/* Image position – toggle group */
 						el( 'div', { className: 'campaign-toggle-group-wrap' },
 							el( 'p', { className: 'campaign-toggle-group-label' }, __( 'Image position', 'campaign-block' ) ),
