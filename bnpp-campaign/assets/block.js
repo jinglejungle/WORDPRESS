@@ -210,18 +210,26 @@
 			var buttonPanelRef = useRef( null );
 
 			/* ---- Handlers ---- */
+			/**
+			 * CORRIGÉ : Tronquer au lieu de bloquer pour assurer la synchronisation
+			 * entre la vue visuelle (RichText) et le panneau droit (TextControl)
+			 */
 			function onTitleChange( newValue ) {
-				/* Bloquer au-delà de la limite, autoriser jusqu'à la limite incluse */
-				if ( newValue.length <= getTitleMax( newValue ) ) {
-					setAttributes( { title: newValue } );
-				}
+				var max = getTitleMax( newValue );
+				// Tronquer si dépassement de limite
+				var truncated = newValue.length > max ? newValue.substring( 0, max ) : newValue;
+				setAttributes( { title: truncated } );
 			}
 
+			/**
+			 * CORRIGÉ : Tronquer au lieu de bloquer pour assurer la synchronisation
+			 * entre la vue visuelle (RichText) et le panneau droit (TextareaControl)
+			 */
 			function onDescriptionChange( newValue ) {
-				/* Bloquer au-delà de la limite, autoriser jusqu'à la limite incluse */
-				if ( newValue.length <= DESC_MAX ) {
-					setAttributes( { description: newValue } );
-				}
+				var max = DESC_MAX;
+				// Tronquer si dépassement de limite
+				var truncated = newValue.length > max ? newValue.substring( 0, max ) : newValue;
+				setAttributes( { description: truncated } );
 			}
 
 			function onSelectImage( media ) {
