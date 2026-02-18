@@ -181,11 +181,11 @@
 			/* Border color for the image: boxBgColor at 30% opacity. */
 			var imageBorderColor = hexToRgba( boxBgColor, 0.3 );
 
-			var titleMax     = getTitleMax( title );
-			var titleLen     = title.length;
-			var titleAtLimit = titleLen > titleMax;
-			var descLen      = description.length;
-			var descAtLimit  = descLen > DESC_MAX;
+			var titleMax      = getTitleMax( title );
+			var titleLen      = title.length;
+			var titleAtLimit  = titleLen === titleMax;   /* avertissement rouge à la limite exacte */
+			var descLen       = description.length;
+			var descAtLimit   = descLen === DESC_MAX;    /* avertissement rouge à la limite exacte */
 
 			/*
 			 * imagePanelOpen controls the Image PanelBody open/closed state.
@@ -211,12 +211,14 @@
 
 			/* ---- Handlers ---- */
 			function onTitleChange( newValue ) {
+				/* Bloquer au-delà de la limite, autoriser jusqu'à la limite incluse */
 				if ( newValue.length <= getTitleMax( newValue ) ) {
 					setAttributes( { title: newValue } );
 				}
 			}
 
 			function onDescriptionChange( newValue ) {
+				/* Bloquer au-delà de la limite, autoriser jusqu'à la limite incluse */
 				if ( newValue.length <= DESC_MAX ) {
 					setAttributes( { description: newValue } );
 				}
