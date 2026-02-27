@@ -1,7 +1,7 @@
 /**
  * BNPP Carousel Block
- * Pure Vanilla JavaScript implementation without React dependencies
- * Supports Gutenberg editor interface and frontend carousel functionality
+ * Pure Vanilla JavaScript implementation
+ * With inline editing and character limits
  */
 
 (function() {
@@ -9,70 +9,26 @@
 
 	/**
 	 * ==========================================
-	 * Gutenberg Block Registration (Pure JS)
+	 * Gutenberg Block Registration
 	 * ==========================================
 	 */
 
-	/**
-	 * Register the carousel block using WordPress Gutenberg API
-	 * No React, pure DOM manipulation with vanilla JavaScript
-	 */
 	wp.blocks.registerBlockType('bnpp/carousel-homepage', {
 		title: 'BNPP Carousel Homepage',
 		icon: 'images-alt2',
 		category: 'media',
 		keywords: ['carousel', 'slider', 'gallery'],
 		description: 'A responsive carousel block with up to 3 slides',
-		example: {
-			attributes: {
-				slides: [
-					{
-						id: 0,
-						title: 'Slide 1',
-						description: 'Add your description here',
-						imageId: 0,
-						imageUrl: '',
-						buttonUrl: '',
-						buttonText: 'Button content...',
-						buttonStyle: 'primary',
-						buttonTarget: false,
-					},
-					{
-						id: 1,
-						title: 'Slide 2',
-						description: 'Add your description here',
-						imageId: 0,
-						imageUrl: '',
-						buttonUrl: '',
-						buttonText: 'Button content...',
-						buttonStyle: 'primary',
-						buttonTarget: false,
-					},
-					{
-						id: 2,
-						title: 'Slide 3',
-						description: 'Add your description here',
-						imageId: 0,
-						imageUrl: '',
-						buttonUrl: '',
-						buttonText: 'Button content...',
-						buttonStyle: 'primary',
-						buttonTarget: false,
-					},
-				],
-				activeSlide: 0,
-			},
-		},
 
 		/**
 		 * Block edit function - Gutenberg editor interface
-		 * Returns Gutenberg-compatible element structure using wp.element.createElement
 		 */
 		edit: function(props) {
 			var attributes = props.attributes;
 			var setAttributes = props.setAttributes;
 			var slides = attributes.slides || [];
 			var activeSlide = attributes.activeSlide || 0;
+			var autoPlayDuration = attributes.autoPlayDuration || 4;
 
 			// Ensure we have exactly 3 slides
 			var normalizedSlides = slides.slice();
@@ -90,18 +46,15 @@
 				});
 			}
 
-			// Update attributes if we added slides
 			if (normalizedSlides.length !== slides.length) {
 				setAttributes({ slides: normalizedSlides });
 			}
-
-			slides = normalizedSlides;
 
 			/**
 			 * Update a specific slide property
 			 */
 			var updateSlide = function(slideIndex, fieldName, value) {
-				var updatedSlides = slides.map(function(slide, i) {
+				var updatedSlides = normalizedSlides.map(function(slide, i) {
 					if (i === slideIndex) {
 						var updated = Object.assign({}, slide);
 						updated[fieldName] = value;
@@ -113,14 +66,14 @@
 			};
 
 			/**
-			 * Set active slide for editing in inspector panel
+			 * Set active slide for editing
 			 */
 			var setActiveSlideHandler = function(index) {
 				setAttributes({ activeSlide: index });
 			};
 
 			/**
-			 * Handle media upload for slide background image
+			 * Handle media upload
 			 */
 			var onSelectImage = function(media, slideIndex) {
 				if (!media || !media.url) {
@@ -140,16 +93,54 @@
 				updateSlide(slideIndex, 'imageUrl', '');
 			};
 
-			var currentSlideData = slides[activeSlide] || slides[0];
+			/**
+			 * Handle title change with 70 character limit
+			 */
+			var handleTitleChange = function(slideIndex, value) {
+				if (value.length > 70) {
+					if (value.length > normalizedSlides[slideIndex].title.length) {
+						alert('Title is limited to 70 characters.');
+					}
+					value = value.substring(0, 70);
+				}
+				updateSlide(slideIndex, 'title', value);
+			};
 
-			// Use wp.element.createElement to create proper Gutenberg elements
+			/**
+			 * Handle description change with 100 character limit
+			 */
+			var handleDescriptionChange = function(slideIndex, value) {
+				if (value.length > 100) {
+					if (value.length > normalizedSlides[slideIndex].description.length) {
+						alert('Description is limited to 100 characters.');
+					}
+					value = value.substring(0, 100);
+				}
+				updateSlide(slideIndex, 'description', value);
+			};
+
+			/**
+			 * Handle button text change
+			 */
+			var handleButtonTextChange = function(slideIndex, value) {
+				updateSlide(slideIndex, 'buttonText', value);
+			};
+
+			var currentSlideData = normalizedSlides[activeSlide] || normalizedSlides[0];
+
+			// Main container with two columns
 			return wp.element.createElement(
 				'div',
-				{ style: { display: 'flex', gap: '20px' } },
-				// Left column - Carousel preview
+				{ style: { display: 'flex', gap: '0', width: '100%' } },
+				
+				// ==========================================
+				// LEFT COLUMN - Carousel Preview
+				// ==========================================
 				wp.element.createElement(
 					'div',
-					{ style: { flex: 1 } },
+					{ style: { flex: 1, position: 'relative' } },
+					
+					// Carousel container
 					wp.element.createElement(
 						'div',
 						{
@@ -165,8 +156,9 @@
 								border: '2px solid #0066cc',
 							},
 						},
+						
 						// Render slides
-						slides.map(function(slide, slideIndex) {
+						normalizedSlides.map(function(slide, slideIndex) {
 							var isActive = slideIndex === activeSlide;
 							var showButton = slide.buttonUrl && slide.buttonText !== 'Button content...';
 
@@ -192,7 +184,8 @@
 										border: isActive ? '3px solid #0066cc' : '1px solid #ccc',
 									},
 								},
-								// Description box
+								
+								// Description box with inline editing
 								wp.element.createElement(
 									'div',
 									{
@@ -203,7 +196,7 @@
 										},
 										style: {
 											position: 'absolute',
-											top: '280px',
+											top: '180px',
 											left: '40px',
 											width: '689px',
 											maxHeight: '285px',
@@ -213,26 +206,154 @@
 											borderRadius: '4px',
 											zIndex: 20,
 											cursor: 'pointer',
-											border: 'none',
+											border: isActive ? '2px solid #0066cc' : 'none',
 											boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
 										},
 									},
+									
+									// Title - Editable on click
 									wp.element.createElement(
 										'h3',
-										{ style: { margin: '0 0 12px 0', fontSize: '24px', fontWeight: '600', color: '#333' } },
+										{
+											onClick: function(e) {
+												e.stopPropagation();
+											},
+											style: {
+												margin: '0 0 12px 0',
+												fontSize: '24px',
+												fontWeight: '600',
+												color: '#333',
+												cursor: 'text',
+												userSelect: 'text',
+												WebkitUserSelect: 'text',
+											},
+											onDoubleClick: function(e) {
+												// Create inline text input
+												var h3 = e.target;
+												if (h3.contentEditable === 'true') return;
+												
+												var originalText = h3.textContent;
+												h3.contentEditable = 'true';
+												h3.focus();
+												
+												// Select all text
+												if (window.getSelection && document.createRange) {
+													var range = document.createRange();
+													range.selectNodeContents(h3);
+													var sel = window.getSelection();
+													sel.removeAllRanges();
+													sel.addRange(range);
+												}
+												
+												// Handle input
+												var handleInput = function() {
+													var text = h3.textContent;
+													if (text.length > 70) {
+														h3.textContent = text.substring(0, 70);
+													}
+												};
+												
+												var handleBlur = function() {
+													h3.contentEditable = 'false';
+													var newText = h3.textContent;
+													handleTitleChange(slideIndex, newText);
+													h3.removeEventListener('input', handleInput);
+													h3.removeEventListener('blur', handleBlur);
+													h3.removeEventListener('keydown', handleKeydown);
+												};
+												
+												var handleKeydown = function(e) {
+													if (e.key === 'Enter') {
+														e.preventDefault();
+														h3.blur();
+													}
+												};
+												
+												h3.addEventListener('input', handleInput);
+												h3.addEventListener('blur', handleBlur);
+												h3.addEventListener('keydown', handleKeydown);
+											},
+										},
 										slide.title
 									),
+									
+									// Description - Editable on click
 									wp.element.createElement(
 										'p',
-										{ style: { margin: 0, fontSize: '14px', color: '#666', lineHeight: '1.5' } },
+										{
+											onClick: function(e) {
+												e.stopPropagation();
+											},
+											style: {
+												margin: 0,
+												fontSize: '14px',
+												color: '#666',
+												lineHeight: '1.5',
+												cursor: 'text',
+												userSelect: 'text',
+												WebkitUserSelect: 'text',
+											},
+											onDoubleClick: function(e) {
+												// Create inline text input
+												var p = e.target;
+												if (p.contentEditable === 'true') return;
+												
+												var originalText = p.textContent;
+												p.contentEditable = 'true';
+												p.focus();
+												
+												// Select all text
+												if (window.getSelection && document.createRange) {
+													var range = document.createRange();
+													range.selectNodeContents(p);
+													var sel = window.getSelection();
+													sel.removeAllRanges();
+													sel.addRange(range);
+												}
+												
+												// Handle input
+												var handleInput = function() {
+													var text = p.textContent;
+													if (text.length > 100) {
+														p.textContent = text.substring(0, 100);
+													}
+												};
+												
+												var handleBlur = function() {
+													p.contentEditable = 'false';
+													var newText = p.textContent;
+													handleDescriptionChange(slideIndex, newText);
+													p.removeEventListener('input', handleInput);
+													p.removeEventListener('blur', handleBlur);
+													p.removeEventListener('keydown', handleKeydown);
+												};
+												
+												var handleKeydown = function(e) {
+													if (e.key === 'Enter' && e.ctrlKey) {
+														e.preventDefault();
+														p.blur();
+													}
+												};
+												
+												p.addEventListener('input', handleInput);
+												p.addEventListener('blur', handleBlur);
+												p.addEventListener('keydown', handleKeydown);
+											},
+										},
 										slide.description
 									)
 								),
-								// Button
+								
+								// Button - Editable on click
 								showButton ? wp.element.createElement(
 									'div',
 									{
-										style: { position: 'absolute', top: '585px', left: '40px', zIndex: 20 },
+										style: {
+											position: 'absolute',
+											top: '525px',
+											left: '40px',
+											zIndex: 20,
+										},
 										onClick: function(e) {
 											e.stopPropagation();
 											setActiveSlideHandler(slideIndex);
@@ -256,13 +377,50 @@
 												fontWeight: '600',
 												cursor: 'pointer',
 											},
+											onDoubleClick: function(e) {
+												e.stopPropagation();
+												// Create inline text input
+												var a = e.target;
+												if (a.contentEditable === 'true') return;
+												
+												a.contentEditable = 'true';
+												a.focus();
+												
+												// Select all text
+												if (window.getSelection && document.createRange) {
+													var range = document.createRange();
+													range.selectNodeContents(a);
+													var sel = window.getSelection();
+													sel.removeAllRanges();
+													sel.addRange(range);
+												}
+												
+												var handleBlur = function() {
+													a.contentEditable = 'false';
+													var newText = a.textContent;
+													handleButtonTextChange(slideIndex, newText);
+													a.removeEventListener('blur', handleBlur);
+													a.removeEventListener('keydown', handleKeydown);
+												};
+												
+												var handleKeydown = function(e) {
+													if (e.key === 'Enter') {
+														e.preventDefault();
+														a.blur();
+													}
+												};
+												
+												a.addEventListener('blur', handleBlur);
+												a.addEventListener('keydown', handleKeydown);
+											},
 										},
 										slide.buttonText
 									)
 								) : null
 							);
 						}),
-						// Title indicators
+						
+						// Title indicators at bottom with left border highlight
 						wp.element.createElement(
 							'div',
 							{
@@ -280,7 +438,7 @@
 									marginTop: '-154px',
 								},
 							},
-							slides.map(function(slide, index) {
+							normalizedSlides.map(function(slide, index) {
 								var isActive = index === activeSlide;
 								return wp.element.createElement(
 									'div',
@@ -298,7 +456,7 @@
 											cursor: 'pointer',
 											backgroundColor: isActive ? '#ffffff' : '#ececec',
 											border: '1px solid #ddd',
-											borderBottom: isActive ? '3px solid #0066cc' : '1px solid #ddd',
+											borderLeft: isActive ? '4px solid #0066cc' : '1px solid #ddd',
 											fontSize: '16px',
 											fontWeight: isActive ? '700' : '600',
 											color: isActive ? '#0066cc' : '#333',
@@ -309,41 +467,77 @@
 									slide.title
 								);
 							})
+						),
+						
+						// Play/Pause button (top right of carousel)
+						wp.element.createElement(
+							'button',
+							{
+								style: {
+									position: 'absolute',
+									top: '10px',
+									right: '10px',
+									padding: '8px 12px',
+									backgroundColor: '#0066cc',
+									color: '#ffffff',
+									border: 'none',
+									borderRadius: '4px',
+									cursor: 'pointer',
+									fontSize: '12px',
+									fontWeight: '600',
+									zIndex: 30,
+									transition: 'background-color 0.2s ease',
+								},
+							},
+							'▶ Play'
 						)
 					)
 				),
-				// Right column - Inspector panel
+				
+				// ==========================================
+				// RIGHT COLUMN - Inspector Panel
+				// ==========================================
 				wp.element.createElement(
 					'div',
 					{
 						style: {
-											width: '280px',
-											maxHeight: '600px',
-											overflowY: 'auto',
-											paddingRight: '10px',
-											padding: '15px',
-											backgroundColor: '#ffffff',
-											borderRadius: '4px',
-										},
+							width: '300px',
+							maxHeight: '800px',
+							overflowY: 'auto',
+							padding: '20px',
+							backgroundColor: '#f5f5f5',
+							borderLeft: '1px solid #ddd',
+							boxSizing: 'border-box',
+						},
 					},
+					
+					// Panel title
+					wp.element.createElement(
+						'h2',
+						{ style: { margin: '0 0 20px 0', fontSize: '16px', fontWeight: '600', color: '#333' } },
+						'Slide Settings'
+					),
+					
 					// Slide selector buttons
 					wp.element.createElement(
 						'div',
-						{ style: { display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' } },
-						slides.map(function(slide, index) {
+						{ style: { display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' } },
+						normalizedSlides.map(function(slide, index) {
 							return wp.element.createElement(
 								'button',
 								{
 									key: 'btn-slide-' + index,
 									onClick: function() { setActiveSlideHandler(index); },
 									style: {
-										padding: '10px 15px',
+										flex: 1,
+										minWidth: '70px',
+										padding: '10px',
 										backgroundColor: index === activeSlide ? '#0066cc' : '#e0e0e0',
 										color: index === activeSlide ? '#ffffff' : '#333',
-										border: '2px solid ' + (index === activeSlide ? '#0066cc' : '#999'),
+										border: index === activeSlide ? '2px solid #0066cc' : '2px solid #ccc',
 										borderRadius: '4px',
 										cursor: 'pointer',
-										fontSize: '14px',
+										fontSize: '13px',
 										fontWeight: index === activeSlide ? '600' : 'normal',
 										transition: 'all 0.2s ease',
 									},
@@ -352,22 +546,41 @@
 							);
 						})
 					),
-					// Title input
+					
+					// Title input with character counter
 					wp.element.createElement(
 						'div',
 						{ style: { marginBottom: '15px' } },
 						wp.element.createElement(
 							'label',
-							{ style: { display: 'block', marginBottom: '5px', fontSize: '13px', fontWeight: '500', color: '#555' } },
-							'Slide Title'
+							{ style: { display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
+							'Title (Max 70 characters)'
 						),
 						wp.element.createElement(
 							'input',
 							{
 								type: 'text',
 								value: currentSlideData.title,
-								onChange: function(e) { updateSlide(activeSlide, 'title', e.target.value); },
-								placeholder: 'Enter slide title',
+								onChange: function(e) {
+									var value = e.target.value;
+									if (value.length > 70) {
+										if (value.length > currentSlideData.title.length) {
+											e.target.value = value.substring(0, 70);
+										}
+									}
+									handleTitleChange(activeSlide, e.target.value);
+								},
+								onPaste: function(e) {
+									e.preventDefault();
+									var text = (e.clipboardData || window.clipboardData).getData('text');
+									if (text.length > 70) {
+										alert('Pasted text exceeded 70 character limit and has been truncated.');
+										text = text.substring(0, 70);
+									}
+									handleTitleChange(activeSlide, text);
+									e.target.value = text;
+								},
+								placeholder: 'Slide title',
 								style: {
 									width: '100%',
 									padding: '8px',
@@ -375,25 +588,50 @@
 									borderRadius: '4px',
 									fontSize: '13px',
 									boxSizing: 'border-box',
+									fontFamily: 'inherit',
 								},
 							}
+						),
+						wp.element.createElement(
+							'small',
+							{ style: { display: 'block', marginTop: '3px', fontSize: '11px', color: '#999' } },
+							currentSlideData.title.length + ' / 70 characters'
 						)
 					),
-					// Description input
+					
+					// Description input with character counter
 					wp.element.createElement(
 						'div',
 						{ style: { marginBottom: '15px' } },
 						wp.element.createElement(
 							'label',
-							{ style: { display: 'block', marginBottom: '5px', fontSize: '13px', fontWeight: '500', color: '#555' } },
-							'Description'
+							{ style: { display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
+							'Description (Max 100 characters)'
 						),
 						wp.element.createElement(
 							'textarea',
 							{
 								value: currentSlideData.description,
-								onChange: function(e) { updateSlide(activeSlide, 'description', e.target.value); },
-								placeholder: 'Add your description here',
+								onChange: function(e) {
+									var value = e.target.value;
+									if (value.length > 100) {
+										if (value.length > currentSlideData.description.length) {
+											e.target.value = value.substring(0, 100);
+										}
+									}
+									handleDescriptionChange(activeSlide, e.target.value);
+								},
+								onPaste: function(e) {
+									e.preventDefault();
+									var text = (e.clipboardData || window.clipboardData).getData('text');
+									if (text.length > 100) {
+										alert('Pasted text exceeded 100 character limit and has been truncated.');
+										text = text.substring(0, 100);
+									}
+									handleDescriptionChange(activeSlide, text);
+									e.target.value = text;
+								},
+								placeholder: 'Slide description',
 								style: {
 									width: '100%',
 									padding: '8px',
@@ -401,28 +639,34 @@
 									borderRadius: '4px',
 									fontSize: '13px',
 									boxSizing: 'border-box',
-									resize: 'vertical',
-									minHeight: '80px',
 									fontFamily: 'inherit',
+									resize: 'vertical',
+									minHeight: '70px',
 								},
 							}
+						),
+						wp.element.createElement(
+							'small',
+							{ style: { display: 'block', marginTop: '3px', fontSize: '11px', color: '#999' } },
+							currentSlideData.description.length + ' / 100 characters'
 						)
 					),
-					// Image section
+					
+					// Background image section
 					wp.element.createElement(
 						'div',
 						{
 							style: {
 								marginBottom: '20px',
 								padding: '15px',
-								backgroundColor: '#f9f9f9',
-								border: '1px solid #e0e0e0',
+								backgroundColor: '#ffffff',
+								border: '1px solid #ddd',
 								borderRadius: '4px',
 							},
 						},
 						wp.element.createElement(
 							'h3',
-							{ style: { margin: '0 0 15px 0', fontSize: '14px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
+							{ style: { margin: '0 0 10px 0', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
 							'Background Image'
 						),
 						wp.element.createElement(
@@ -431,7 +675,7 @@
 								style: {
 									position: 'relative',
 									width: '100%',
-									height: '150px',
+									height: '120px',
 									backgroundColor: '#f5f5f5',
 									border: currentSlideData.imageUrl ? '2px solid #0066cc' : '2px dashed #ccc',
 									borderRadius: '4px',
@@ -440,6 +684,8 @@
 									justifyContent: 'center',
 									marginBottom: '10px',
 									overflow: 'hidden',
+									fontSize: '12px',
+									color: '#666',
 								},
 							},
 							currentSlideData.imageUrl ? wp.element.createElement(
@@ -449,7 +695,7 @@
 									alt: 'Slide background',
 									style: { maxWidth: '100%', maxHeight: '100%', objectFit: 'cover' },
 								}
-							) : 'No image selected'
+							) : 'No image'
 						),
 						wp.element.createElement(
 							'button',
@@ -472,14 +718,16 @@
 									}
 								},
 								style: {
-									padding: '8px 16px',
+									width: '100%',
+									padding: '8px',
 									backgroundColor: '#0066cc',
 									color: '#ffffff',
 									border: 'none',
 									borderRadius: '4px',
 									cursor: 'pointer',
-									fontSize: '13px',
-									fontWeight: '500',
+									fontSize: '12px',
+									fontWeight: '600',
+									marginBottom: currentSlideData.imageUrl ? '8px' : '0',
 								},
 							},
 							currentSlideData.imageUrl ? 'Change Image' : 'Upload Image'
@@ -489,20 +737,21 @@
 							{
 								onClick: function() { removeImage(activeSlide); },
 								style: {
-									marginLeft: '10px',
-									padding: '8px 16px',
-									backgroundColor: '#cccccc',
+									width: '100%',
+									padding: '8px',
+									backgroundColor: '#e0e0e0',
 									color: '#cc0000',
 									border: 'none',
 									borderRadius: '4px',
 									cursor: 'pointer',
-									fontSize: '13px',
-									fontWeight: '500',
+									fontSize: '12px',
+									fontWeight: '600',
 								},
 							},
 							'Remove Image'
 						) : null
 					),
+					
 					// Button settings section
 					wp.element.createElement(
 						'div',
@@ -510,23 +759,23 @@
 							style: {
 								marginBottom: '20px',
 								padding: '15px',
-								backgroundColor: '#f9f9f9',
-								border: '1px solid #e0e0e0',
+								backgroundColor: '#ffffff',
+								border: currentSlideData.buttonUrl ? '2px solid #0066cc' : '1px solid #ddd',
 								borderRadius: '4px',
 							},
 						},
 						wp.element.createElement(
 							'h3',
-							{ style: { margin: '0 0 15px 0', fontSize: '14px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
+							{ style: { margin: '0 0 10px 0', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
 							'Button Settings'
 						),
 						wp.element.createElement(
 							'div',
-							{ style: { marginBottom: '15px' } },
+							{ style: { marginBottom: '10px' } },
 							wp.element.createElement(
 								'label',
-								{ style: { display: 'block', marginBottom: '5px', fontSize: '13px', fontWeight: '500', color: '#555' } },
-								'Button Link URL'
+								{ style: { display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
+								'Button URL'
 							),
 							wp.element.createElement(
 								'input',
@@ -542,16 +791,17 @@
 										borderRadius: '4px',
 										fontSize: '13px',
 										boxSizing: 'border-box',
+										fontFamily: 'inherit',
 									},
 								}
 							)
 						),
 						wp.element.createElement(
 							'div',
-							{ style: { marginBottom: '15px' } },
+							{ style: { marginBottom: '10px' } },
 							wp.element.createElement(
 								'label',
-								{ style: { display: 'block', marginBottom: '5px', fontSize: '13px', fontWeight: '500', color: '#555' } },
+								{ style: { display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
 								'Button Text'
 							),
 							wp.element.createElement(
@@ -562,15 +812,16 @@
 									onChange: function(e) { updateSlide(activeSlide, 'buttonText', e.target.value); },
 									onFocus: function(e) {
 										if (e.target.value === 'Button content...') {
-											updateSlide(activeSlide, 'buttonText', '');
+											e.target.value = '';
 										}
 									},
 									onBlur: function(e) {
 										if (e.target.value === '') {
+											e.target.value = 'Button content...';
 											updateSlide(activeSlide, 'buttonText', 'Button content...');
 										}
 									},
-									placeholder: 'Button content...',
+									placeholder: 'Button text',
 									style: {
 										width: '100%',
 										padding: '8px',
@@ -578,16 +829,17 @@
 										borderRadius: '4px',
 										fontSize: '13px',
 										boxSizing: 'border-box',
+										fontFamily: 'inherit',
 									},
 								}
 							)
 						),
 						wp.element.createElement(
 							'div',
-							{ style: { marginBottom: '15px' } },
+							{ style: { marginBottom: '10px' } },
 							wp.element.createElement(
 								'label',
-								{ style: { display: 'block', marginBottom: '5px', fontSize: '13px', fontWeight: '500', color: '#555' } },
+								{ style: { display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
 								'Button Style'
 							),
 							wp.element.createElement(
@@ -602,6 +854,7 @@
 										borderRadius: '4px',
 										fontSize: '13px',
 										boxSizing: 'border-box',
+										fontFamily: 'inherit',
 									},
 								},
 								wp.element.createElement('option', { value: 'primary' }, 'Primary'),
@@ -619,14 +872,56 @@
 									type: 'checkbox',
 									checked: currentSlideData.buttonTarget,
 									onChange: function(e) { updateSlide(activeSlide, 'buttonTarget', e.target.checked); },
-									style: { width: 'auto', margin: 0 },
+									style: { width: 'auto', margin: 0, cursor: 'pointer' },
 								}
 							),
 							wp.element.createElement(
 								'label',
-								{ style: { fontSize: '13px', fontWeight: '500', color: '#555', margin: 0, cursor: 'pointer' } },
+								{ style: { fontSize: '12px', fontWeight: '600', color: '#333', margin: 0, cursor: 'pointer' } },
 								'Open in New Tab'
 							)
+						)
+					),
+					
+					// AutoPlay duration section
+					wp.element.createElement(
+						'div',
+						{
+							style: {
+								padding: '15px',
+								backgroundColor: '#ffffff',
+								border: '1px solid #ddd',
+								borderRadius: '4px',
+							},
+						},
+						wp.element.createElement(
+							'h3',
+							{ style: { margin: '0 0 10px 0', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
+							'AutoPlay Duration'
+						),
+						wp.element.createElement(
+							'label',
+							{ style: { display: 'block', marginBottom: '5px', fontSize: '12px', color: '#666' } },
+							'Seconds between slides (default: 4)'
+						),
+						wp.element.createElement(
+							'input',
+							{
+								type: 'number',
+								value: autoPlayDuration,
+								onChange: function(e) { setAttributes({ autoPlayDuration: parseInt(e.target.value) || 4 }); },
+								min: 1,
+								max: 30,
+								style: {
+									width: '100%',
+									padding: '8px',
+									border: '1px solid #ddd',
+									borderRadius: '4px',
+									fontSize: '13px',
+									boxSizing: 'border-box',
+									fontFamily: 'inherit',
+								},
+							}
 						)
 					)
 				)
@@ -635,7 +930,7 @@
 
 		/**
 		 * Block save function
-		 * Returns null to use PHP render callback for server-side rendering
+		 * Returns null to use PHP render callback
 		 */
 		save: function() {
 			return null;
@@ -648,15 +943,12 @@
 	 * ==========================================
 	 */
 
-	/**
-	 * Initialize carousel when DOM is ready
-	 */
 	document.addEventListener('DOMContentLoaded', function() {
 		initializeCarousels();
 	});
 
 	/**
-	 * Initialize all carousels present on the page
+	 * Initialize all carousels on page
 	 */
 	function initializeCarousels() {
 		var carouselWrappers = document.querySelectorAll('.bnpp-carousel-wrapper');
@@ -672,13 +964,11 @@
 			var currentSlideIndex = 0;
 
 			/**
-			 * Display specific slide by index
-			 * @param {number} n - The slide index to display
+			 * Display slide at index
 			 */
 			var showSlide = function(n) {
-				// Remove active class from all slides and titles
 				slides.forEach(function(slide) {
-					slide.classList.remove('active', 'prev');
+					slide.classList.remove('active');
 					slide.setAttribute('aria-hidden', 'true');
 				});
 
@@ -687,7 +977,6 @@
 					item.setAttribute('aria-selected', 'false');
 				});
 
-				// Add active class to current slide and title
 				slides[n].classList.add('active');
 				slides[n].setAttribute('aria-hidden', 'false');
 				titleItems[n].classList.add('active');
@@ -697,7 +986,7 @@
 			};
 
 			/**
-			 * Move to next slide in carousel
+			 * Next slide
 			 */
 			var nextSlide = function() {
 				var n = (currentSlideIndex + 1) % slides.length;
@@ -705,7 +994,7 @@
 			};
 
 			/**
-			 * Move to previous slide in carousel
+			 * Previous slide
 			 */
 			var prevSlide = function() {
 				var n = (currentSlideIndex - 1 + slides.length) % slides.length;
@@ -713,8 +1002,7 @@
 			};
 
 			/**
-			 * Go to specific slide by index
-			 * @param {number} n - The slide index
+			 * Go to slide
 			 */
 			var goToSlide = function(n) {
 				if (n >= 0 && n < slides.length) {
@@ -722,16 +1010,15 @@
 				}
 			};
 
-			// Initialize carousel by showing first slide
+			// Initialize first slide
 			showSlide(0);
 
-			// Add click handlers to all title items
+			// Title click handlers
 			titleItems.forEach(function(item, index) {
 				item.addEventListener('click', function() {
 					goToSlide(index);
 				});
 
-				// Keyboard support for title items (Enter and Space keys)
 				item.addEventListener('keydown', function(e) {
 					if (e.key === 'Enter' || e.key === ' ') {
 						e.preventDefault();
@@ -740,7 +1027,7 @@
 				});
 			});
 
-			// Keyboard navigation with arrow keys
+			// Keyboard navigation
 			container.addEventListener('keydown', function(e) {
 				if (e.key === 'ArrowLeft') {
 					prevSlide();
@@ -749,28 +1036,18 @@
 				}
 			});
 
-			// Store carousel instance for external JavaScript access
+			// Store carousel instance
 			wrapper.carouselInstance = {
 				nextSlide: nextSlide,
 				prevSlide: prevSlide,
 				goToSlide: goToSlide,
 				getCurrentSlide: function() { return currentSlideIndex; }
 			};
-
-			/**
-			 * OPTIONAL: Enable automatic slide rotation
-			 * Uncomment the code below to enable auto-rotation every 10 seconds
-			 * 
-			 * setInterval(function() {
-			 *     nextSlide();
-			 * }, 10000);
-			 */
 		});
 	}
 
 	/**
-	 * Re-initialize carousels when content is dynamically added to page
-	 * Uses MutationObserver to detect DOM changes
+	 * Re-initialize on dynamic content
 	 */
 	if (window.MutationObserver) {
 		var observer = new MutationObserver(function() {
