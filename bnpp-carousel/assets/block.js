@@ -1,19 +1,23 @@
 /**
  * BNPP Carousel Block
- * Pure Vanilla JavaScript implementation
- * With inline editing and character limits
+ * Pure Vanilla JavaScript with Gutenberg InspectorControls
+ * Inline editing and character limits
  */
 
 (function() {
 	'use strict';
 
 	/**
-	 * ==========================================
-	 * Gutenberg Block Registration
-	 * ==========================================
+	 * Get block editor components
 	 */
+	var blockEditor = wp.blockEditor;
+	var blocks = wp.blocks;
+	var element = wp.element;
 
-	wp.blocks.registerBlockType('bnpp/carousel-homepage', {
+	/**
+	 * Register the carousel block
+	 */
+	blocks.registerBlockType('bnpp/carousel-homepage', {
 		title: 'BNPP Carousel Homepage',
 		icon: 'images-alt2',
 		category: 'media',
@@ -128,20 +132,20 @@
 
 			var currentSlideData = normalizedSlides[activeSlide] || normalizedSlides[0];
 
-			// Main container with two columns
-			return wp.element.createElement(
-				'div',
-				{ style: { display: 'flex', gap: '0', width: '100%' } },
-				
+			// Return editor with carousel preview + inspector panel
+			return element.createElement(
+				element.Fragment,
+				null,
+
 				// ==========================================
-				// LEFT COLUMN - Carousel Preview
+				// CAROUSEL PREVIEW (full width)
 				// ==========================================
-				wp.element.createElement(
+				element.createElement(
 					'div',
-					{ style: { flex: 1, position: 'relative' } },
+					{ style: { position: 'relative' } },
 					
 					// Carousel container
-					wp.element.createElement(
+					element.createElement(
 						'div',
 						{
 							className: 'bnpp-carousel-container',
@@ -162,7 +166,7 @@
 							var isActive = slideIndex === activeSlide;
 							var showButton = slide.buttonUrl && slide.buttonText !== 'Button content...';
 
-							return wp.element.createElement(
+							return element.createElement(
 								'div',
 								{
 									key: 'slide-' + slideIndex,
@@ -186,7 +190,7 @@
 								},
 								
 								// Description box with inline editing
-								wp.element.createElement(
+								element.createElement(
 									'div',
 									{
 										className: 'diapositive-description',
@@ -211,8 +215,8 @@
 										},
 									},
 									
-									// Title - Editable on click
-									wp.element.createElement(
+									// Title - Editable on double click
+									element.createElement(
 										'h3',
 										{
 											onClick: function(e) {
@@ -228,15 +232,12 @@
 												WebkitUserSelect: 'text',
 											},
 											onDoubleClick: function(e) {
-												// Create inline text input
 												var h3 = e.target;
 												if (h3.contentEditable === 'true') return;
 												
-												var originalText = h3.textContent;
 												h3.contentEditable = 'true';
 												h3.focus();
 												
-												// Select all text
 												if (window.getSelection && document.createRange) {
 													var range = document.createRange();
 													range.selectNodeContents(h3);
@@ -245,7 +246,6 @@
 													sel.addRange(range);
 												}
 												
-												// Handle input
 												var handleInput = function() {
 													var text = h3.textContent;
 													if (text.length > 70) {
@@ -277,8 +277,8 @@
 										slide.title
 									),
 									
-									// Description - Editable on click
-									wp.element.createElement(
+									// Description - Editable on double click
+									element.createElement(
 										'p',
 										{
 											onClick: function(e) {
@@ -294,15 +294,12 @@
 												WebkitUserSelect: 'text',
 											},
 											onDoubleClick: function(e) {
-												// Create inline text input
 												var p = e.target;
 												if (p.contentEditable === 'true') return;
 												
-												var originalText = p.textContent;
 												p.contentEditable = 'true';
 												p.focus();
 												
-												// Select all text
 												if (window.getSelection && document.createRange) {
 													var range = document.createRange();
 													range.selectNodeContents(p);
@@ -311,7 +308,6 @@
 													sel.addRange(range);
 												}
 												
-												// Handle input
 												var handleInput = function() {
 													var text = p.textContent;
 													if (text.length > 100) {
@@ -344,8 +340,8 @@
 									)
 								),
 								
-								// Button - Editable on click
-								showButton ? wp.element.createElement(
+								// Button - Editable on double click
+								showButton ? element.createElement(
 									'div',
 									{
 										style: {
@@ -359,7 +355,7 @@
 											setActiveSlideHandler(slideIndex);
 										},
 									},
-									wp.element.createElement(
+									element.createElement(
 										'a',
 										{
 											className: 'bnpp-button ' + (slide.buttonStyle || 'primary'),
@@ -379,14 +375,12 @@
 											},
 											onDoubleClick: function(e) {
 												e.stopPropagation();
-												// Create inline text input
 												var a = e.target;
 												if (a.contentEditable === 'true') return;
 												
 												a.contentEditable = 'true';
 												a.focus();
 												
-												// Select all text
 												if (window.getSelection && document.createRange) {
 													var range = document.createRange();
 													range.selectNodeContents(a);
@@ -420,8 +414,8 @@
 							);
 						}),
 						
-						// Title indicators at bottom with left border highlight
-						wp.element.createElement(
+						// Title indicators at bottom
+						element.createElement(
 							'div',
 							{
 								className: 'bnpp-carousel-titles',
@@ -440,7 +434,7 @@
 							},
 							normalizedSlides.map(function(slide, index) {
 								var isActive = index === activeSlide;
-								return wp.element.createElement(
+								return element.createElement(
 									'div',
 									{
 										key: 'title-' + index,
@@ -462,6 +456,7 @@
 											color: isActive ? '#0066cc' : '#333',
 											userSelect: 'none',
 											marginLeft: index === 0 ? '286px' : '0',
+											paddingLeft: isActive ? '16px' : '20px',
 										},
 									},
 									slide.title
@@ -469,8 +464,8 @@
 							})
 						),
 						
-						// Play/Pause button (top right of carousel)
-						wp.element.createElement(
+						// Play/Pause button
+						element.createElement(
 							'button',
 							{
 								style: {
@@ -486,77 +481,73 @@
 									fontSize: '12px',
 									fontWeight: '600',
 									zIndex: 30,
-									transition: 'background-color 0.2s ease',
 								},
 							},
 							'▶ Play'
 						)
 					)
 				),
-				
+
 				// ==========================================
-				// RIGHT COLUMN - Inspector Panel
+				// INSPECTOR CONTROLS (right panel)
 				// ==========================================
-				wp.element.createElement(
-					'div',
-					{
-						style: {
-							width: '300px',
-							maxHeight: '800px',
-							overflowY: 'auto',
-							padding: '20px',
-							backgroundColor: '#f5f5f5',
-							borderLeft: '1px solid #ddd',
-							boxSizing: 'border-box',
+				element.createElement(
+					blockEditor.InspectorControls,
+					null,
+					
+					// Slide selector
+					element.createElement(
+						'div',
+						{
+							style: {
+								padding: '15px',
+								borderBottom: '1px solid #e0e0e0',
+							},
 						},
-					},
-					
-					// Panel title
-					wp.element.createElement(
-						'h2',
-						{ style: { margin: '0 0 20px 0', fontSize: '16px', fontWeight: '600', color: '#333' } },
-						'Slide Settings'
-					),
-					
-					// Slide selector buttons
-					wp.element.createElement(
-						'div',
-						{ style: { display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' } },
-						normalizedSlides.map(function(slide, index) {
-							return wp.element.createElement(
-								'button',
-								{
-									key: 'btn-slide-' + index,
-									onClick: function() { setActiveSlideHandler(index); },
-									style: {
-										flex: 1,
-										minWidth: '70px',
-										padding: '10px',
-										backgroundColor: index === activeSlide ? '#0066cc' : '#e0e0e0',
-										color: index === activeSlide ? '#ffffff' : '#333',
-										border: index === activeSlide ? '2px solid #0066cc' : '2px solid #ccc',
-										borderRadius: '4px',
-										cursor: 'pointer',
-										fontSize: '13px',
-										fontWeight: index === activeSlide ? '600' : 'normal',
-										transition: 'all 0.2s ease',
-									},
-								},
-								'Slide ' + (index + 1)
-							);
-						})
-					),
-					
-					// Title input with character counter
-					wp.element.createElement(
-						'div',
-						{ style: { marginBottom: '15px' } },
-						wp.element.createElement(
-							'label',
-							{ style: { display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
-							'Title (Max 70 characters)'
+						element.createElement(
+							'h3',
+							{ style: { margin: '0 0 10px 0', fontSize: '13px', fontWeight: '600', color: '#333' } },
+							'Slide Settings'
 						),
-						wp.element.createElement(
+						element.createElement(
+							'div',
+							{ style: { display: 'flex', gap: '8px', flexWrap: 'wrap' } },
+							normalizedSlides.map(function(slide, index) {
+								return element.createElement(
+									'button',
+									{
+										key: 'btn-slide-' + index,
+										onClick: function() { setActiveSlideHandler(index); },
+										style: {
+											flex: '1',
+											minWidth: '60px',
+											padding: '8px 12px',
+											backgroundColor: index === activeSlide ? '#0066cc' : '#e0e0e0',
+											color: index === activeSlide ? '#ffffff' : '#333',
+											border: index === activeSlide ? '2px solid #0066cc' : '2px solid #ccc',
+											borderRadius: '4px',
+											cursor: 'pointer',
+											fontSize: '12px',
+											fontWeight: index === activeSlide ? '600' : 'normal',
+											transition: 'all 0.2s ease',
+										},
+									},
+									'Slide ' + (index + 1)
+								);
+							})
+						)
+					),
+					
+					// Title input
+					element.createElement(
+						'div',
+						{ style: { padding: '15px', borderBottom: '1px solid #e0e0e0' } },
+						element.createElement(
+							'label',
+							{ style: { display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
+							'Title'
+						),
+						element.createElement(
 							'input',
 							{
 								type: 'text',
@@ -583,32 +574,33 @@
 								placeholder: 'Slide title',
 								style: {
 									width: '100%',
-									padding: '8px',
-									border: '1px solid #ddd',
-									borderRadius: '4px',
-									fontSize: '13px',
+									padding: '6px 8px',
+									border: '1px solid #ccc',
+									borderRadius: '3px',
+									fontSize: '12px',
 									boxSizing: 'border-box',
 									fontFamily: 'inherit',
+									marginBottom: '5px',
 								},
 							}
 						),
-						wp.element.createElement(
+						element.createElement(
 							'small',
-							{ style: { display: 'block', marginTop: '3px', fontSize: '11px', color: '#999' } },
+							{ style: { fontSize: '11px', color: '#999' } },
 							currentSlideData.title.length + ' / 70 characters'
 						)
 					),
 					
-					// Description input with character counter
-					wp.element.createElement(
+					// Description input
+					element.createElement(
 						'div',
-						{ style: { marginBottom: '15px' } },
-						wp.element.createElement(
+						{ style: { padding: '15px', borderBottom: '1px solid #e0e0e0' } },
+						element.createElement(
 							'label',
-							{ style: { display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
-							'Description (Max 100 characters)'
+							{ style: { display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
+							'Description'
 						),
-						wp.element.createElement(
+						element.createElement(
 							'textarea',
 							{
 								value: currentSlideData.description,
@@ -634,61 +626,54 @@
 								placeholder: 'Slide description',
 								style: {
 									width: '100%',
-									padding: '8px',
-									border: '1px solid #ddd',
-									borderRadius: '4px',
-									fontSize: '13px',
+									padding: '6px 8px',
+									border: '1px solid #ccc',
+									borderRadius: '3px',
+									fontSize: '12px',
 									boxSizing: 'border-box',
 									fontFamily: 'inherit',
 									resize: 'vertical',
-									minHeight: '70px',
+									minHeight: '60px',
+									marginBottom: '5px',
 								},
 							}
 						),
-						wp.element.createElement(
+						element.createElement(
 							'small',
-							{ style: { display: 'block', marginTop: '3px', fontSize: '11px', color: '#999' } },
+							{ style: { fontSize: '11px', color: '#999' } },
 							currentSlideData.description.length + ' / 100 characters'
 						)
 					),
 					
 					// Background image section
-					wp.element.createElement(
+					element.createElement(
 						'div',
-						{
-							style: {
-								marginBottom: '20px',
-								padding: '15px',
-								backgroundColor: '#ffffff',
-								border: '1px solid #ddd',
-								borderRadius: '4px',
-							},
-						},
-						wp.element.createElement(
+						{ style: { padding: '15px', borderBottom: '1px solid #e0e0e0' } },
+						element.createElement(
 							'h3',
 							{ style: { margin: '0 0 10px 0', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
 							'Background Image'
 						),
-						wp.element.createElement(
+						element.createElement(
 							'div',
 							{
 								style: {
 									position: 'relative',
 									width: '100%',
-									height: '120px',
+									height: '100px',
 									backgroundColor: '#f5f5f5',
 									border: currentSlideData.imageUrl ? '2px solid #0066cc' : '2px dashed #ccc',
-									borderRadius: '4px',
+									borderRadius: '3px',
 									display: 'flex',
 									alignItems: 'center',
 									justifyContent: 'center',
 									marginBottom: '10px',
 									overflow: 'hidden',
-									fontSize: '12px',
+									fontSize: '11px',
 									color: '#666',
 								},
 							},
-							currentSlideData.imageUrl ? wp.element.createElement(
+							currentSlideData.imageUrl ? element.createElement(
 								'img',
 								{
 									src: currentSlideData.imageUrl,
@@ -697,7 +682,7 @@
 								}
 							) : 'No image'
 						),
-						wp.element.createElement(
+						element.createElement(
 							'button',
 							{
 								onClick: function() {
@@ -719,11 +704,11 @@
 								},
 								style: {
 									width: '100%',
-									padding: '8px',
+									padding: '6px 8px',
 									backgroundColor: '#0066cc',
 									color: '#ffffff',
 									border: 'none',
-									borderRadius: '4px',
+									borderRadius: '3px',
 									cursor: 'pointer',
 									fontSize: '12px',
 									fontWeight: '600',
@@ -732,17 +717,17 @@
 							},
 							currentSlideData.imageUrl ? 'Change Image' : 'Upload Image'
 						),
-						currentSlideData.imageUrl ? wp.element.createElement(
+						currentSlideData.imageUrl ? element.createElement(
 							'button',
 							{
 								onClick: function() { removeImage(activeSlide); },
 								style: {
 									width: '100%',
-									padding: '8px',
+									padding: '6px 8px',
 									backgroundColor: '#e0e0e0',
 									color: '#cc0000',
 									border: 'none',
-									borderRadius: '4px',
+									borderRadius: '3px',
 									cursor: 'pointer',
 									fontSize: '12px',
 									fontWeight: '600',
@@ -752,32 +737,24 @@
 						) : null
 					),
 					
-					// Button settings section
-					wp.element.createElement(
+					// Button settings
+					element.createElement(
 						'div',
-						{
-							style: {
-								marginBottom: '20px',
-								padding: '15px',
-								backgroundColor: '#ffffff',
-								border: currentSlideData.buttonUrl ? '2px solid #0066cc' : '1px solid #ddd',
-								borderRadius: '4px',
-							},
-						},
-						wp.element.createElement(
+						{ style: { padding: '15px', borderBottom: '1px solid #e0e0e0' } },
+						element.createElement(
 							'h3',
 							{ style: { margin: '0 0 10px 0', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
 							'Button Settings'
 						),
-						wp.element.createElement(
+						element.createElement(
 							'div',
 							{ style: { marginBottom: '10px' } },
-							wp.element.createElement(
+							element.createElement(
 								'label',
-								{ style: { display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
-								'Button URL'
+								{ style: { display: 'block', marginBottom: '5px', fontSize: '11px', fontWeight: '600', color: '#333' } },
+								'URL'
 							),
-							wp.element.createElement(
+							element.createElement(
 								'input',
 								{
 									type: 'url',
@@ -786,25 +763,25 @@
 									placeholder: 'https://example.com',
 									style: {
 										width: '100%',
-										padding: '8px',
-										border: '1px solid #ddd',
-										borderRadius: '4px',
-										fontSize: '13px',
+										padding: '6px 8px',
+										border: '1px solid #ccc',
+										borderRadius: '3px',
+										fontSize: '12px',
 										boxSizing: 'border-box',
 										fontFamily: 'inherit',
 									},
 								}
 							)
 						),
-						wp.element.createElement(
+						element.createElement(
 							'div',
 							{ style: { marginBottom: '10px' } },
-							wp.element.createElement(
+							element.createElement(
 								'label',
-								{ style: { display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
-								'Button Text'
+								{ style: { display: 'block', marginBottom: '5px', fontSize: '11px', fontWeight: '600', color: '#333' } },
+								'Text'
 							),
-							wp.element.createElement(
+							element.createElement(
 								'input',
 								{
 									type: 'text',
@@ -824,49 +801,49 @@
 									placeholder: 'Button text',
 									style: {
 										width: '100%',
-										padding: '8px',
-										border: '1px solid #ddd',
-										borderRadius: '4px',
-										fontSize: '13px',
+										padding: '6px 8px',
+										border: '1px solid #ccc',
+										borderRadius: '3px',
+										fontSize: '12px',
 										boxSizing: 'border-box',
 										fontFamily: 'inherit',
 									},
 								}
 							)
 						),
-						wp.element.createElement(
+						element.createElement(
 							'div',
 							{ style: { marginBottom: '10px' } },
-							wp.element.createElement(
+							element.createElement(
 								'label',
-								{ style: { display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
-								'Button Style'
+								{ style: { display: 'block', marginBottom: '5px', fontSize: '11px', fontWeight: '600', color: '#333' } },
+								'Style'
 							),
-							wp.element.createElement(
+							element.createElement(
 								'select',
 								{
 									value: currentSlideData.buttonStyle || 'primary',
 									onChange: function(e) { updateSlide(activeSlide, 'buttonStyle', e.target.value); },
 									style: {
 										width: '100%',
-										padding: '8px',
-										border: '1px solid #ddd',
-										borderRadius: '4px',
-										fontSize: '13px',
+										padding: '6px 8px',
+										border: '1px solid #ccc',
+										borderRadius: '3px',
+										fontSize: '12px',
 										boxSizing: 'border-box',
 										fontFamily: 'inherit',
 									},
 								},
-								wp.element.createElement('option', { value: 'primary' }, 'Primary'),
-								wp.element.createElement('option', { value: 'secondary' }, 'Secondary'),
-								wp.element.createElement('option', { value: 'tertiary' }, 'Tertiary'),
-								wp.element.createElement('option', { value: 'ghost' }, 'Ghost')
+								element.createElement('option', { value: 'primary' }, 'Primary'),
+								element.createElement('option', { value: 'secondary' }, 'Secondary'),
+								element.createElement('option', { value: 'tertiary' }, 'Tertiary'),
+								element.createElement('option', { value: 'ghost' }, 'Ghost')
 							)
 						),
-						wp.element.createElement(
+						element.createElement(
 							'div',
 							{ style: { display: 'flex', alignItems: 'center', gap: '8px' } },
-							wp.element.createElement(
+							element.createElement(
 								'input',
 								{
 									type: 'checkbox',
@@ -875,36 +852,29 @@
 									style: { width: 'auto', margin: 0, cursor: 'pointer' },
 								}
 							),
-							wp.element.createElement(
+							element.createElement(
 								'label',
-								{ style: { fontSize: '12px', fontWeight: '600', color: '#333', margin: 0, cursor: 'pointer' } },
+								{ style: { fontSize: '11px', fontWeight: '600', color: '#333', margin: 0, cursor: 'pointer' } },
 								'Open in New Tab'
 							)
 						)
 					),
 					
-					// AutoPlay duration section
-					wp.element.createElement(
+					// AutoPlay duration
+					element.createElement(
 						'div',
-						{
-							style: {
-								padding: '15px',
-								backgroundColor: '#ffffff',
-								border: '1px solid #ddd',
-								borderRadius: '4px',
-							},
-						},
-						wp.element.createElement(
+						{ style: { padding: '15px' } },
+						element.createElement(
 							'h3',
 							{ style: { margin: '0 0 10px 0', fontSize: '12px', fontWeight: '600', color: '#333', textTransform: 'uppercase' } },
 							'AutoPlay Duration'
 						),
-						wp.element.createElement(
+						element.createElement(
 							'label',
-							{ style: { display: 'block', marginBottom: '5px', fontSize: '12px', color: '#666' } },
-							'Seconds between slides (default: 4)'
+							{ style: { display: 'block', marginBottom: '5px', fontSize: '11px', color: '#666' } },
+							'Seconds between slides'
 						),
-						wp.element.createElement(
+						element.createElement(
 							'input',
 							{
 								type: 'number',
@@ -914,10 +884,10 @@
 								max: 30,
 								style: {
 									width: '100%',
-									padding: '8px',
-									border: '1px solid #ddd',
-									borderRadius: '4px',
-									fontSize: '13px',
+									padding: '6px 8px',
+									border: '1px solid #ccc',
+									borderRadius: '3px',
+									fontSize: '12px',
 									boxSizing: 'border-box',
 									fontFamily: 'inherit',
 								},
@@ -930,7 +900,6 @@
 
 		/**
 		 * Block save function
-		 * Returns null to use PHP render callback
 		 */
 		save: function() {
 			return null;
