@@ -95,6 +95,18 @@ function bnpp_carousel_register_block() {
 					'type'    => 'integer',
 					'default' => 4,
 				),
+				'showPlayButton' => array(
+					'type'    => 'boolean',
+					'default' => true,
+				),
+				'enableAutoPlay' => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
+				'activeEditSection' => array(
+					'type'    => 'string',
+					'default' => null,
+				),
 			),
 		)
 	);
