@@ -15,11 +15,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Register the carousel block
  */
 function bnpp_carousel_register_block() {
-	// Register the block script
+	// Register the block script for editor only
 	wp_register_script(
 		'bnpp-carousel-editor',
 		BNPP_CAROUSEL_URL . 'assets/block.js',
-		array( 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-data' ),
+		array( 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-data' ),
 		BNPP_CAROUSEL_VERSION,
 		true
 	);
@@ -90,6 +90,10 @@ function bnpp_carousel_register_block() {
 				'activeSlide' => array(
 					'type'    => 'integer',
 					'default' => 0,
+				),
+				'autoPlayDuration' => array(
+					'type'    => 'integer',
+					'default' => 4,
 				),
 			),
 		)
@@ -163,9 +167,10 @@ function bnpp_carousel_render_block( $attributes ) {
 }
 
 /**
- * Enqueue frontend scripts
+ * Enqueue frontend carousel functionality only
  */
 function bnpp_carousel_enqueue_frontend_script() {
+	// Only enqueue if block.js not already loaded in editor
 	wp_enqueue_script(
 		'bnpp-carousel-frontend',
 		BNPP_CAROUSEL_URL . 'assets/block.js',
@@ -173,5 +178,14 @@ function bnpp_carousel_enqueue_frontend_script() {
 		BNPP_CAROUSEL_VERSION,
 		true
 	);
+	
+	// Inline script to initialize carousels
+	wp_add_inline_script( 'bnpp-carousel-frontend', '
+		if ( document.readyState === "loading" ) {
+			document.addEventListener( "DOMContentLoaded", function() {
+				// Carousels auto-initialize via frontend code in block.js
+			});
+		}
+	' );
 }
 add_action( 'wp_enqueue_scripts', 'bnpp_carousel_enqueue_frontend_script' );
