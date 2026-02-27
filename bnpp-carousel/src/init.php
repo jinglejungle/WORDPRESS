@@ -95,18 +95,6 @@ function bnpp_carousel_register_block() {
 					'type'    => 'integer',
 					'default' => 4,
 				),
-				'showPlayButton' => array(
-					'type'    => 'boolean',
-					'default' => true,
-				),
-				'enableAutoPlay' => array(
-					'type'    => 'boolean',
-					'default' => false,
-				),
-				'activeEditSection' => array(
-					'type'    => 'string',
-					'default' => null,
-				),
 			),
 		)
 	);
@@ -121,9 +109,6 @@ add_action( 'init', 'bnpp_carousel_register_block' );
  */
 function bnpp_carousel_render_block( $attributes ) {
 	$slides = isset( $attributes['slides'] ) ? $attributes['slides'] : array();
-	$show_play_button = isset( $attributes['showPlayButton'] ) ? $attributes['showPlayButton'] : true;
-	$enable_autoplay = isset( $attributes['enableAutoPlay'] ) ? $attributes['enableAutoPlay'] : false;
-	$autoplay_duration = isset( $attributes['autoPlayDuration'] ) ? $attributes['autoPlayDuration'] : 4;
 	
 	if ( empty( $slides ) ) {
 		return '';
@@ -131,7 +116,7 @@ function bnpp_carousel_render_block( $attributes ) {
 
 	ob_start();
 	?>
-	<div class="bnpp-carousel-wrapper" data-autoplay="<?php echo esc_attr( $enable_autoplay ? 'true' : 'false' ); ?>" data-duration="<?php echo esc_attr( $autoplay_duration ); ?>">
+	<div class="bnpp-carousel-wrapper">
 		<div class="bnpp-carousel-container">
 			<?php foreach ( $slides as $index => $slide ) : ?>
 				<?php
@@ -163,28 +148,20 @@ function bnpp_carousel_render_block( $attributes ) {
 					<?php endif; ?>
 				</div>
 			<?php endforeach; ?>
+		</div>
 
-			<!-- Slide title indicators at the bottom -->
-			<div class="bnpp-carousel-titles" role="tablist">
-				<?php foreach ( $slides as $index => $slide ) : ?>
-					<?php $title = isset( $slide['title'] ) ? $slide['title'] : 'Slide ' . ( $index + 1 ); ?>
-					<div class="bnpp-carousel-title-item"
-						role="tab"
-						aria-selected="false">
-						<?php echo esc_html( $title ); ?>
-					</div>
-				<?php endforeach; ?>
-			</div>
-
-			<!-- Play/Pause button -->
-			<?php if ( $show_play_button ) : ?>
-				<button class="bnpp-carousel-play-button" data-playing="false" aria-label="Play carousel">▶ Play</button>
-			<?php endif; ?>
+		<!-- Slide title indicators at the bottom -->
+		<div class="bnpp-carousel-titles" role="tablist">
+			<?php foreach ( $slides as $index => $slide ) : ?>
+				<?php $title = isset( $slide['title'] ) ? $slide['title'] : 'Slide ' . ( $index + 1 ); ?>
+				<div class="bnpp-carousel-title-item"
+					role="tab"
+					aria-selected="false">
+					<?php echo esc_html( $title ); ?>
+				</div>
+			<?php endforeach; ?>
 		</div>
 	</div>
-	<?php
-	return ob_get_clean();
-}
 	<?php
 	return ob_get_clean();
 }
