@@ -50,7 +50,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             }
 
             var updateSlide = function( idx, key, value ) {
-                var newSlides = slides.slice();
+                var newSlides = JSON.parse( JSON.stringify( slides ) );
                 if ( key === 'link' ) {
                     newSlides[ idx ].link = Object.assign( {}, newSlides[ idx ].link, value );
                 } else {
