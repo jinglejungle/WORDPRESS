@@ -41,82 +41,187 @@ if ( ! wpBlocks || ! wpBlocksEditor ) {
             };
 
             var slide = slides[ currentSlideIndex ];
+            var el = wp.element.createElement;
+            var Fragment = wp.element.Fragment;
+            var InspectorControls = wp.blockEditor.InspectorControls;
+            var MediaUpload = wp.blockEditor.MediaUpload;
+            var PanelBody = wp.components.PanelBody;
 
-            // Create elements using WordPress API
-            var preview = wpElement.createElement( 'div', { 
-                style: { position: 'relative', width: '100%', height: '400px', background: '#000', overflow: 'hidden', borderRadius: '4px', marginBottom: '20px' } 
-            },
-                wpElement.createElement( 'div', { 
-                    style: { width: '100%', height: '100%', backgroundImage: slide.background ? 'url(' + slide.background + ')' : 'none', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' } 
-                },
-                    wpElement.createElement( 'div', { style: { backgroundColor: 'rgba(0,0,0,0.65)', color: '#fff', padding: '30px', textAlign: 'center', maxWidth: '600px', borderRadius: '8px' } },
-                        wpElement.createElement( 'h2', { style: { margin: '0 0 15px 0', fontSize: '2em', fontWeight: 'bold' } }, slide.title ),
-                        wpElement.createElement( 'p', { style: { margin: '15px 0' } }, slide.description ),
-                        wpElement.createElement( 'a', { href: slide.link.url, style: { display: 'inline-block', marginTop: '15px', padding: '12px 28px', backgroundColor: '#007bff', color: '#fff', borderRadius: '4px', fontWeight: 'bold', textDecoration: 'none' } }, slide.link.text )
-                    )
-                ),
-                wpElement.createElement( 'div', { style: { position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '6px' } },
-                    slides.map( function( s, i ) {
-                        return wpElement.createElement( 'button', { key: i, onClick: function() { setAttributes( { currentSlideIndex: i } ); }, style: { background: i === currentSlideIndex ? '#fff' : 'rgba(0,0,0,0.5)', color: i === currentSlideIndex ? '#000' : '#fff', border: '2px solid #fff', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' } }, s.title );
+            // Slide selectors
+            var slideSelectorButtons = slides.map( function( s, i ) {
+                return el( 'button', {
+                    key: i,
+                    onClick: function() { setAttributes( { currentSlideIndex: i } ); },
+                    style: {
+                        flex: 1,
+                        padding: '12px',
+                        background: i === currentSlideIndex ? '#007bff' : '#f0f0f0',
+                        color: i === currentSlideIndex ? '#fff' : '#000',
+                        border: '2px solid ' + ( i === currentSlideIndex ? '#007bff' : '#ccc' ),
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold'
+                    }
+                }, String( i + 1 ) );
+            } );
+
+            var slideSelectorPanel = el( PanelBody, { title: 'Slide Selection', initialOpen: true },
+                el( 'div', { style: { display: 'flex', gap: '10px' } }, slideSelectorButtons )
+            );
+
+            // Settings inputs
+            var settingsContent = [];
+
+            // Title
+            settingsContent.push( el( 'div', { key: 'title', style: { marginBottom: '15px' } },
+                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Title' ),
+                el( 'input', {
+                    type: 'text',
+                    value: slide.title,
+                    onInput: function( e ) { updateSlide( currentSlideIndex, 'title', e.target.value ); },
+                    style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
+                } )
+            ) );
+
+            // Description
+            settingsContent.push( el( 'div', { key: 'desc', style: { marginBottom: '15px' } },
+                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Description' ),
+                el( 'textarea', {
+                    value: slide.description,
+                    onInput: function( e ) { updateSlide( currentSlideIndex, 'description', e.target.value ); },
+                    style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', minHeight: '80px', boxSizing: 'border-box', fontFamily: 'inherit' }
+                } )
+            ) );
+
+            // Background image with MediaUpload
+            settingsContent.push( el( 'div', { key: 'bg', style: { marginBottom: '15px' } },
+                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Background Image' ),
+                el( MediaUpload, {
+                    onSelect: function( media ) { updateSlide( currentSlideIndex, 'background', media.url ); },
+                    allowedTypes: [ 'image' ],
+                    render: function( obj ) {
+                        return el( 'div', null,
+                            el( 'button', {
+                                onClick: obj.open,
+                                style: { width: '100%', padding: '10px', background: '#f0f0f0', border: '2px solid #ccc', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }
+                            }, slide.background ? 'Change Image' : 'Select Image' ),
+                            slide.background ? el( 'div', { style: { marginTop: '10px' } },
+                                el( 'img', { src: slide.background, style: { maxWidth: '100%', height: 'auto', borderRadius: '4px' } } ),
+                                el( 'button', {
+                                    onClick: function() { updateSlide( currentSlideIndex, 'background', '' ); },
+                                    style: { width: '100%', marginTop: '10px', padding: '8px', background: '#d32f2f', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }
+                                }, 'Remove Image' )
+                            ) : null
+                        );
+                    }
+                } )
+            ) );
+
+            // Button text
+            settingsContent.push( el( 'div', { key: 'btn-text', style: { marginBottom: '15px' } },
+                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Button Text' ),
+                el( 'input', {
+                    type: 'text',
+                    value: slide.link.text,
+                    onInput: function( e ) { updateSlide( currentSlideIndex, 'link', { text: e.target.value } ); },
+                    style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
+                } )
+            ) );
+
+            // Button URL
+            settingsContent.push( el( 'div', { key: 'btn-url', style: { marginBottom: '15px' } },
+                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Button URL' ),
+                el( 'input', {
+                    type: 'url',
+                    value: slide.link.url,
+                    onInput: function( e ) { updateSlide( currentSlideIndex, 'link', { url: e.target.value } ); },
+                    style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
+                } )
+            ) );
+
+            // Button style
+            settingsContent.push( el( 'div', { key: 'btn-style', style: { marginBottom: '15px' } },
+                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Button Style' ),
+                el( 'div', { style: { display: 'flex', gap: '8px' } },
+                    [ 'primary', 'secondary', 'tertiary', 'ghost' ].map( function( style ) {
+                        return el( 'button', {
+                            key: style,
+                            onClick: function() { updateSlide( currentSlideIndex, 'link', { class: style } ); },
+                            style: {
+                                flex: 1,
+                                padding: '8px',
+                                border: '2px solid ' + ( slide.link.class === style ? '#007bff' : '#ccc' ),
+                                background: slide.link.class === style ? '#007bff' : '#fff',
+                                color: slide.link.class === style ? '#fff' : '#000',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: 'bold'
+                            }
+                        }, style.charAt( 0 ).toUpperCase() + style.slice( 1 ) );
                     } )
                 )
-            );
+            ) );
 
-            var selectors = wpElement.createElement( 'div', { style: { display: 'flex', gap: '10px', marginBottom: '20px' } },
-                slides.map( function( s, i ) {
-                    return wpElement.createElement( 'button', { key: i, onClick: function() { setAttributes( { currentSlideIndex: i } ); }, style: { flex: 1, padding: '12px', background: i === currentSlideIndex ? '#007bff' : '#f0f0f0', color: i === currentSlideIndex ? '#fff' : '#000', border: '2px solid ' + ( i === currentSlideIndex ? '#007bff' : '#ccc' ), borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' } }, String( i + 1 ) );
+            // Duration
+            settingsContent.push( el( 'div', { key: 'duration', style: { marginBottom: '15px', paddingTop: '15px', borderTop: '1px solid #ccc' } },
+                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Duration (seconds)' ),
+                el( 'input', {
+                    type: 'number',
+                    value: autoplaySpeed,
+                    onInput: function( e ) { setAttributes( { autoplaySpeed: parseInt( e.target.value ) || 4 } ); },
+                    min: 1,
+                    max: 60,
+                    style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
                 } )
-            );
+            ) );
 
-            var settingsContent = [
-                wpElement.createElement( 'h3', { key: 'title-h', style: { margin: '0 0 15px 0' } }, 'Slide ' + ( currentSlideIndex + 1 ) + ' Settings' ),
-                
-                wpElement.createElement( 'div', { key: 'title-div', style: { marginBottom: '15px' } },
-                    wpElement.createElement( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Title' ),
-                    wpElement.createElement( 'input', { type: 'text', value: slide.title, onInput: function( e ) { updateSlide( currentSlideIndex, 'title', e.target.value ); }, style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' } } )
-                ),
+            var settingsPanel = el( PanelBody, { title: 'Slide Settings', initialOpen: true }, settingsContent );
 
-                wpElement.createElement( 'div', { key: 'desc-div', style: { marginBottom: '15px' } },
-                    wpElement.createElement( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Description' ),
-                    wpElement.createElement( 'textarea', { value: slide.description, onInput: function( e ) { updateSlide( currentSlideIndex, 'description', e.target.value ); }, style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', minHeight: '80px', boxSizing: 'border-box', fontFamily: 'inherit' } } )
-                ),
+            var rightPanel = el( InspectorControls, null, slideSelectorPanel, settingsPanel );
 
-                wpElement.createElement( 'div', { key: 'bg-div', style: { marginBottom: '15px' } },
-                    wpElement.createElement( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Background Image URL' ),
-                    wpElement.createElement( 'input', { type: 'url', value: slide.background, onInput: function( e ) { updateSlide( currentSlideIndex, 'background', e.target.value ); }, placeholder: 'https://example.com/image.jpg', style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' } } )
-                ),
+            // Preview
+            var previewNavButtons = slides.map( function( s, i ) {
+                return el( 'button', {
+                    key: i,
+                    onClick: function() { setAttributes( { currentSlideIndex: i } ); },
+                    style: {
+                        background: i === currentSlideIndex ? '#fff' : 'rgba(0,0,0,0.5)',
+                        color: i === currentSlideIndex ? '#000' : '#fff',
+                        border: '2px solid #fff',
+                        padding: '8px 12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '0.85em'
+                    }
+                }, s.title );
+            } );
 
-                wpElement.createElement( 'div', { key: 'text-div', style: { marginBottom: '15px' } },
-                    wpElement.createElement( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Button Text' ),
-                    wpElement.createElement( 'input', { type: 'text', value: slide.link.text, onInput: function( e ) { updateSlide( currentSlideIndex, 'link', { text: e.target.value } ); }, style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' } } )
-                ),
-
-                wpElement.createElement( 'div', { key: 'url-div', style: { marginBottom: '15px' } },
-                    wpElement.createElement( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Button URL' ),
-                    wpElement.createElement( 'input', { type: 'url', value: slide.link.url, onInput: function( e ) { updateSlide( currentSlideIndex, 'link', { url: e.target.value } ); }, style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' } } )
-                ),
-
-                wpElement.createElement( 'div', { key: 'style-div', style: { marginBottom: '15px' } },
-                    wpElement.createElement( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Button Style' ),
-                    wpElement.createElement( 'div', { style: { display: 'flex', gap: '8px' } },
-                        [ 'primary', 'secondary', 'tertiary', 'ghost' ].map( function( style ) {
-                            return wpElement.createElement( 'button', { key: style, onClick: function() { updateSlide( currentSlideIndex, 'link', { class: style } ); }, style: { flex: 1, padding: '8px', border: '2px solid ' + ( slide.link.class === style ? '#007bff' : '#ccc' ), background: slide.link.class === style ? '#007bff' : '#fff', color: slide.link.class === style ? '#fff' : '#000', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' } }, style.charAt( 0 ).toUpperCase() + style.slice( 1 ) );
-                        } )
+            var preview = el( 'div', {
+                style: { position: 'relative', width: '100%', height: '400px', background: '#000', overflow: 'hidden', borderRadius: '4px', marginBottom: '20px' }
+            },
+                el( 'div', {
+                    style: {
+                        width: '100%',
+                        height: '100%',
+                        backgroundImage: slide.background ? 'url(' + slide.background + ')' : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }
+                },
+                    el( 'div', { style: { backgroundColor: 'rgba(0,0,0,0.65)', color: '#fff', padding: '30px', textAlign: 'center', maxWidth: '600px', borderRadius: '8px' } },
+                        el( 'h2', { style: { margin: '0 0 15px 0', fontSize: '2em', fontWeight: 'bold' } }, slide.title ),
+                        el( 'p', { style: { margin: '15px 0' } }, slide.description ),
+                        el( 'a', { href: slide.link.url, style: { display: 'inline-block', marginTop: '15px', padding: '12px 28px', backgroundColor: '#007bff', color: '#fff', borderRadius: '4px', fontWeight: 'bold', textDecoration: 'none' } }, slide.link.text )
                     )
                 ),
-
-                wpElement.createElement( 'div', { key: 'duration-div', style: { marginBottom: '15px', paddingTop: '15px', borderTop: '1px solid #ccc' } },
-                    wpElement.createElement( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Duration (seconds)' ),
-                    wpElement.createElement( 'input', { type: 'number', value: autoplaySpeed, onInput: function( e ) { setAttributes( { autoplaySpeed: parseInt( e.target.value ) || 4 } ); }, min: 1, max: 60, style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' } } )
-                )
-            ];
-
-            var rightPanel = wpElement.createElement( wpBlocksEditor.InspectorControls, null,
-                wpElement.createElement( wpComponents.PanelBody, { title: 'Slide Selection', initialOpen: true }, selectors ),
-                wpElement.createElement( wpComponents.PanelBody, { title: 'Slide Settings', initialOpen: true }, settingsContent )
+                el( 'div', { style: { position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '6px' } }, previewNavButtons )
             );
 
-            return wpElement.createElement( wpElement.Fragment, null, rightPanel, preview );
+            return el( Fragment, null, rightPanel, preview );
         },
 
         save: function() {
