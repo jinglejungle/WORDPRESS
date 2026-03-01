@@ -15,22 +15,6 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
         attributes: {
             slides: {
                 type: 'array',
-                items: {
-                    type: 'object',
-                    properties: {
-                        title: { type: 'string' },
-                        description: { type: 'string' },
-                        background: { type: 'string' },
-                        link: {
-                            type: 'object',
-                            properties: {
-                                text: { type: 'string' },
-                                url: { type: 'string' },
-                                class: { type: 'string' }
-                            }
-                        }
-                    }
-                },
                 default: [
                     { title: 'Slide 1', description: 'Description 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
                     { title: 'Slide 2', description: 'Description 2', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
