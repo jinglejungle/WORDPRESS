@@ -202,14 +202,59 @@
                     el(
                         'div',
                         { style: { marginBottom: '15px' } },
-                        el( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Background Image URL' ),
-                        el( 'input', {
-                            type: 'url',
-                            value: slide.background || '',
-                            onChange: function( e ) { updateSlide( currentSlideIndex, 'background', e.target.value ); },
-                            placeholder: 'https://example.com/image.jpg',
-                            style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
-                        } )
+                        el( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Background Image' ),
+                        el(
+                            MediaUpload,
+                            {
+                                onSelect: function( media ) { updateSlide( currentSlideIndex, 'background', media.url ); },
+                                allowedTypes: [ 'image' ],
+                                render: function( obj ) {
+                                    return el(
+                                        'div',
+                                        null,
+                                        el(
+                                            'button',
+                                            {
+                                                onClick: obj.open,
+                                                style: {
+                                                    width: '100%',
+                                                    padding: '10px',
+                                                    background: '#f0f0f0',
+                                                    border: '2px solid #ccc',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer',
+                                                    fontWeight: 'bold'
+                                                }
+                                            },
+                                            slide.background ? 'Change Image' : 'Select Image'
+                                        ),
+                                        slide.background ? el(
+                                            'div',
+                                            { style: { marginTop: '10px' } },
+                                            el( 'img', { src: slide.background, style: { maxWidth: '100%', height: 'auto', borderRadius: '4px' } } ),
+                                            el(
+                                                'button',
+                                                {
+                                                    onClick: function() { updateSlide( currentSlideIndex, 'background', '' ); },
+                                                    style: {
+                                                        width: '100%',
+                                                        marginTop: '10px',
+                                                        padding: '8px',
+                                                        background: '#d32f2f',
+                                                        color: '#fff',
+                                                        border: 'none',
+                                                        borderRadius: '4px',
+                                                        cursor: 'pointer',
+                                                        fontWeight: 'bold'
+                                                    }
+                                                },
+                                                'Remove Image'
+                                            )
+                                        ) : null
+                                    );
+                                }
+                            }
+                        )
                     ),
 
                     el(
