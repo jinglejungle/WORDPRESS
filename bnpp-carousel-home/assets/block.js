@@ -389,9 +389,62 @@
             );
         },
 
-        save: function() {
-            // Server-side rendering
-            return null;
+        save: function( props ) {
+            var attributes = props.attributes;
+            var slides = attributes.slides || [];
+            var autoplaySpeed = attributes.autoplaySpeed || 4;
+
+            // Create carousel structure
+            return createElement(
+                'section',
+                { className: 'bnpp-carousel-wrapper', role: 'region', 'aria-roledescription': 'carousel', 'aria-label': 'Services presentation' },
+                // Carousel container
+                createElement(
+                    'div',
+                    { className: 'bnpp-carousel' },
+                    // Render each slide
+                    slides.map( function( slide, index ) {
+                        var style = slide.background ? { backgroundImage: 'url(' + slide.background + ')' } : {};
+                        return createElement(
+                            'div',
+                            { key: index, className: 'bnpp-slide', style: style },
+                            createElement(
+                                'div',
+                                { className: 'bnpp-overlay' },
+                                createElement( 'h2', null, slide.title || 'Slide ' + ( index + 1 ) ),
+                                slide.description ? createElement( 'p', null, slide.description ) : null,
+                                slide.link && slide.link.text ? createElement(
+                                    'a',
+                                    { href: slide.link.url || '#', className: 'bnpp-btn bnpp-btn-' + ( slide.link.class || 'primary' ) },
+                                    slide.link.text
+                                ) : null
+                            )
+                        );
+                    } )
+                ),
+                // Navigation
+                createElement(
+                    'div',
+                    { className: 'bnpp-carousel-nav', role: 'tablist' },
+                    slides.map( function( slide, index ) {
+                        return createElement(
+                            'button',
+                            { key: index, role: 'tab', 'aria-selected': index === 0 ? 'true' : 'false', 'data-slide': index },
+                            slide.title || 'Slide ' + ( index + 1 )
+                        );
+                    } )
+                ),
+                // Pause button
+                createElement( 'button', { className: 'bnpp-pause-btn', 'aria-pressed': 'false' }, 'Pause' ),
+                // Status for screen readers
+                createElement( 'div', { className: 'sr-only', 'aria-live': 'polite', id: 'bnpp-carousel-status' } ),
+                // Config script
+                createElement(
+                    'script',
+                    { type: 'application/json', className: 'bnpp-carousel-config' },
+                    JSON.stringify( { autoplaySpeed: autoplaySpeed * 1000, totalSlides: slides.length } )
+                )
+            );
         }
     } );
 
