@@ -1,27 +1,21 @@
 /**
  * BNPP Carousel Homepage Block
- * Gutenberg editor with live preview
- * 3 slides maximum, background support
- * Pure JavaScript - no React, no JSX
+ * Pure JavaScript using WordPress API (no React/JSX)
  */
 
 ( function() {
-    // Check if WordPress API is available
     if ( typeof wp === 'undefined' || ! wp.blocks ) {
         return;
     }
 
     var registerBlockType = wp.blocks.registerBlockType;
+    var el = wp.element.createElement;
     var Fragment = wp.element.Fragment;
-    var createElement = wp.element.createElement;
     var InspectorControls = wp.blockEditor.InspectorControls;
     var MediaUpload = wp.blockEditor.MediaUpload;
     var PanelBody = wp.components.PanelBody;
     var Button = wp.components.Button;
 
-    /**
-     * Register the Gutenberg block
-     */
     registerBlockType( 'bnpp/carousel-homepage', {
         title: 'Carousel Homepage',
         icon: 'slides',
@@ -36,8 +30,7 @@
             var autoplaySpeed = attributes.autoplaySpeed || 4;
             var currentSlideIndex = attributes.currentSlideIndex !== undefined ? attributes.currentSlideIndex : 0;
 
-            // Ensure exactly 3 slides
-            if ( slides.length === 0 ) {
+            if ( ! slides || slides.length === 0 ) {
                 slides = [
                     { title: 'Slide 1', description: 'Description 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
                     { title: 'Slide 2', description: 'Description 2', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
@@ -46,9 +39,11 @@
                 setAttributes( { slides: slides } );
             }
 
-            // Update slide property
             var updateSlide = function( index, field, value ) {
                 var newSlides = slides.slice();
+                if ( ! newSlides[ index ] ) {
+                    newSlides[ index ] = { title: '', description: '', background: '', link: { text: '', url: '#', class: 'primary' } };
+                }
                 if ( field === 'link' ) {
                     newSlides[ index ].link = Object.assign( {}, newSlides[ index ].link, value );
                 } else {
@@ -57,12 +52,11 @@
                 setAttributes( { slides: newSlides } );
             };
 
-            // Render slide preview in carousel
             var renderSlidePreview = function( slide, index ) {
                 var isActive = index === currentSlideIndex;
                 var backgroundStyle = slide.background ? { backgroundImage: 'url(' + slide.background + ')' } : {};
 
-                return createElement(
+                return el(
                     'div',
                     {
                         key: index,
@@ -83,12 +77,12 @@
                             backgroundPosition: 'center'
                         }, backgroundStyle )
                     },
-                    createElement(
+                    el(
                         'div',
                         { className: 'bnpp-overlay', style: { backgroundColor: 'rgba(0,0,0,0.65)', color: '#fff', padding: '30px', textAlign: 'center', maxWidth: '600px', borderRadius: '8px' } },
-                        createElement( 'h2', { style: { fontSize: '2em', margin: '0 0 15px 0', fontWeight: 'bold' } }, slide.title || 'Slide ' + ( index + 1 ) ),
-                        createElement( 'p', { style: { fontSize: '1.1em', margin: '15px 0' } }, slide.description || '' ),
-                        slide.link && slide.link.text ? createElement(
+                        el( 'h2', { style: { fontSize: '2em', margin: '0 0 15px 0', fontWeight: 'bold' } }, slide.title || 'Slide ' + ( index + 1 ) ),
+                        el( 'p', { style: { fontSize: '1.1em', margin: '15px 0' } }, slide.description || '' ),
+                        slide.link && slide.link.text ? el(
                             'a',
                             {
                                 href: slide.link.url || '#',
@@ -111,13 +105,12 @@
                 );
             };
 
-            // Render navigation buttons with slide titles
             var renderNavButtons = function() {
-                return createElement(
+                return el(
                     'div',
                     { style: { position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, display: 'flex', gap: '6px' } },
                     slides.map( function( slide, index ) {
-                        return createElement(
+                        return el(
                             'button',
                             {
                                 key: index,
@@ -144,13 +137,12 @@
                 );
             };
 
-            // Render slide selector buttons for right panel
             var renderSlideSelectors = function() {
-                return createElement(
+                return el(
                     'div',
                     { style: { display: 'flex', gap: '10px', marginBottom: '20px' } },
                     slides.map( function( slide, index ) {
-                        return createElement(
+                        return el(
                             'button',
                             {
                                 key: index,
@@ -173,140 +165,88 @@
                 );
             };
 
-            // Render slide editor for currently selected slide
             var renderCurrentSlideEditor = function() {
                 var slide = slides[ currentSlideIndex ];
                 if ( ! slide ) return null;
 
-                return createElement(
+                return el(
                     'div',
                     null,
-                    createElement( 'h3', { style: { margin: '20px 0 15px 0' } }, 'Slide ' + ( currentSlideIndex + 1 ) + ' Settings' ),
+                    el( 'h3', { style: { margin: '20px 0 15px 0' } }, 'Slide ' + ( currentSlideIndex + 1 ) + ' Settings' ),
 
-                    // Title
-                    createElement(
+                    el(
                         'div',
                         { style: { marginBottom: '15px' } },
-                        createElement( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Title' ),
-                        createElement( 'input', {
+                        el( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Title' ),
+                        el( 'input', {
                             type: 'text',
                             value: slide.title || '',
                             onChange: function( e ) { updateSlide( currentSlideIndex, 'title', e.target.value ); },
                             placeholder: 'Slide title',
-                            style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }
+                            style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
                         } )
                     ),
 
-                    // Description
-                    createElement(
+                    el(
                         'div',
                         { style: { marginBottom: '15px' } },
-                        createElement( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Description' ),
-                        createElement( 'textarea', {
+                        el( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Description' ),
+                        el( 'textarea', {
                             value: slide.description || '',
                             onChange: function( e ) { updateSlide( currentSlideIndex, 'description', e.target.value ); },
                             placeholder: 'Slide description',
-                            style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', minHeight: '80px', fontFamily: 'inherit' }
+                            style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', minHeight: '80px', fontFamily: 'inherit', boxSizing: 'border-box' }
                         } )
                     ),
 
-                    // Background image
-                    createElement(
+                    el(
                         'div',
                         { style: { marginBottom: '15px' } },
-                        createElement( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Background Image' ),
-                        createElement(
-                            MediaUpload,
-                            {
-                                onSelect: function( media ) { updateSlide( currentSlideIndex, 'background', media.url ); },
-                                allowedTypes: [ 'image' ],
-                                render: function( obj ) {
-                                    return createElement(
-                                        'div',
-                                        null,
-                                        createElement(
-                                            'button',
-                                            {
-                                                onClick: obj.open,
-                                                style: {
-                                                    width: '100%',
-                                                    padding: '10px',
-                                                    background: '#f0f0f0',
-                                                    border: '2px solid #ccc',
-                                                    borderRadius: '4px',
-                                                    cursor: 'pointer',
-                                                    fontWeight: 'bold'
-                                                }
-                                            },
-                                            slide.background ? 'Change Image' : 'Select Image'
-                                        ),
-                                        slide.background ? createElement(
-                                            'div',
-                                            { style: { marginTop: '10px' } },
-                                            createElement( 'img', { src: slide.background, style: { maxWidth: '100%', height: 'auto', borderRadius: '4px' } } ),
-                                            createElement(
-                                                'button',
-                                                {
-                                                    onClick: function() { updateSlide( currentSlideIndex, 'background', '' ); },
-                                                    style: {
-                                                        width: '100%',
-                                                        marginTop: '10px',
-                                                        padding: '8px',
-                                                        background: '#d32f2f',
-                                                        color: '#fff',
-                                                        border: 'none',
-                                                        borderRadius: '4px',
-                                                        cursor: 'pointer',
-                                                        fontWeight: 'bold'
-                                                    }
-                                                },
-                                                'Remove Image'
-                                            )
-                                        ) : null
-                                    );
-                                }
-                            }
-                        )
+                        el( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Background Image URL' ),
+                        el( 'input', {
+                            type: 'url',
+                            value: slide.background || '',
+                            onChange: function( e ) { updateSlide( currentSlideIndex, 'background', e.target.value ); },
+                            placeholder: 'https://example.com/image.jpg',
+                            style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
+                        } )
                     ),
 
-                    // Button text
-                    createElement(
+                    el(
                         'div',
                         { style: { marginBottom: '15px' } },
-                        createElement( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Button Text' ),
-                        createElement( 'input', {
+                        el( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Button Text' ),
+                        el( 'input', {
                             type: 'text',
                             value: ( slide.link && slide.link.text ) || '',
                             onChange: function( e ) { updateSlide( currentSlideIndex, 'link', { text: e.target.value } ); },
                             placeholder: 'Button text',
-                            style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }
+                            style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
                         } )
                     ),
 
-                    // Button URL
-                    createElement(
+                    el(
                         'div',
                         { style: { marginBottom: '15px' } },
-                        createElement( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Button URL' ),
-                        createElement( 'input', {
+                        el( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Button URL' ),
+                        el( 'input', {
                             type: 'url',
                             value: ( slide.link && slide.link.url ) || '',
                             onChange: function( e ) { updateSlide( currentSlideIndex, 'link', { url: e.target.value } ); },
                             placeholder: 'https://example.com',
-                            style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }
+                            style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
                         } )
                     ),
 
-                    // Button style
-                    createElement(
+                    el(
                         'div',
                         { style: { marginBottom: '15px' } },
-                        createElement( 'label', { style: { fontWeight: 'bold', marginBottom: '10px', display: 'block' } }, 'Button Style' ),
-                        createElement(
+                        el( 'label', { style: { fontWeight: 'bold', marginBottom: '10px', display: 'block' } }, 'Button Style' ),
+                        el(
                             'div',
                             { style: { display: 'flex', gap: '8px', flexWrap: 'wrap' } },
                             [ 'primary', 'secondary', 'tertiary', 'ghost' ].map( function( style ) {
-                                return createElement(
+                                return el(
                                     'button',
                                     {
                                         key: style,
@@ -329,41 +269,38 @@
                         )
                     ),
 
-                    // Duration setting
-                    createElement(
+                    el(
                         'div',
                         { style: { marginBottom: '15px', paddingTop: '15px', borderTop: '1px solid #ccc' } },
-                        createElement( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Duration between slides (seconds)' ),
-                        createElement( 'input', {
+                        el( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Duration between slides (seconds)' ),
+                        el( 'input', {
                             type: 'number',
                             value: autoplaySpeed,
                             onChange: function( e ) { setAttributes( { autoplaySpeed: parseInt( e.target.value ) || 4 } ); },
                             min: 1,
                             max: 60,
-                            style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }
+                            style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
                         } )
                     )
                 );
             };
 
-            // Right panel
-            var rightPanel = createElement(
+            var rightPanel = el(
                 InspectorControls,
                 null,
-                createElement(
+                el(
                     PanelBody,
                     { title: 'Slide Selection', initialOpen: true },
                     renderSlideSelectors()
                 ),
-                createElement(
+                el(
                     PanelBody,
                     { title: 'Slide Settings', initialOpen: true },
                     renderCurrentSlideEditor()
                 )
             );
 
-            // Main carousel preview
-            var carouselPreview = createElement(
+            var carouselPreview = el(
                 'div',
                 {
                     style: {
@@ -380,8 +317,7 @@
                 renderNavButtons()
             );
 
-            // Return the edit interface
-            return createElement(
+            return el(
                 Fragment,
                 null,
                 rightPanel,
@@ -389,62 +325,8 @@
             );
         },
 
-        save: function( props ) {
-            var attributes = props.attributes;
-            var slides = attributes.slides || [];
-            var autoplaySpeed = attributes.autoplaySpeed || 4;
-
-            // Create carousel structure
-            return createElement(
-                'section',
-                { className: 'bnpp-carousel-wrapper', role: 'region', 'aria-roledescription': 'carousel', 'aria-label': 'Services presentation' },
-                // Carousel container
-                createElement(
-                    'div',
-                    { className: 'bnpp-carousel' },
-                    // Render each slide
-                    slides.map( function( slide, index ) {
-                        var style = slide.background ? { backgroundImage: 'url(' + slide.background + ')' } : {};
-                        return createElement(
-                            'div',
-                            { key: index, className: 'bnpp-slide', style: style },
-                            createElement(
-                                'div',
-                                { className: 'bnpp-overlay' },
-                                createElement( 'h2', null, slide.title || 'Slide ' + ( index + 1 ) ),
-                                slide.description ? createElement( 'p', null, slide.description ) : null,
-                                slide.link && slide.link.text ? createElement(
-                                    'a',
-                                    { href: slide.link.url || '#', className: 'bnpp-btn bnpp-btn-' + ( slide.link.class || 'primary' ) },
-                                    slide.link.text
-                                ) : null
-                            )
-                        );
-                    } )
-                ),
-                // Navigation
-                createElement(
-                    'div',
-                    { className: 'bnpp-carousel-nav', role: 'tablist' },
-                    slides.map( function( slide, index ) {
-                        return createElement(
-                            'button',
-                            { key: index, role: 'tab', 'aria-selected': index === 0 ? 'true' : 'false', 'data-slide': index },
-                            slide.title || 'Slide ' + ( index + 1 )
-                        );
-                    } )
-                ),
-                // Pause button
-                createElement( 'button', { className: 'bnpp-pause-btn', 'aria-pressed': 'false' }, 'Pause' ),
-                // Status for screen readers
-                createElement( 'div', { className: 'sr-only', 'aria-live': 'polite', id: 'bnpp-carousel-status' } ),
-                // Config script
-                createElement(
-                    'script',
-                    { type: 'application/json', className: 'bnpp-carousel-config' },
-                    JSON.stringify( { autoplaySpeed: autoplaySpeed * 1000, totalSlides: slides.length } )
-                )
-            );
+        save: function() {
+            return null;
         }
     } );
 
@@ -468,7 +350,6 @@ document.addEventListener( 'DOMContentLoaded', function() {
             return;
         }
 
-        // Configuration
         var config = { autoplaySpeed: 4000, totalSlides: slides.length };
         if ( configScript ) {
             try {
@@ -482,7 +363,6 @@ document.addEventListener( 'DOMContentLoaded', function() {
         var isPlaying = true;
         var autoplayInterval;
 
-        // Display specific slide
         var showSlide = function( index ) {
             slides.forEach( function( slide, i ) {
                 if ( i === index ) {
@@ -503,7 +383,6 @@ document.addEventListener( 'DOMContentLoaded', function() {
             currentSlide = index;
         };
 
-        // Navigation
         var nextSlide = function() {
             currentSlide = ( currentSlide + 1 ) % slides.length;
             showSlide( currentSlide );
@@ -514,7 +393,6 @@ document.addEventListener( 'DOMContentLoaded', function() {
             showSlide( currentSlide );
         };
 
-        // Autoplay
         var startAutoplay = function() {
             if ( autoplayInterval ) {
                 clearInterval( autoplayInterval );
@@ -530,18 +408,15 @@ document.addEventListener( 'DOMContentLoaded', function() {
             isPlaying = false;
         };
 
-        // Initialization
         showSlide( 0 );
         startAutoplay();
 
-        // Button clicks
         navButtons.forEach( function( btn, index ) {
             btn.addEventListener( 'click', function() {
                 showSlide( index );
             } );
         } );
 
-        // Pause button
         if ( pauseBtn ) {
             pauseBtn.addEventListener( 'click', function() {
                 if ( isPlaying ) {
@@ -556,13 +431,11 @@ document.addEventListener( 'DOMContentLoaded', function() {
             } );
         }
 
-        // Keyboard
         document.addEventListener( 'keydown', function( e ) {
             if ( e.key === 'ArrowRight' ) nextSlide();
             if ( e.key === 'ArrowLeft' ) prevSlide();
         } );
 
-        // Hover
         carousel.addEventListener( 'mouseenter', function() {
             if ( isPlaying ) stopAutoplay();
         } );
