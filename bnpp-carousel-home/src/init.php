@@ -64,6 +64,22 @@ function bnpp_carousel_register_block() {
             'attributes'      => array(
                 'slides' => array(
                     'type' => 'array',
+                    'items' => array(
+                        'type' => 'object',
+                        'properties' => array(
+                            'title' => array( 'type' => 'string' ),
+                            'description' => array( 'type' => 'string' ),
+                            'background' => array( 'type' => 'string' ),
+                            'link' => array(
+                                'type' => 'object',
+                                'properties' => array(
+                                    'text' => array( 'type' => 'string' ),
+                                    'url' => array( 'type' => 'string' ),
+                                    'class' => array( 'type' => 'string' ),
+                                ),
+                            ),
+                        ),
+                    ),
                     'default' => array(
                         array(
                             'title'       => 'Slide 1',
@@ -100,6 +116,14 @@ function bnpp_carousel_register_block() {
                 'autoplaySpeed' => array(
                     'type'    => 'number',
                     'default' => 4,
+                ),
+                'currentSlideIndex' => array(
+                    'type'    => 'number',
+                    'default' => 0,
+                ),
+                'currentSlide' => array(
+                    'type'    => 'number',
+                    'default' => 0,
                 ),
             ),
         )
