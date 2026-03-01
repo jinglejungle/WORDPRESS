@@ -68,6 +68,7 @@ function bnpp_carousel_register_block() {
                         array(
                             'title'       => 'Discover our services',
                             'description' => 'Quality services tailored to your needs',
+                            'background'  => '',
                             'link'        => array(
                                 'text'  => 'Learn more',
                                 'url'   => '#',
@@ -77,6 +78,7 @@ function bnpp_carousel_register_block() {
                         array(
                             'title'       => 'Solutions for your needs',
                             'description' => 'Find the perfect solution for your business',
+                            'background'  => '',
                             'link'        => array(
                                 'text'  => 'View solutions',
                                 'url'   => '#',
@@ -86,6 +88,7 @@ function bnpp_carousel_register_block() {
                         array(
                             'title'       => 'Contact our team',
                             'description' => 'We are here to answer your questions',
+                            'background'  => '',
                             'link'        => array(
                                 'text'  => 'Contact us',
                                 'url'   => '#',
@@ -122,12 +125,13 @@ function bnpp_carousel_render_block( $attributes ) {
     foreach ( $slides as $index => $slide ) {
         $title       = isset( $slide['title'] ) ? sanitize_text_field( $slide['title'] ) : '';
         $description = isset( $slide['description'] ) ? sanitize_text_field( $slide['description'] ) : '';
+        $background  = isset( $slide['background'] ) ? esc_url( $slide['background'] ) : '';
         $link        = isset( $slide['link'] ) ? $slide['link'] : array();
         $link_text   = isset( $link['text'] ) ? sanitize_text_field( $link['text'] ) : '';
         $link_url    = isset( $link['url'] ) ? esc_url( $link['url'] ) : '#';
         $link_class  = isset( $link['class'] ) ? sanitize_text_field( $link['class'] ) : 'primary';
 
-        $output .= '<div class="bnpp-slide">';
+        $output .= '<div class="bnpp-slide"' . ( ! empty( $background ) ? ' style="background-image: url(\'' . $background . '\');"' : '' ) . '>';
         $output .= '<div class="bnpp-overlay">';
         
         if ( ! empty( $title ) ) {

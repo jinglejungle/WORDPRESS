@@ -1,6 +1,7 @@
 /**
  * BNPP Carousel Homepage Block
- * Gutenberg editor with live preview and settings panel
+ * Gutenberg editor with live preview
+ * 3 slides maximum, background support
  * Pure JavaScript - no React, no JSX
  */
 
@@ -14,10 +15,8 @@
     var Fragment = wp.element.Fragment;
     var createElement = wp.element.createElement;
     var InspectorControls = wp.blockEditor.InspectorControls;
+    var MediaUpload = wp.blockEditor.MediaUpload;
     var PanelBody = wp.components.PanelBody;
-    var TextControl = wp.components.TextControl;
-    var TextareaControl = wp.components.TextareaControl;
-    var RangeControl = wp.components.RangeControl;
     var Button = wp.components.Button;
 
     /**
@@ -27,7 +26,7 @@
         title: 'Carousel Homepage',
         icon: 'slides',
         category: 'media',
-        description: 'An accessible carousel with advanced slide editing',
+        description: 'An accessible carousel with 3 slides and background images',
         keywords: [ 'carousel', 'slider', 'banner' ],
         
         edit: function( props ) {
@@ -37,12 +36,19 @@
             var autoplaySpeed = attributes.autoplaySpeed || 4;
             var currentSlideIndex = attributes.currentSlideIndex !== undefined ? attributes.currentSlideIndex : 0;
 
+            // Ensure exactly 3 slides
+            if ( slides.length === 0 ) {
+                slides = [
+                    { title: 'Slide 1', description: 'Description 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
+                    { title: 'Slide 2', description: 'Description 2', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
+                    { title: 'Slide 3', description: 'Description 3', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } }
+                ];
+                setAttributes( { slides: slides } );
+            }
+
             // Update slide property
             var updateSlide = function( index, field, value ) {
                 var newSlides = slides.slice();
-                if ( ! newSlides[ index ] ) {
-                    newSlides[ index ] = { title: '', description: '', link: { text: '', url: '#', class: 'primary' } };
-                }
                 if ( field === 'link' ) {
                     newSlides[ index ].link = Object.assign( {}, newSlides[ index ].link, value );
                 } else {
@@ -51,32 +57,17 @@
                 setAttributes( { slides: newSlides } );
             };
 
-            // Add new slide
-            var addSlide = function() {
-                var newSlides = slides.slice();
-                newSlides.push( {
-                    title: 'New slide',
-                    description: 'Slide description',
-                    link: { text: 'Learn more', url: '#', class: 'primary' }
-                } );
-                setAttributes( { slides: newSlides } );
-            };
-
-            // Delete slide
-            var deleteSlide = function( index ) {
-                var newSlides = slides.filter( function( s, i ) { return i !== index; } );
-                setAttributes( { slides: newSlides } );
-            };
-
-            // Render a single slide in preview
+            // Render slide preview in carousel
             var renderSlidePreview = function( slide, index ) {
                 var isActive = index === currentSlideIndex;
+                var backgroundStyle = slide.background ? { backgroundImage: 'url(' + slide.background + ')' } : {};
+
                 return createElement(
                     'div',
                     {
                         key: index,
                         className: 'bnpp-slide' + ( isActive ? ' active' : '' ),
-                        style: {
+                        style: Object.assign( {
                             position: 'absolute',
                             width: '100%',
                             height: '100%',
@@ -90,18 +81,17 @@
                             backgroundColor: '#f0f0f0',
                             backgroundSize: 'cover',
                             backgroundPosition: 'center'
-                        }
+                        }, backgroundStyle )
                     },
                     createElement(
                         'div',
                         { className: 'bnpp-overlay', style: { backgroundColor: 'rgba(0,0,0,0.65)', color: '#fff', padding: '30px', textAlign: 'center', maxWidth: '600px', borderRadius: '8px' } },
-                        createElement( 'h2', { style: { fontSize: '2em', margin: '0 0 15px 0', fontWeight: 'bold' } }, slide.title || '(No title)' ),
-                        createElement( 'p', { style: { fontSize: '1.1em', margin: '15px 0' } }, slide.description || '(No description)' ),
+                        createElement( 'h2', { style: { fontSize: '2em', margin: '0 0 15px 0', fontWeight: 'bold' } }, slide.title || 'Slide ' + ( index + 1 ) ),
+                        createElement( 'p', { style: { fontSize: '1.1em', margin: '15px 0' } }, slide.description || '' ),
                         slide.link && slide.link.text ? createElement(
                             'a',
                             {
                                 href: slide.link.url || '#',
-                                className: 'bnpp-btn bnpp-btn-' + ( slide.link.class || 'primary' ),
                                 style: {
                                     display: 'inline-block',
                                     marginTop: '15px',
@@ -121,11 +111,11 @@
                 );
             };
 
-            // Render navigation buttons
+            // Render navigation buttons with slide titles
             var renderNavButtons = function() {
                 return createElement(
                     'div',
-                    { style: { position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: 10 } },
+                    { style: { position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, display: 'flex', gap: '6px' } },
                     slides.map( function( slide, index ) {
                         return createElement(
                             'button',
@@ -137,10 +127,44 @@
                                     color: index === currentSlideIndex ? '#000' : '#fff',
                                     border: '2px solid #fff',
                                     padding: '8px 14px',
-                                    margin: '0 6px',
                                     cursor: 'pointer',
                                     borderRadius: '4px',
-                                    fontWeight: 'bold'
+                                    fontWeight: 'bold',
+                                    maxWidth: '80px',
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    fontSize: '0.85em'
+                                },
+                                title: slide.title
+                            },
+                            slide.title || 'Slide ' + ( index + 1 )
+                        );
+                    } )
+                );
+            };
+
+            // Render slide selector buttons for right panel
+            var renderSlideSelectors = function() {
+                return createElement(
+                    'div',
+                    { style: { display: 'flex', gap: '10px', marginBottom: '20px' } },
+                    slides.map( function( slide, index ) {
+                        return createElement(
+                            'button',
+                            {
+                                key: index,
+                                onClick: function() { setAttributes( { currentSlideIndex: index } ); },
+                                style: {
+                                    flex: 1,
+                                    padding: '12px',
+                                    background: index === currentSlideIndex ? '#007bff' : '#f0f0f0',
+                                    color: index === currentSlideIndex ? '#fff' : '#000',
+                                    border: index === currentSlideIndex ? '2px solid #007bff' : '2px solid #ccc',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontWeight: 'bold',
+                                    fontSize: '1.1em'
                                 }
                             },
                             ( index + 1 ).toString()
@@ -149,13 +173,16 @@
                 );
             };
 
-            // Render slide editor for right panel
-            var renderSlideEditor = function( slide, index ) {
+            // Render slide editor for currently selected slide
+            var renderCurrentSlideEditor = function() {
+                var slide = slides[ currentSlideIndex ];
+                if ( ! slide ) return null;
+
                 return createElement(
                     'div',
-                    { key: index, style: { background: '#f0f0f0', padding: '20px', marginBottom: '20px', borderRadius: '4px', border: '1px solid #ddd' } },
-                    createElement( 'h3', { style: { margin: '0 0 15px 0' } }, 'Slide ' + ( index + 1 ) ),
-                    
+                    null,
+                    createElement( 'h3', { style: { margin: '20px 0 15px 0' } }, 'Slide ' + ( currentSlideIndex + 1 ) + ' Settings' ),
+
                     // Title
                     createElement(
                         'div',
@@ -164,7 +191,7 @@
                         createElement( 'input', {
                             type: 'text',
                             value: slide.title || '',
-                            onChange: function( e ) { updateSlide( index, 'title', e.target.value ); },
+                            onChange: function( e ) { updateSlide( currentSlideIndex, 'title', e.target.value ); },
                             placeholder: 'Slide title',
                             style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }
                         } )
@@ -177,10 +204,69 @@
                         createElement( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Description' ),
                         createElement( 'textarea', {
                             value: slide.description || '',
-                            onChange: function( e ) { updateSlide( index, 'description', e.target.value ); },
+                            onChange: function( e ) { updateSlide( currentSlideIndex, 'description', e.target.value ); },
                             placeholder: 'Slide description',
                             style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', minHeight: '80px', fontFamily: 'inherit' }
                         } )
+                    ),
+
+                    // Background image
+                    createElement(
+                        'div',
+                        { style: { marginBottom: '15px' } },
+                        createElement( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Background Image' ),
+                        createElement(
+                            MediaUpload,
+                            {
+                                onSelect: function( media ) { updateSlide( currentSlideIndex, 'background', media.url ); },
+                                allowedTypes: [ 'image' ],
+                                render: function( obj ) {
+                                    return createElement(
+                                        'div',
+                                        null,
+                                        createElement(
+                                            'button',
+                                            {
+                                                onClick: obj.open,
+                                                style: {
+                                                    width: '100%',
+                                                    padding: '10px',
+                                                    background: '#f0f0f0',
+                                                    border: '2px solid #ccc',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer',
+                                                    fontWeight: 'bold'
+                                                }
+                                            },
+                                            slide.background ? 'Change Image' : 'Select Image'
+                                        ),
+                                        slide.background ? createElement(
+                                            'div',
+                                            { style: { marginTop: '10px' } },
+                                            createElement( 'img', { src: slide.background, style: { maxWidth: '100%', height: 'auto', borderRadius: '4px' } } ),
+                                            createElement(
+                                                'button',
+                                                {
+                                                    onClick: function() { updateSlide( currentSlideIndex, 'background', '' ); },
+                                                    style: {
+                                                        width: '100%',
+                                                        marginTop: '10px',
+                                                        padding: '8px',
+                                                        background: '#d32f2f',
+                                                        color: '#fff',
+                                                        border: 'none',
+                                                        borderRadius: '4px',
+                                                        cursor: 'pointer',
+                                                        fontWeight: 'bold'
+                                                    }
+                                                },
+                                                'Remove Image'
+                                            )
+                                        ) : null
+                                    );
+                                }
+                            }
+                        )
                     ),
 
                     // Button text
@@ -191,7 +277,7 @@
                         createElement( 'input', {
                             type: 'text',
                             value: ( slide.link && slide.link.text ) || '',
-                            onChange: function( e ) { updateSlide( index, 'link', { text: e.target.value } ); },
+                            onChange: function( e ) { updateSlide( currentSlideIndex, 'link', { text: e.target.value } ); },
                             placeholder: 'Button text',
                             style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }
                         } )
@@ -205,7 +291,7 @@
                         createElement( 'input', {
                             type: 'url',
                             value: ( slide.link && slide.link.url ) || '',
-                            onChange: function( e ) { updateSlide( index, 'link', { url: e.target.value } ); },
+                            onChange: function( e ) { updateSlide( currentSlideIndex, 'link', { url: e.target.value } ); },
                             placeholder: 'https://example.com',
                             style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }
                         } )
@@ -224,15 +310,17 @@
                                     'button',
                                     {
                                         key: style,
-                                        onClick: function() { updateSlide( index, 'link', { class: style } ); },
+                                        onClick: function() { updateSlide( currentSlideIndex, 'link', { class: style } ); },
                                         style: {
-                                            padding: '8px 16px',
+                                            flex: 1,
+                                            padding: '8px',
                                             border: ( slide.link && slide.link.class ) === style ? '2px solid #007bff' : '2px solid #ccc',
                                             background: ( slide.link && slide.link.class ) === style ? '#007bff' : '#fff',
                                             color: ( slide.link && slide.link.class ) === style ? '#fff' : '#000',
                                             borderRadius: '4px',
                                             cursor: 'pointer',
-                                            fontWeight: 'bold'
+                                            fontWeight: 'bold',
+                                            fontSize: '0.9em'
                                         }
                                     },
                                     style.charAt( 0 ).toUpperCase() + style.slice( 1 )
@@ -241,24 +329,20 @@
                         )
                     ),
 
-                    // Delete button
-                    slides.length > 1 ? createElement(
-                        'button',
-                        {
-                            onClick: function() { deleteSlide( index ); },
-                            style: {
-                                padding: '8px 16px',
-                                backgroundColor: '#d32f2f',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontWeight: 'bold',
-                                width: '100%'
-                            }
-                        },
-                        'Delete Slide'
-                    ) : null
+                    // Duration setting
+                    createElement(
+                        'div',
+                        { style: { marginBottom: '15px', paddingTop: '15px', borderTop: '1px solid #ccc' } },
+                        createElement( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Duration between slides (seconds)' ),
+                        createElement( 'input', {
+                            type: 'number',
+                            value: autoplaySpeed,
+                            onChange: function( e ) { setAttributes( { autoplaySpeed: parseInt( e.target.value ) || 4 } ); },
+                            min: 1,
+                            max: 60,
+                            style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }
+                        } )
+                    )
                 );
             };
 
@@ -268,42 +352,13 @@
                 null,
                 createElement(
                     PanelBody,
-                    { title: 'Carousel Settings', initialOpen: true },
-                    createElement(
-                        'div',
-                        null,
-                        createElement( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Duration between slides (seconds)' ),
-                        createElement( 'input', {
-                            type: 'number',
-                            value: autoplaySpeed,
-                            onChange: function( e ) { setAttributes( { autoplaySpeed: parseInt( e.target.value ) || 4 } ); },
-                            min: 1,
-                            max: 60,
-                            style: { width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px' }
-                        } )
-                    )
+                    { title: 'Slide Selection', initialOpen: true },
+                    renderSlideSelectors()
                 ),
                 createElement(
                     PanelBody,
                     { title: 'Slide Settings', initialOpen: true },
-                    slides.map( renderSlideEditor ),
-                    createElement(
-                        'button',
-                        {
-                            onClick: addSlide,
-                            style: {
-                                width: '100%',
-                                padding: '12px',
-                                background: '#007bff',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontWeight: 'bold'
-                            }
-                        },
-                        '+ Add Slide'
-                    )
+                    renderCurrentSlideEditor()
                 )
             );
 
