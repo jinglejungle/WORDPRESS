@@ -1,6 +1,6 @@
 <?php
 /**
- * Enregistrement et gestion du bloc Gutenberg
+ * Block registration and management
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -8,11 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Enregistre les scripts et styles du bloc
+ * Register block scripts and styles
  */
 function bnpp_carousel_register_block_assets() {
     
-    // Scripts et styles côté édition
+    // Editor scripts
     wp_register_script(
         'bnpp-carousel-editor',
         BNPP_CAROUSEL_URL . 'assets/block.js',
@@ -21,7 +21,7 @@ function bnpp_carousel_register_block_assets() {
         true
     );
 
-    // Styles côté édition
+    // Editor styles
     wp_register_style(
         'bnpp-carousel-editor-style',
         BNPP_CAROUSEL_URL . 'assets/block.css',
@@ -29,7 +29,7 @@ function bnpp_carousel_register_block_assets() {
         BNPP_CAROUSEL_VERSION
     );
 
-    // Styles côté frontend
+    // Frontend styles
     wp_register_style(
         'bnpp-carousel-frontend-style',
         BNPP_CAROUSEL_URL . 'assets/block.css',
@@ -37,11 +37,11 @@ function bnpp_carousel_register_block_assets() {
         BNPP_CAROUSEL_VERSION
     );
 
-    // Scripts côté frontend
+    // Frontend scripts
     wp_register_script(
         'bnpp-carousel-frontend',
         BNPP_CAROUSEL_URL . 'assets/block.js',
-        array( 'jquery' ),
+        array(),
         BNPP_CAROUSEL_VERSION,
         true
     );
@@ -49,7 +49,7 @@ function bnpp_carousel_register_block_assets() {
 add_action( 'init', 'bnpp_carousel_register_block_assets' );
 
 /**
- * Enregistre le bloc Gutenberg
+ * Register the Gutenberg block
  */
 function bnpp_carousel_register_block() {
     
@@ -66,45 +66,30 @@ function bnpp_carousel_register_block() {
                     'type' => 'array',
                     'default' => array(
                         array(
-                            'title'       => 'Découvrez nos services',
-                            'description' => 'Services de qualité adaptés à vos besoins',
+                            'title'       => 'Discover our services',
+                            'description' => 'Quality services tailored to your needs',
                             'link'        => array(
-                                'text'  => 'En savoir plus',
+                                'text'  => 'Learn more',
                                 'url'   => '#',
                                 'class' => 'primary',
                             ),
                         ),
                         array(
-                            'title'       => 'Solutions adaptées à vos besoins',
-                            'description' => 'Trouvez la solution parfaite pour votre entreprise',
+                            'title'       => 'Solutions for your needs',
+                            'description' => 'Find the perfect solution for your business',
                             'link'        => array(
-                                'text'  => 'Voir les solutions',
+                                'text'  => 'View solutions',
                                 'url'   => '#',
                                 'class' => 'primary',
                             ),
                         ),
                         array(
-                            'title'       => 'Contactez notre équipe',
-                            'description' => 'Nous sommes à votre écoute pour répondre à vos questions',
+                            'title'       => 'Contact our team',
+                            'description' => 'We are here to answer your questions',
                             'link'        => array(
-                                'text'  => 'Nous contacter',
+                                'text'  => 'Contact us',
                                 'url'   => '#',
                                 'class' => 'primary',
-                            ),
-                        ),
-                    ),
-                    'items' => array(
-                        'type' => 'object',
-                        'properties' => array(
-                            'title'       => array( 'type' => 'string' ),
-                            'description' => array( 'type' => 'string' ),
-                            'link'        => array(
-                                'type' => 'object',
-                                'properties' => array(
-                                    'text'  => array( 'type' => 'string' ),
-                                    'url'   => array( 'type' => 'string' ),
-                                    'class' => array( 'type' => 'string' ),
-                                ),
                             ),
                         ),
                     ),
@@ -120,7 +105,7 @@ function bnpp_carousel_register_block() {
 add_action( 'init', 'bnpp_carousel_register_block' );
 
 /**
- * Rendu du bloc côté frontend
+ * Render the block on frontend
  */
 function bnpp_carousel_render_block( $attributes ) {
     $slides = isset( $attributes['slides'] ) ? $attributes['slides'] : array();
@@ -130,7 +115,7 @@ function bnpp_carousel_render_block( $attributes ) {
         return '';
     }
 
-    $output = '<section class="bnpp-carousel-wrapper" role="region" aria-roledescription="carousel" aria-label="Présentation des services">';
+    $output = '<section class="bnpp-carousel-wrapper" role="region" aria-roledescription="carousel" aria-label="Services presentation">';
     
     $output .= '<div class="bnpp-carousel">';
 
@@ -146,15 +131,15 @@ function bnpp_carousel_render_block( $attributes ) {
         $output .= '<div class="bnpp-overlay">';
         
         if ( ! empty( $title ) ) {
-            $output .= '<h2>' . $title . '</h2>';
+            $output .= '<h2>' . esc_html( $title ) . '</h2>';
         }
         
         if ( ! empty( $description ) ) {
-            $output .= '<p>' . $description . '</p>';
+            $output .= '<p>' . esc_html( $description ) . '</p>';
         }
         
         if ( ! empty( $link_text ) && ! empty( $link_url ) ) {
-            $output .= '<a href="' . $link_url . '" class="bnpp-btn bnpp-btn-' . $link_class . '">' . $link_text . '</a>';
+            $output .= '<a href="' . $link_url . '" class="bnpp-btn bnpp-btn-' . $link_class . '">' . esc_html( $link_text ) . '</a>';
         }
         
         $output .= '</div>';
@@ -168,7 +153,7 @@ function bnpp_carousel_render_block( $attributes ) {
     foreach ( $slides as $index => $slide ) {
         $title = isset( $slide['title'] ) ? sanitize_text_field( $slide['title'] ) : 'Slide ' . ( $index + 1 );
         $aria_selected = $index === 0 ? 'true' : 'false';
-        $output .= '<button role="tab" aria-selected="' . $aria_selected . '" data-slide="' . $index . '">' . $title . '</button>';
+        $output .= '<button role="tab" aria-selected="' . $aria_selected . '" data-slide="' . $index . '">' . esc_html( $title ) . '</button>';
     }
     $output .= '</div>';
 
@@ -183,7 +168,7 @@ function bnpp_carousel_render_block( $attributes ) {
     // Inline script data
     $output .= '<script type="application/json" class="bnpp-carousel-config">';
     $output .= wp_json_encode( array(
-        'autoplaySpeed' => $autoplay_speed * 1000, // Convertir en millisecondes
+        'autoplaySpeed' => $autoplay_speed * 1000, // Convert to milliseconds
         'totalSlides'   => count( $slides ),
     ) );
     $output .= '</script>';

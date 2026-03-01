@@ -58,7 +58,7 @@
     line-height: 1.6;
 }
 
-/* ===== Styles des boutons ===== */
+/* ===== Button Styles ===== */
 
 .bnpp-btn {
     display: inline-block;
@@ -372,40 +372,6 @@
 
 .bnpp-carousel-actions button.delete:hover {
     background: #ffebee;
-}
-
-.bnpp-settings-group {
-    background: #f9f9f9;
-    padding: 20px;
-    border-radius: 4px;
-    border: 1px solid #e0e0e0;
-    margin-bottom: 20px;
-}
-
-.bnpp-settings-group h3 {
-    margin: 0 0 15px 0;
-    font-size: 1rem;
-}
-
-.bnpp-settings-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-
-.bnpp-settings-group input {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 0.9rem;
-}
-
-.bnpp-settings-group input:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
 .bnpp-add-slide-btn {

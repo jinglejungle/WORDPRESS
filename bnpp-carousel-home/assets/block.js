@@ -1,21 +1,21 @@
 /**
  * BNPP Carousel Homepage Block
- * Scripts pour l'éditeur Gutenberg et le frontend
+ * Scripts for Gutenberg editor and frontend
  */
 
 const { registerBlockType } = wp.blocks;
-const { RichText, InspectorControls } = wp.blockEditor;
+const { InspectorControls } = wp.blockEditor;
 const { PanelBody, Button, TextControl, TextareaControl, NumberControl } = wp.components;
 const { Fragment } = wp.element;
 
 /**
- * Enregistrement du bloc Gutenberg
+ * Register the Gutenberg block
  */
 registerBlockType( 'bnpp/carousel-homepage', {
-    title: 'BNPP Carousel Homepage',
+    title: 'Carousel Homepage',
     icon: 'slides',
     category: 'media',
-    description: 'Un carousel accessible avec édition avancée des slides',
+    description: 'An accessible carousel with advanced slide editing capabilities',
     keywords: [ 'carousel', 'slider', 'banner' ],
     
     edit: function( props ) {
@@ -44,9 +44,9 @@ registerBlockType( 'bnpp/carousel-homepage', {
         const addSlide = () => {
             const newSlides = [ ...slides ];
             newSlides.push( {
-                title: 'Nouveau slide',
-                description: 'Description du slide',
-                link: { text: 'En savoir plus', url: '#', class: 'primary' }
+                title: 'New slide',
+                description: 'Slide description',
+                link: { text: 'Learn more', url: '#', class: 'primary' }
             } );
             setAttributes( { slides: newSlides } );
         };
@@ -63,9 +63,9 @@ registerBlockType( 'bnpp/carousel-homepage', {
         return (
             <Fragment>
                 <InspectorControls>
-                    <PanelBody title="Paramètres du carousel" initialOpen={ true }>
+                    <PanelBody title="Carousel Settings" initialOpen={ true }>
                         <NumberControl
-                            label="Durée entre chaque slide (secondes)"
+                            label="Duration between slides (seconds)"
                             value={ autoplaySpeed }
                             onChange={ ( value ) => setAttributes( { autoplaySpeed: value } ) }
                             min={ 1 }
@@ -75,7 +75,7 @@ registerBlockType( 'bnpp/carousel-homepage', {
                 </InspectorControls>
 
                 <div className="bnpp-carousel-editor">
-                    <h2 style={ { marginBottom: '20px' } }>Slides du Carousel</h2>
+                    <h2 style={ { marginBottom: '20px' } }>Carousel Slides</h2>
 
                     { slides.map( ( slide, index ) => (
                         <div key={ index } className="bnpp-carousel-editor-slide">
@@ -85,23 +85,23 @@ registerBlockType( 'bnpp/carousel-homepage', {
                                     <button
                                         onClick={ () => deleteSlide( index ) }
                                         className="bnpp-style-btn delete"
-                                        title="Supprimer ce slide"
+                                        title="Delete this slide"
                                     >
-                                        Supprimer
+                                        Delete
                                     </button>
                                 ) }
                             </div>
 
                             <div className="bnpp-carousel-editor-controls">
-                                {/* Titre */}
+                                {/* Title */}
                                 <div>
-                                    <label htmlFor={ `slide-title-${ index }` }>Titre</label>
+                                    <label htmlFor={ `slide-title-${ index }` }>Title</label>
                                     <input
                                         id={ `slide-title-${ index }` }
                                         type="text"
                                         value={ slide.title || '' }
                                         onChange={ ( e ) => updateSlide( index, 'title', e.target.value ) }
-                                        placeholder="Titre du slide"
+                                        placeholder="Slide title"
                                     />
                                 </div>
 
@@ -112,27 +112,27 @@ registerBlockType( 'bnpp/carousel-homepage', {
                                         id={ `slide-desc-${ index }` }
                                         value={ slide.description || '' }
                                         onChange={ ( e ) => updateSlide( index, 'description', e.target.value ) }
-                                        placeholder="Description du slide"
+                                        placeholder="Slide description"
                                     />
                                 </div>
 
-                                {/* Éditeur de lien */}
+                                {/* Link Editor */}
                                 <div className="bnpp-link-editor">
-                                    <h4>Lien et bouton</h4>
+                                    <h4>Link and Button</h4>
 
-                                    {/* Texte du lien */}
+                                    {/* Link Text */}
                                     <div>
-                                        <label htmlFor={ `link-text-${ index }` }>Texte du lien</label>
+                                        <label htmlFor={ `link-text-${ index }` }>Button Text</label>
                                         <input
                                             id={ `link-text-${ index }` }
                                             type="text"
                                             value={ slide.link?.text || '' }
                                             onChange={ ( e ) => updateSlide( index, 'link', { text: e.target.value } ) }
-                                            placeholder="Texte du bouton"
+                                            placeholder="Button text"
                                         />
                                     </div>
 
-                                    {/* URL du lien */}
+                                    {/* Link URL */}
                                     <div style={ { marginTop: '10px' } }>
                                         <label htmlFor={ `link-url-${ index }` }>URL</label>
                                         <input
@@ -140,20 +140,20 @@ registerBlockType( 'bnpp/carousel-homepage', {
                                             type="url"
                                             value={ slide.link?.url || '' }
                                             onChange={ ( e ) => updateSlide( index, 'link', { url: e.target.value } ) }
-                                            placeholder="https://exemple.com"
+                                            placeholder="https://example.com"
                                         />
                                     </div>
 
-                                    {/* Sélection du style */}
+                                    {/* Button Style Selection */}
                                     <div style={ { marginTop: '10px' } }>
-                                        <label>Style du bouton</label>
+                                        <label>Button Style</label>
                                         <div className="bnpp-style-buttons">
                                             { [ 'primary', 'secondary', 'tertiary', 'ghost' ].map( ( buttonClass ) => (
                                                 <button
                                                     key={ buttonClass }
                                                     className={ `bnpp-style-btn ${ slide.link?.class === buttonClass ? 'active' : '' }` }
                                                     onClick={ () => updateLinkClass( index, buttonClass ) }
-                                                    title={ `Style ${ buttonClass }` }
+                                                    title={ `${ buttonClass } style` }
                                                 >
                                                     { buttonClass.charAt( 0 ).toUpperCase() + buttonClass.slice( 1 ) }
                                                 </button>
@@ -165,9 +165,9 @@ registerBlockType( 'bnpp/carousel-homepage', {
                         </div>
                     ) ) }
 
-                    {/* Bouton ajouter un slide */}
+                    {/* Add Slide Button */}
                     <button onClick={ addSlide } className="bnpp-add-slide-btn">
-                        + Ajouter un slide
+                        + Add Slide
                     </button>
                 </div>
             </Fragment>
@@ -175,12 +175,12 @@ registerBlockType( 'bnpp/carousel-homepage', {
     },
 
     save: function() {
-        return null; // Le rendu est géré côté serveur
+        return null; // Server-side rendering
     }
 } );
 
 /**
- * JavaScript du frontend
+ * Frontend JavaScript - Interactive carousel
  */
 document.addEventListener( 'DOMContentLoaded', function() {
     const carousels = document.querySelectorAll( '.bnpp-carousel-wrapper' );
@@ -203,7 +203,7 @@ document.addEventListener( 'DOMContentLoaded', function() {
             try {
                 config = JSON.parse( configScript.textContent );
             } catch ( e ) {
-                console.error( 'Erreur parsing config:', e );
+                console.error( 'Error parsing config:', e );
             }
         }
 
@@ -212,10 +212,10 @@ document.addEventListener( 'DOMContentLoaded', function() {
         let autoplayInterval;
 
         /**
-         * Affiche un slide spécifique
+         * Display a specific slide
          */
         const showSlide = ( index ) => {
-            // Masquer tous les slides
+            // Hide all slides
             slides.forEach( ( slide, i ) => {
                 if ( i === index ) {
                     slide.classList.add( 'active' );
@@ -224,21 +224,21 @@ document.addEventListener( 'DOMContentLoaded', function() {
                 }
             } );
 
-            // Mettre à jour les boutons de navigation
+            // Update navigation buttons
             navButtons.forEach( ( btn, i ) => {
                 btn.setAttribute( 'aria-selected', i === index ? 'true' : 'false' );
             } );
 
-            // Mettre à jour le statut pour les lecteurs d'écran
+            // Update status for screen readers
             if ( statusDiv ) {
-                statusDiv.textContent = `Slide ${ index + 1 } sur ${ slides.length }`;
+                statusDiv.textContent = `Slide ${ index + 1 } of ${ slides.length }`;
             }
 
             currentSlide = index;
         };
 
         /**
-         * Slide suivant
+         * Next slide
          */
         const nextSlide = () => {
             currentSlide = ( currentSlide + 1 ) % slides.length;
@@ -246,7 +246,7 @@ document.addEventListener( 'DOMContentLoaded', function() {
         };
 
         /**
-         * Slide précédent
+         * Previous slide
          */
         const prevSlide = () => {
             currentSlide = ( currentSlide - 1 + slides.length ) % slides.length;
@@ -254,7 +254,7 @@ document.addEventListener( 'DOMContentLoaded', function() {
         };
 
         /**
-         * Lance l'autoplay
+         * Start autoplay
          */
         const startAutoplay = () => {
             if ( autoplayInterval ) {
@@ -265,7 +265,7 @@ document.addEventListener( 'DOMContentLoaded', function() {
         };
 
         /**
-         * Arrête l'autoplay
+         * Stop autoplay
          */
         const stopAutoplay = () => {
             if ( autoplayInterval ) {
@@ -274,24 +274,24 @@ document.addEventListener( 'DOMContentLoaded', function() {
             isPlaying = false;
         };
 
-        // Initialisation
+        // Initialization
         showSlide( 0 );
         startAutoplay();
 
-        // Navigation par boutons
+        // Navigation via buttons
         navButtons.forEach( ( btn, index ) => {
             btn.addEventListener( 'click', () => {
                 showSlide( index );
             } );
         } );
 
-        // Bouton pause/play
+        // Pause/Play button
         if ( pauseBtn ) {
             pauseBtn.addEventListener( 'click', () => {
                 if ( isPlaying ) {
                     stopAutoplay();
                     pauseBtn.setAttribute( 'aria-pressed', 'true' );
-                    pauseBtn.textContent = 'Lecture';
+                    pauseBtn.textContent = 'Play';
                 } else {
                     startAutoplay();
                     pauseBtn.setAttribute( 'aria-pressed', 'false' );
@@ -300,17 +300,13 @@ document.addEventListener( 'DOMContentLoaded', function() {
             } );
         }
 
-        // Navigation au clavier
+        // Keyboard navigation
         document.addEventListener( 'keydown', ( e ) => {
-            if ( e.key === 'ArrowRight' ) {
-                nextSlide();
-            }
-            if ( e.key === 'ArrowLeft' ) {
-                prevSlide();
-            }
+            if ( e.key === 'ArrowRight' ) nextSlide();
+            if ( e.key === 'ArrowLeft' ) prevSlide();
         } );
 
-        // Pause au hover (si souhaité)
+        // Pause on hover
         carousel.addEventListener( 'mouseenter', () => {
             if ( isPlaying ) {
                 stopAutoplay();
