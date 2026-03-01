@@ -181,6 +181,7 @@
                         el( 'input', {
                             type: 'text',
                             value: slide.title || '',
+                            onInput: function( e ) { updateSlide( currentSlideIndex, 'title', e.target.value ); },
                             onChange: function( e ) { updateSlide( currentSlideIndex, 'title', e.target.value ); },
                             placeholder: 'Slide title',
                             style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
@@ -193,6 +194,7 @@
                         el( 'label', { style: { fontWeight: 'bold', marginBottom: '5px', display: 'block' } }, 'Description' ),
                         el( 'textarea', {
                             value: slide.description || '',
+                            onInput: function( e ) { updateSlide( currentSlideIndex, 'description', e.target.value ); },
                             onChange: function( e ) { updateSlide( currentSlideIndex, 'description', e.target.value ); },
                             placeholder: 'Slide description',
                             style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', minHeight: '80px', fontFamily: 'inherit', boxSizing: 'border-box' }
@@ -264,6 +266,7 @@
                         el( 'input', {
                             type: 'text',
                             value: ( slide.link && slide.link.text ) || '',
+                            onInput: function( e ) { updateSlide( currentSlideIndex, 'link', { text: e.target.value } ); },
                             onChange: function( e ) { updateSlide( currentSlideIndex, 'link', { text: e.target.value } ); },
                             placeholder: 'Button text',
                             style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
@@ -277,6 +280,7 @@
                         el( 'input', {
                             type: 'url',
                             value: ( slide.link && slide.link.url ) || '',
+                            onInput: function( e ) { updateSlide( currentSlideIndex, 'link', { url: e.target.value } ); },
                             onChange: function( e ) { updateSlide( currentSlideIndex, 'link', { url: e.target.value } ); },
                             placeholder: 'https://example.com',
                             style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
@@ -321,6 +325,7 @@
                         el( 'input', {
                             type: 'number',
                             value: autoplaySpeed,
+                            onInput: function( e ) { setAttributes( { autoplaySpeed: parseInt( e.target.value ) || 4 } ); },
                             onChange: function( e ) { setAttributes( { autoplaySpeed: parseInt( e.target.value ) || 4 } ); },
                             min: 1,
                             max: 60,
