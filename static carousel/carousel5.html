@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carousel Accessible Stable</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+
+<style>
+body { margin:0; font-family: Arial, sans-serif; }
+
+.carousel-wrapper { position:relative; overflow:hidden; }
+
+.slide {
+    height:75vh;
+    min-height:400px;
+    background-size:cover;
+    background-position:center;
+    display:flex !important;
+    justify-content:center;
+    align-items:center;
+}
+
+.slide:nth-child(1){background-image:url('https://picsum.photos/id/1015/1600/900');}
+.slide:nth-child(2){background-image:url('https://picsum.photos/id/1016/1600/900');}
+.slide:nth-child(3){background-image:url('https://picsum.photos/id/1018/1600/900');}
+
+.overlay{
+    background:rgba(0,0,0,0.65);
+    color:#fff;
+    padding:30px;
+    text-align:center;
+}
+
+.overlay h2{
+    font-size:clamp(1.8rem,4vw,2.8rem);
+    font-weight:700;
+}
+
+.overlay a{
+    display:inline-block;
+    margin-top:15px;
+    color:#fff;
+    font-weight:bold;
+    text-decoration:underline;
+}
+
+.carousel-nav{
+    position:absolute;
+    bottom:20px;
+    width:100%;
+    text-align:center;
+}
+
+.carousel-nav button{
+    background:rgba(0,0,0,0.5);
+    border:2px solid #fff;
+    color:#fff;
+    padding:8px 14px;
+    margin:0 6px;
+    cursor:pointer;
+}
+
+.carousel-nav button[aria-selected="true"]{
+    background:#fff;
+    color:#000;
+}
+
+.pause-btn{
+    position:absolute;
+    top:20px;
+    right:20px;
+    background:rgba(0,0,0,0.6);
+    color:#fff;
+    border:2px solid #fff;
+    padding:6px 12px;
+    cursor:pointer;
+}
+
+button:focus,a:focus{
+    outline:3px solid #FFD700;
+    outline-offset:3px;
+}
+
+.sr-only{
+    position:absolute;
+    left:-9999px;
+}
+</style>
+</head>
+
+<body>
+
+<section class="carousel-wrapper"
+         role="region"
+         aria-roledescription="carousel"
+         aria-label="Présentation des services">
+
+<div class="carousel">
+
+<div class="slide">
+<div class="overlay">
+<h2>Découvrez nos services</h2>
+<a href="#">En savoir plus</a>
+</div>
+</div>
+
+<div class="slide">
+<div class="overlay">
+<h2>Solutions adaptées à vos besoins</h2>
+<a href="#">Voir les solutions</a>
+</div>
+</div>
+
+<div class="slide">
+<div class="overlay">
+<h2>Contactez notre équipe</h2>
+<a href="#">Nous contacter</a>
+</div>
+</div>
+
+</div>
+
+<button class="pause-btn" aria-pressed="false">Pause</button>
+
+<div class="carousel-nav" role="tablist">
+<button role="tab" aria-selected="true" data-slide="0">Services</button>
+<button role="tab" aria-selected="false" data-slide="1">Solutions</button>
+<button role="tab" aria-selected="false" data-slide="2">Contact</button>
+</div>
+
+<div class="sr-only" aria-live="polite" id="carousel-status"></div>
+
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
+<script>
+$(function(){
+
+const $carousel = $('.carousel');
+const totalSlides = $('.slide').length;
+const status = document.getElementById('carousel-status');
+const pauseBtn = document.querySelector('.pause-btn');
+
+$carousel.on('init', function(event, slick){
+
+    // FORÇAGE démarrage autoplay après initialisation
+    slick.slickPlay();
+
+    status.textContent = "Slide 1 sur " + totalSlides;
+
+});
+
+$carousel.slick({
+    autoplay:true,
+    autoplaySpeed:4000,
+    speed:600,
+    infinite:true,
+    arrows:false,
+    dots:false,
+    pauseOnHover:true,
+    pauseOnFocus:true,
+    accessibility:true
+});
+
+// Navigation clic
+$('.carousel-nav button').on('click', function(){
+    let index = $(this).data('slide');
+    $carousel.slick('slickGoTo', index);
+});
+
+// Mise à jour état actif
+$carousel.on('afterChange', function(event, slick, currentSlide){
+
+    $('.carousel-nav button').attr('aria-selected','false');
+    $('.carousel-nav button').eq(currentSlide).attr('aria-selected','true');
+
+    status.textContent = "Slide " + (currentSlide+1) + " sur " + totalSlides;
+});
+
+// Bouton pause
+pauseBtn.addEventListener('click', function(){
+
+    if($(this).attr('aria-pressed') === "false"){
+        $carousel.slick('slickPause');
+        $(this).attr('aria-pressed','true').text('Lecture');
+    } else {
+        $carousel.slick('slickPlay');
+        $(this).attr('aria-pressed','false').text('Pause');
+    }
+
+});
+
+// Navigation clavier
+document.addEventListener('keydown', function(e){
+    if(e.key === "ArrowRight") $carousel.slick('slickNext');
+    if(e.key === "ArrowLeft") $carousel.slick('slickPrev');
+});
+
+});
+</script>
+
+</body>
+</html>
