@@ -142,31 +142,8 @@
             return el( wp.element.Fragment, null, rightPanel, previewElements );
         },
 
-        save: function( props ) {
-            var slides = props.attributes.slides || [];
-            var autoplaySpeed = props.attributes.autoplaySpeed || 4;
-
-            var slideElements = slides.map( function( slide, idx ) {
-                return el( 'div', { key: idx, className: 'bnpp-slide', style: { backgroundImage: slide.background ? 'url(' + slide.background + ')' : 'none' } },
-                    el( 'div', { className: 'bnpp-overlay' },
-                        el( 'h2', null, slide.title ),
-                        el( 'p', null, slide.description ),
-                        el( 'a', { href: slide.link.url, className: 'bnpp-btn bnpp-btn-' + slide.link.class }, slide.link.text )
-                    )
-                );
-            } );
-
-            var navButtons = slides.map( function( slide, idx ) {
-                return el( 'button', { key: idx, role: 'tab', 'aria-selected': idx === 0 ? 'true' : 'false' }, slide.title );
-            } );
-
-            return el( 'section', { className: 'bnpp-carousel-wrapper', role: 'region', 'aria-roledescription': 'carousel' },
-                el( 'div', { className: 'bnpp-carousel' }, slideElements ),
-                el( 'div', { className: 'bnpp-carousel-nav', role: 'tablist' }, navButtons ),
-                el( 'button', { className: 'bnpp-pause-btn', 'aria-pressed': 'false' }, 'Pause' ),
-                el( 'div', { className: 'sr-only', 'aria-live': 'polite', id: 'bnpp-carousel-status' } ),
-                el( 'script', { type: 'application/json', className: 'bnpp-carousel-config' }, JSON.stringify( { autoplaySpeed: autoplaySpeed * 1000, totalSlides: slides.length } ) )
-            );
+        save: function() {
+            return null; // PHP will render via render_callback
         }
     } );
 
