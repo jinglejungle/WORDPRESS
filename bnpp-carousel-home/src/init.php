@@ -60,7 +60,6 @@ function bnpp_carousel_register_block() {
             'editor_style'    => 'bnpp-carousel-editor-style',
             'style'           => 'bnpp-carousel-frontend-style',
             'script'          => 'bnpp-carousel-frontend',
-            'render_callback' => 'bnpp_carousel_render_block',
             'attributes'      => array(
                 'slides' => array(
                     'type' => 'array',
@@ -130,72 +129,3 @@ function bnpp_carousel_register_block() {
     );
 }
 add_action( 'init', 'bnpp_carousel_register_block' );
-
-/**
- * Render the block on frontend
- */
-function bnpp_carousel_render_block( $attributes, $content ) {
-    $slides = isset( $attributes['slides'] ) ? $attributes['slides'] : array();
-    $autoplay_speed = isset( $attributes['autoplaySpeed'] ) ? intval( $attributes['autoplaySpeed'] ) : 4;
-
-    if ( empty( $slides ) ) {
-        return '';
-    }
-
-    $output = '<section class="bnpp-carousel-wrapper" role="region" aria-roledescription="carousel" aria-label="Services presentation">';
-    $output .= '<div class="bnpp-carousel">';
-
-    foreach ( $slides as $index => $slide ) {
-        $title = isset( $slide['title'] ) ? sanitize_text_field( $slide['title'] ) : '';
-        $description = isset( $slide['description'] ) ? sanitize_text_field( $slide['description'] ) : '';
-        $background = isset( $slide['background'] ) ? esc_url( $slide['background'] ) : '';
-        $link = isset( $slide['link'] ) ? $slide['link'] : array();
-        $link_text = isset( $link['text'] ) ? sanitize_text_field( $link['text'] ) : '';
-        $link_url = isset( $link['url'] ) ? esc_url( $link['url'] ) : '#';
-        $link_class = isset( $link['class'] ) ? sanitize_text_field( $link['class'] ) : 'primary';
-
-        $style = ! empty( $background ) ? ' style="background-image: url(' . $background . ');"' : '';
-        $output .= '<div class="bnpp-slide"' . $style . '>';
-        $output .= '<div class="bnpp-overlay">';
-        
-        if ( ! empty( $title ) ) {
-            $output .= '<h2>' . esc_html( $title ) . '</h2>';
-        }
-        
-        if ( ! empty( $description ) ) {
-            $output .= '<p>' . esc_html( $description ) . '</p>';
-        }
-        
-        if ( ! empty( $link_text ) && ! empty( $link_url ) ) {
-            $output .= '<a href="' . $link_url . '" class="bnpp-btn bnpp-btn-' . $link_class . '">' . esc_html( $link_text ) . '</a>';
-        }
-        
-        $output .= '</div></div>';
-    }
-
-    $output .= '</div>';
-
-    // Navigation buttons
-    $output .= '<div class="bnpp-carousel-nav" role="tablist">';
-    foreach ( $slides as $index => $slide ) {
-        $title = isset( $slide['title'] ) ? sanitize_text_field( $slide['title'] ) : 'Slide ' . ( $index + 1 );
-        $aria_selected = $index === 0 ? 'true' : 'false';
-        $output .= '<button role="tab" aria-selected="' . $aria_selected . '" data-slide="' . $index . '">' . esc_html( $title ) . '</button>';
-    }
-    $output .= '</div>';
-
-    // Pause button
-    $output .= '<button class="bnpp-pause-btn" aria-pressed="false">Pause</button>';
-
-    // Status for screen readers
-    $output .= '<div class="sr-only" aria-live="polite" id="bnpp-carousel-status"></div>';
-
-    // Config script
-    $output .= '<script type="application/json" class="bnpp-carousel-config">';
-    $output .= wp_json_encode( array( 'autoplaySpeed' => $autoplay_speed * 1000, 'totalSlides' => count( $slides ) ) );
-    $output .= '</script>';
-
-    $output .= '</section>';
-
-    return $output;
-}
