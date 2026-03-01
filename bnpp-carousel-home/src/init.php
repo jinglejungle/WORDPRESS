@@ -50,7 +50,20 @@ function bnpp_carousel_register_block() {
                 'slides' => array(
                     'type' => 'array',
                     'items' => array(
-                        'type' => 'object'
+                        'type' => 'object',
+                        'properties' => array(
+                            'title' => array( 'type' => 'string' ),
+                            'description' => array( 'type' => 'string' ),
+                            'background' => array( 'type' => 'string' ),
+                            'link' => array(
+                                'type' => 'object',
+                                'properties' => array(
+                                    'text' => array( 'type' => 'string' ),
+                                    'url' => array( 'type' => 'string' ),
+                                    'class' => array( 'type' => 'string' ),
+                                ),
+                            ),
+                        ),
                     ),
                     'default' => array(
                         array(
