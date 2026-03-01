@@ -1,27 +1,18 @@
 <?php
-/**
- * Block registration and management
- */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-/**
- * Register block scripts and styles
- */
 function bnpp_carousel_register_block_assets() {
-    
-    // Editor scripts
     wp_register_script(
         'bnpp-carousel-editor',
         BNPP_CAROUSEL_URL . 'assets/block.js',
-        array( 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-data' ),
+        array( 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-data', 'wp-block-editor' ),
         BNPP_CAROUSEL_VERSION,
         true
     );
 
-    // Editor styles
     wp_register_style(
         'bnpp-carousel-editor-style',
         BNPP_CAROUSEL_URL . 'assets/block.css',
@@ -29,7 +20,6 @@ function bnpp_carousel_register_block_assets() {
         BNPP_CAROUSEL_VERSION
     );
 
-    // Frontend styles
     wp_register_style(
         'bnpp-carousel-frontend-style',
         BNPP_CAROUSEL_URL . 'assets/block.css',
@@ -37,7 +27,6 @@ function bnpp_carousel_register_block_assets() {
         BNPP_CAROUSEL_VERSION
     );
 
-    // Frontend scripts
     wp_register_script(
         'bnpp-carousel-frontend',
         BNPP_CAROUSEL_URL . 'assets/block.js',
@@ -48,11 +37,7 @@ function bnpp_carousel_register_block_assets() {
 }
 add_action( 'init', 'bnpp_carousel_register_block_assets' );
 
-/**
- * Register the Gutenberg block
- */
 function bnpp_carousel_register_block() {
-    
     register_block_type(
         'bnpp/carousel-homepage',
         array(
@@ -65,20 +50,7 @@ function bnpp_carousel_register_block() {
                 'slides' => array(
                     'type' => 'array',
                     'items' => array(
-                        'type' => 'object',
-                        'properties' => array(
-                            'title' => array( 'type' => 'string' ),
-                            'description' => array( 'type' => 'string' ),
-                            'background' => array( 'type' => 'string' ),
-                            'link' => array(
-                                'type' => 'object',
-                                'properties' => array(
-                                    'text' => array( 'type' => 'string' ),
-                                    'url' => array( 'type' => 'string' ),
-                                    'class' => array( 'type' => 'string' ),
-                                ),
-                            ),
-                        ),
+                        'type' => 'object'
                     ),
                     'default' => array(
                         array(
@@ -121,20 +93,13 @@ function bnpp_carousel_register_block() {
                     'type'    => 'number',
                     'default' => 0,
                 ),
-                'currentSlide' => array(
-                    'type'    => 'number',
-                    'default' => 0,
-                ),
             ),
         )
     );
 }
 add_action( 'init', 'bnpp_carousel_register_block' );
 
-/**
- * Render block on frontend
- */
-function bnpp_carousel_render_block( $attributes, $content ) {
+function bnpp_carousel_render_block( $attributes ) {
     $slides = isset( $attributes['slides'] ) ? $attributes['slides'] : array();
     $autoplay_speed = isset( $attributes['autoplaySpeed'] ) ? intval( $attributes['autoplaySpeed'] ) : 4;
 
@@ -145,7 +110,7 @@ function bnpp_carousel_render_block( $attributes, $content ) {
     $output = '<section class="bnpp-carousel-wrapper" role="region" aria-roledescription="carousel" aria-label="Carousel">';
     $output .= '<div class="bnpp-carousel">';
 
-    foreach ( $slides as $index => $slide ) {
+    foreach ( $slides as $slide ) {
         $title = isset( $slide['title'] ) ? sanitize_text_field( $slide['title'] ) : '';
         $description = isset( $slide['description'] ) ? sanitize_text_field( $slide['description'] ) : '';
         $background = isset( $slide['background'] ) ? esc_url( $slide['background'] ) : '';

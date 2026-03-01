@@ -1,39 +1,30 @@
-/* ===== Styles Editor & Frontend ===== */
-
 .bnpp-carousel-wrapper {
     position: relative;
     overflow: hidden;
-    background: #f5f5f5;
 }
 
 .bnpp-carousel {
-    display: flex;
-    overflow: hidden;
     position: relative;
-}
-
-.bnpp-slide {
-    flex-shrink: 0;
     width: 100%;
     height: 75vh;
     min-height: 400px;
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
+}
+
+.bnpp-slide {
     position: absolute;
-    left: 0;
-    top: 0;
     width: 100%;
     height: 100%;
+    opacity: 0;
     transition: opacity 0.6s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
 }
 
 .bnpp-slide.active {
     opacity: 1;
-    position: relative;
 }
 
 .bnpp-overlay {
@@ -46,19 +37,16 @@
 }
 
 .bnpp-overlay h2 {
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
-    font-weight: 700;
+    font-size: 2.5em;
     margin: 0 0 15px 0;
-    line-height: 1.3;
+    font-weight: 700;
 }
 
 .bnpp-overlay p {
-    font-size: clamp(1rem, 2vw, 1.2rem);
+    font-size: 1.1em;
     margin: 15px 0;
     line-height: 1.6;
 }
-
-/* ===== Button Styles ===== */
 
 .bnpp-btn {
     display: inline-block;
@@ -70,44 +58,26 @@
     transition: all 0.3s ease;
     cursor: pointer;
     border: 2px solid transparent;
-    font-size: 1rem;
 }
 
-/* Primary */
 .bnpp-btn-primary {
     background-color: #007bff;
     color: #fff;
-    border-color: #007bff;
 }
 
 .bnpp-btn-primary:hover {
     background-color: #0056b3;
-    border-color: #0056b3;
 }
 
-.bnpp-btn-primary:focus {
-    outline: 3px solid #FFD700;
-    outline-offset: 3px;
-}
-
-/* Secondary */
 .bnpp-btn-secondary {
     background-color: #6c757d;
     color: #fff;
-    border-color: #6c757d;
 }
 
 .bnpp-btn-secondary:hover {
     background-color: #545b62;
-    border-color: #545b62;
 }
 
-.bnpp-btn-secondary:focus {
-    outline: 3px solid #FFD700;
-    outline-offset: 3px;
-}
-
-/* Tertiary */
 .bnpp-btn-tertiary {
     background-color: transparent;
     color: #fff;
@@ -115,58 +85,37 @@
 }
 
 .bnpp-btn-tertiary:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: #fff;
+    background-color: rgba(255,255,255,0.1);
 }
 
-.bnpp-btn-tertiary:focus {
-    outline: 3px solid #FFD700;
-    outline-offset: 3px;
-}
-
-/* Ghost */
 .bnpp-btn-ghost {
     background-color: transparent;
     color: #fff;
-    border-color: transparent;
     text-decoration: underline;
 }
-
-.bnpp-btn-ghost:hover {
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.bnpp-btn-ghost:focus {
-    outline: 3px solid #FFD700;
-    outline-offset: 3px;
-}
-
-/* ===== Navigation ===== */
 
 .bnpp-carousel-nav {
     position: absolute;
     bottom: 20px;
-    left: 0;
-    right: 0;
-    width: 100%;
-    text-align: center;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 10;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .bnpp-carousel-nav button {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0,0,0,0.5);
     border: 2px solid #fff;
     color: #fff;
     padding: 8px 14px;
-    margin: 0 6px;
     cursor: pointer;
     font-weight: bold;
-    transition: all 0.3s ease;
     border-radius: 4px;
-}
-
-.bnpp-carousel-nav button:hover {
-    background: rgba(0, 0, 0, 0.7);
+    transition: all 0.3s ease;
+    font-size: 0.85em;
 }
 
 .bnpp-carousel-nav button[aria-selected="true"] {
@@ -174,38 +123,24 @@
     color: #000;
 }
 
-.bnpp-carousel-nav button:focus {
-    outline: 3px solid #FFD700;
-    outline-offset: 3px;
-}
-
-/* ===== Pause Button ===== */
-
 .bnpp-pause-btn {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0,0,0,0.6);
     color: #fff;
     border: 2px solid #fff;
-    padding: 6px 12px;
+    padding: 8px 16px;
     cursor: pointer;
     font-weight: bold;
     border-radius: 4px;
-    transition: all 0.3s ease;
     z-index: 15;
+    transition: all 0.3s ease;
 }
 
 .bnpp-pause-btn:hover {
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0,0,0,0.8);
 }
-
-.bnpp-pause-btn:focus {
-    outline: 3px solid #FFD700;
-    outline-offset: 3px;
-}
-
-/* ===== Screen Reader Only ===== */
 
 .sr-only {
     position: absolute;
@@ -213,185 +148,4 @@
     width: 1px;
     height: 1px;
     overflow: hidden;
-}
-
-/* ===== Responsive ===== */
-
-@media (max-width: 768px) {
-    .bnpp-overlay {
-        padding: 20px;
-    }
-
-    .bnpp-btn {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-    }
-
-    .bnpp-pause-btn {
-        padding: 5px 10px;
-        font-size: 0.9rem;
-    }
-
-    .bnpp-carousel-nav button {
-        padding: 6px 10px;
-        margin: 0 4px;
-        font-size: 0.85rem;
-    }
-}
-
-/* ===== Editor Specific Styles ===== */
-
-.wp-block-bnpp-carousel-homepage {
-    margin-bottom: 20px;
-}
-
-.bnpp-carousel-editor-slide {
-    background: #f0f0f0;
-    border: 1px solid #ddd;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 4px;
-}
-
-.bnpp-carousel-editor-slide-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 10px;
-}
-
-.bnpp-carousel-editor-slide-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-}
-
-.bnpp-carousel-editor-controls {
-    display: grid;
-    gap: 15px;
-}
-
-.bnpp-carousel-editor-controls > div {
-    display: grid;
-    gap: 5px;
-}
-
-.bnpp-carousel-editor-controls label {
-    font-weight: bold;
-    font-size: 0.9rem;
-    color: #333;
-}
-
-.bnpp-carousel-editor-controls input,
-.bnpp-carousel-editor-controls textarea {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    font-family: inherit;
-}
-
-.bnpp-carousel-editor-controls textarea {
-    min-height: 60px;
-    resize: vertical;
-}
-
-.bnpp-carousel-editor-controls input:focus,
-.bnpp-carousel-editor-controls textarea:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-}
-
-.bnpp-link-editor {
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 4px;
-    border: 1px solid #e0e0e0;
-}
-
-.bnpp-link-editor h4 {
-    margin: 0 0 10px 0;
-    font-size: 0.95rem;
-}
-
-.bnpp-style-buttons {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.bnpp-style-btn {
-    padding: 8px 16px;
-    border: 2px solid #ccc;
-    background: #fff;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    font-weight: bold;
-    transition: all 0.2s ease;
-}
-
-.bnpp-style-btn.active {
-    border-color: #007bff;
-    background: #007bff;
-    color: #fff;
-}
-
-.bnpp-style-btn:hover {
-    border-color: #007bff;
-}
-
-.bnpp-carousel-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.bnpp-carousel-actions button {
-    padding: 8px 16px;
-    border: 1px solid #ccc;
-    background: #fff;
-    cursor: pointer;
-    border-radius: 4px;
-    font-weight: bold;
-    transition: all 0.2s ease;
-}
-
-.bnpp-carousel-actions button:hover {
-    background: #f5f5f5;
-    border-color: #999;
-}
-
-.bnpp-carousel-actions button.delete {
-    color: #d32f2f;
-    border-color: #d32f2f;
-}
-
-.bnpp-carousel-actions button.delete:hover {
-    background: #ffebee;
-}
-
-.bnpp-add-slide-btn {
-    width: 100%;
-    padding: 12px;
-    background: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background 0.2s ease;
-}
-
-.bnpp-add-slide-btn:hover {
-    background: #0056b3;
-}
-
-.bnpp-add-slide-btn:focus {
-    outline: 3px solid #FFD700;
-    outline-offset: 3px;
 }

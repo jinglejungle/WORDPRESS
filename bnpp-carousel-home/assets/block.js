@@ -1,18 +1,13 @@
-/**
- * BNPP Carousel Block
- * save() generates the actual HTML that gets stored
- */
+var wpData = window.wp && window.wp.data;
+var wpBlocks = window.wp && window.wp.blocks;
+var wpBlocksEditor = window.wp && window.wp.blockEditor;
+var wpComponents = window.wp && window.wp.components;
+var wpElement = window.wp && window.wp.element;
 
-( function() {
-    if ( ! wp.blocks || ! wp.blockEditor || ! wp.element ) return;
-
-    var el = wp.element.createElement;
-    var registerBlockType = wp.blocks.registerBlockType;
-    var InspectorControls = wp.blockEditor.InspectorControls;
-    var MediaUpload = wp.blockEditor.MediaUpload;
-    var PanelBody = wp.components.PanelBody;
-
-    registerBlockType( 'bnpp/carousel-homepage', {
+if ( ! wpBlocks || ! wpBlocksEditor ) {
+    console.log( 'WordPress APIs not ready' );
+} else {
+    wpBlocks.registerBlockType( 'bnpp/carousel-homepage', {
         title: 'Carousel Homepage',
         icon: 'slides',
         category: 'media',
@@ -22,10 +17,9 @@
             var setAttributes = props.setAttributes;
             var slides = attributes.slides || [];
             var autoplaySpeed = attributes.autoplaySpeed || 4;
-            var currentSlide = attributes.currentSlide || 0;
+            var currentSlideIndex = attributes.currentSlideIndex || 0;
 
-            // Init slides if empty
-            if ( slides.length === 0 ) {
+            if ( ! slides.length ) {
                 setAttributes( {
                     slides: [
                         { title: 'Slide 1', description: 'Description 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
@@ -33,7 +27,7 @@
                         { title: 'Slide 3', description: 'Description 3', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } }
                     ]
                 } );
-                return el( 'div', null, 'Initializing...' );
+                return 'Initializing...';
             }
 
             var updateSlide = function( idx, key, value ) {
@@ -46,115 +40,95 @@
                 setAttributes( { slides: newSlides } );
             };
 
-            var slide = slides[ currentSlide ];
+            var slide = slides[ currentSlideIndex ];
 
-            // Preview
-            var previewElements = [];
-            previewElements.push(
-                el( 'div', { key: 'carousel', style: { position: 'relative', width: '100%', height: '400px', background: '#000', overflow: 'hidden', borderRadius: '4px', marginBottom: '20px' } },
-                    // Slide
-                    el( 'div', { style: { width: '100%', height: '100%', backgroundImage: slide.background ? 'url(' + slide.background + ')' : 'none', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
-                        el( 'div', { style: { backgroundColor: 'rgba(0,0,0,0.65)', color: '#fff', padding: '30px', textAlign: 'center', maxWidth: '600px', borderRadius: '8px' } },
-                            el( 'h2', { style: { margin: '0 0 15px 0', fontSize: '2em', fontWeight: 'bold' } }, slide.title ),
-                            el( 'p', { style: { margin: '15px 0' } }, slide.description ),
-                            el( 'a', { href: slide.link.url, style: { display: 'inline-block', marginTop: '15px', padding: '12px 28px', backgroundColor: '#007bff', color: '#fff', borderRadius: '4px', fontWeight: 'bold', textDecoration: 'none' } }, slide.link.text )
-                        )
-                    ),
-                    // Nav buttons
-                    el( 'div', { style: { position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '6px' } },
-                        slides.map( function( s, i ) {
-                            return el( 'button', { key: i, onClick: function() { setAttributes( { currentSlide: i } ); }, style: { background: i === currentSlide ? '#fff' : 'rgba(0,0,0,0.5)', color: i === currentSlide ? '#000' : '#fff', border: '2px solid #fff', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85em' } }, s.title );
-                        } )
+            // Create elements using WordPress API
+            var preview = wpElement.createElement( 'div', { 
+                style: { position: 'relative', width: '100%', height: '400px', background: '#000', overflow: 'hidden', borderRadius: '4px', marginBottom: '20px' } 
+            },
+                wpElement.createElement( 'div', { 
+                    style: { width: '100%', height: '100%', backgroundImage: slide.background ? 'url(' + slide.background + ')' : 'none', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' } 
+                },
+                    wpElement.createElement( 'div', { style: { backgroundColor: 'rgba(0,0,0,0.65)', color: '#fff', padding: '30px', textAlign: 'center', maxWidth: '600px', borderRadius: '8px' } },
+                        wpElement.createElement( 'h2', { style: { margin: '0 0 15px 0', fontSize: '2em', fontWeight: 'bold' } }, slide.title ),
+                        wpElement.createElement( 'p', { style: { margin: '15px 0' } }, slide.description ),
+                        wpElement.createElement( 'a', { href: slide.link.url, style: { display: 'inline-block', marginTop: '15px', padding: '12px 28px', backgroundColor: '#007bff', color: '#fff', borderRadius: '4px', fontWeight: 'bold', textDecoration: 'none' } }, slide.link.text )
                     )
+                ),
+                wpElement.createElement( 'div', { style: { position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '6px' } },
+                    slides.map( function( s, i ) {
+                        return wpElement.createElement( 'button', { key: i, onClick: function() { setAttributes( { currentSlideIndex: i } ); }, style: { background: i === currentSlideIndex ? '#fff' : 'rgba(0,0,0,0.5)', color: i === currentSlideIndex ? '#000' : '#fff', border: '2px solid #fff', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' } }, s.title );
+                    } )
                 )
             );
 
-            // Slide selectors
-            var selectorsPanel = el( 'div', { style: { display: 'flex', gap: '10px', marginBottom: '20px' } },
+            var selectors = wpElement.createElement( 'div', { style: { display: 'flex', gap: '10px', marginBottom: '20px' } },
                 slides.map( function( s, i ) {
-                    return el( 'button', { key: i, onClick: function() { setAttributes( { currentSlide: i } ); }, style: { flex: 1, padding: '12px', background: i === currentSlide ? '#007bff' : '#f0f0f0', color: i === currentSlide ? '#fff' : '#000', border: i === currentSlide ? '2px solid #007bff' : '2px solid #ccc', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' } }, ( i + 1 ) );
+                    return wpElement.createElement( 'button', { key: i, onClick: function() { setAttributes( { currentSlideIndex: i } ); }, style: { flex: 1, padding: '12px', background: i === currentSlideIndex ? '#007bff' : '#f0f0f0', color: i === currentSlideIndex ? '#fff' : '#000', border: '2px solid ' + ( i === currentSlideIndex ? '#007bff' : '#ccc' ), borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' } }, String( i + 1 ) );
                 } )
             );
 
-            // Settings
-            var settingsElements = [];
-            settingsElements.push( el( 'h3', { style: { margin: '0 0 15px 0' } }, 'Slide ' + ( currentSlide + 1 ) ) );
+            var settingsContent = [
+                wpElement.createElement( 'h3', { key: 'title-h', style: { margin: '0 0 15px 0' } }, 'Slide ' + ( currentSlideIndex + 1 ) + ' Settings' ),
+                
+                wpElement.createElement( 'div', { key: 'title-div', style: { marginBottom: '15px' } },
+                    wpElement.createElement( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Title' ),
+                    wpElement.createElement( 'input', { type: 'text', value: slide.title, onInput: function( e ) { updateSlide( currentSlideIndex, 'title', e.target.value ); }, style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' } } )
+                ),
 
-            // Title
-            settingsElements.push( el( 'div', { style: { marginBottom: '15px' } },
-                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Title' ),
-                el( 'input', { type: 'text', value: slide.title, onInput: function( e ) { updateSlide( currentSlide, 'title', e.target.value ); }, style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' } } )
-            ) );
+                wpElement.createElement( 'div', { key: 'desc-div', style: { marginBottom: '15px' } },
+                    wpElement.createElement( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Description' ),
+                    wpElement.createElement( 'textarea', { value: slide.description, onInput: function( e ) { updateSlide( currentSlideIndex, 'description', e.target.value ); }, style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', minHeight: '80px', boxSizing: 'border-box', fontFamily: 'inherit' } } )
+                ),
 
-            // Description
-            settingsElements.push( el( 'div', { style: { marginBottom: '15px' } },
-                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Description' ),
-                el( 'textarea', { value: slide.description, onInput: function( e ) { updateSlide( currentSlide, 'description', e.target.value ); }, style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', minHeight: '80px', boxSizing: 'border-box', fontFamily: 'inherit' } } )
-            ) );
+                wpElement.createElement( 'div', { key: 'bg-div', style: { marginBottom: '15px' } },
+                    wpElement.createElement( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Background Image URL' ),
+                    wpElement.createElement( 'input', { type: 'url', value: slide.background, onInput: function( e ) { updateSlide( currentSlideIndex, 'background', e.target.value ); }, placeholder: 'https://example.com/image.jpg', style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' } } )
+                ),
 
-            // Background
-            settingsElements.push( el( 'div', { style: { marginBottom: '15px' } },
-                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Background Image' ),
-                el( MediaUpload, { onSelect: function( media ) { updateSlide( currentSlide, 'background', media.url ); }, allowedTypes: [ 'image' ], render: function( obj ) {
-                    return el( 'div', null,
-                        el( 'button', { onClick: obj.open, style: { width: '100%', padding: '10px', background: '#f0f0f0', border: '2px solid #ccc', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' } }, slide.background ? 'Change Image' : 'Select Image' ),
-                        slide.background ? el( 'div', { style: { marginTop: '10px' } },
-                            el( 'img', { src: slide.background, style: { maxWidth: '100%', height: 'auto', borderRadius: '4px' } } ),
-                            el( 'button', { onClick: function() { updateSlide( currentSlide, 'background', '' ); }, style: { width: '100%', marginTop: '10px', padding: '8px', background: '#d32f2f', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' } }, 'Remove Image' )
-                        ) : null
-                    );
-                } } )
-            ) );
+                wpElement.createElement( 'div', { key: 'text-div', style: { marginBottom: '15px' } },
+                    wpElement.createElement( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Button Text' ),
+                    wpElement.createElement( 'input', { type: 'text', value: slide.link.text, onInput: function( e ) { updateSlide( currentSlideIndex, 'link', { text: e.target.value } ); }, style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' } } )
+                ),
 
-            // Button text
-            settingsElements.push( el( 'div', { style: { marginBottom: '15px' } },
-                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Button Text' ),
-                el( 'input', { type: 'text', value: slide.link.text, onInput: function( e ) { updateSlide( currentSlide, 'link', { text: e.target.value } ); }, style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' } } )
-            ) );
+                wpElement.createElement( 'div', { key: 'url-div', style: { marginBottom: '15px' } },
+                    wpElement.createElement( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Button URL' ),
+                    wpElement.createElement( 'input', { type: 'url', value: slide.link.url, onInput: function( e ) { updateSlide( currentSlideIndex, 'link', { url: e.target.value } ); }, style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' } } )
+                ),
 
-            // Button URL
-            settingsElements.push( el( 'div', { style: { marginBottom: '15px' } },
-                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Button URL' ),
-                el( 'input', { type: 'url', value: slide.link.url, onInput: function( e ) { updateSlide( currentSlide, 'link', { url: e.target.value } ); }, style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' } } )
-            ) );
+                wpElement.createElement( 'div', { key: 'style-div', style: { marginBottom: '15px' } },
+                    wpElement.createElement( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Button Style' ),
+                    wpElement.createElement( 'div', { style: { display: 'flex', gap: '8px' } },
+                        [ 'primary', 'secondary', 'tertiary', 'ghost' ].map( function( style ) {
+                            return wpElement.createElement( 'button', { key: style, onClick: function() { updateSlide( currentSlideIndex, 'link', { class: style } ); }, style: { flex: 1, padding: '8px', border: '2px solid ' + ( slide.link.class === style ? '#007bff' : '#ccc' ), background: slide.link.class === style ? '#007bff' : '#fff', color: slide.link.class === style ? '#fff' : '#000', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' } }, style.charAt( 0 ).toUpperCase() + style.slice( 1 ) );
+                        } )
+                    )
+                ),
 
-            // Button style
-            settingsElements.push( el( 'div', { style: { marginBottom: '15px' } },
-                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Button Style' ),
-                el( 'div', { style: { display: 'flex', gap: '8px' } },
-                    [ 'primary', 'secondary', 'tertiary', 'ghost' ].map( function( style ) {
-                        return el( 'button', { key: style, onClick: function() { updateSlide( currentSlide, 'link', { class: style } ); }, style: { flex: 1, padding: '8px', border: slide.link.class === style ? '2px solid #007bff' : '2px solid #ccc', background: slide.link.class === style ? '#007bff' : '#fff', color: slide.link.class === style ? '#fff' : '#000', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9em' } }, style.charAt( 0 ).toUpperCase() + style.slice( 1 ) );
-                    } )
+                wpElement.createElement( 'div', { key: 'duration-div', style: { marginBottom: '15px', paddingTop: '15px', borderTop: '1px solid #ccc' } },
+                    wpElement.createElement( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Duration (seconds)' ),
+                    wpElement.createElement( 'input', { type: 'number', value: autoplaySpeed, onInput: function( e ) { setAttributes( { autoplaySpeed: parseInt( e.target.value ) || 4 } ); }, min: 1, max: 60, style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' } } )
                 )
-            ) );
+            ];
 
-            // Duration
-            settingsElements.push( el( 'div', { style: { marginBottom: '15px', paddingTop: '15px', borderTop: '1px solid #ccc' } },
-                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Duration (seconds)' ),
-                el( 'input', { type: 'number', value: autoplaySpeed, onInput: function( e ) { setAttributes( { autoplaySpeed: parseInt( e.target.value ) || 4 } ); }, min: 1, max: 60, style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' } } )
-            ) );
-
-            var rightPanel = el( InspectorControls, null,
-                el( PanelBody, { title: 'Slide Selection', initialOpen: true }, selectorsPanel ),
-                el( PanelBody, { title: 'Slide Settings', initialOpen: true }, settingsElements )
+            var rightPanel = wpElement.createElement( wpBlocksEditor.InspectorControls, null,
+                wpElement.createElement( wpComponents.PanelBody, { title: 'Slide Selection', initialOpen: true }, selectors ),
+                wpElement.createElement( wpComponents.PanelBody, { title: 'Slide Settings', initialOpen: true }, settingsContent )
             );
 
-            return el( wp.element.Fragment, null, rightPanel, previewElements );
+            return wpElement.createElement( wpElement.Fragment, null, rightPanel, preview );
         },
 
         save: function() {
-            return null; // PHP will render via render_callback
+            return null;
         }
     } );
-
-} )();
+}
 
 // Frontend
 document.addEventListener( 'DOMContentLoaded', function() {
     document.querySelectorAll( '.bnpp-carousel-wrapper' ).forEach( function( wrapper ) {
         var carousel = wrapper.querySelector( '.bnpp-carousel' );
-        if ( ! carousel ) return;
-
         var slides = carousel.querySelectorAll( '.bnpp-slide' );
         var navButtons = wrapper.querySelectorAll( '.bnpp-carousel-nav button' );
         var pauseBtn = wrapper.querySelector( '.bnpp-pause-btn' );
