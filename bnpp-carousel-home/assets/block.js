@@ -1,12 +1,12 @@
-var wpData = window.wp && window.wp.data;
 var wpBlocks = window.wp && window.wp.blocks;
 var wpBlocksEditor = window.wp && window.wp.blockEditor;
 var wpComponents = window.wp && window.wp.components;
 var wpElement = window.wp && window.wp.element;
 
-if ( ! wpBlocks || ! wpBlocksEditor ) {
-    console.log( 'WordPress APIs not ready' );
-} else {
+if ( wpBlocks && wpBlocksEditor && wpElement ) {
+    var el = wpElement.createElement;
+    var Fragment = wpElement.Fragment;
+
     wpBlocks.registerBlockType( 'bnpp/carousel-homepage', {
         title: 'Carousel Homepage',
         icon: 'slides',
@@ -34,11 +34,11 @@ if ( ! wpBlocks || ! wpBlocksEditor ) {
         edit: function( props ) {
             var attributes = props.attributes;
             var setAttributes = props.setAttributes;
-            var slides = attributes.slides || [];
-            var autoplaySpeed = attributes.autoplaySpeed || 4;
-            var currentSlideIndex = attributes.currentSlideIndex || 0;
+            var slides = attributes.slides;
+            var autoplaySpeed = attributes.autoplaySpeed;
+            var currentSlideIndex = attributes.currentSlideIndex;
 
-            if ( ! slides.length ) {
+            if ( ! slides || ! slides.length ) {
                 setAttributes( {
                     slides: [
                         { title: 'Slide 1', description: 'Description 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
@@ -46,7 +46,7 @@ if ( ! wpBlocks || ! wpBlocksEditor ) {
                         { title: 'Slide 3', description: 'Description 3', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } }
                     ]
                 } );
-                return 'Initializing...';
+                return 'Loading...';
             }
 
             var updateSlide = function( idx, key, value ) {
@@ -60,13 +60,8 @@ if ( ! wpBlocks || ! wpBlocksEditor ) {
             };
 
             var slide = slides[ currentSlideIndex ];
-            var el = wp.element.createElement;
-            var Fragment = wp.element.Fragment;
-            var InspectorControls = wp.blockEditor.InspectorControls;
-            var MediaUpload = wp.blockEditor.MediaUpload;
-            var PanelBody = wp.components.PanelBody;
 
-            // Slide selectors
+            // Slide selector buttons
             var slideSelectorButtons = slides.map( function( s, i ) {
                 return el( 'button', {
                     key: i,
@@ -84,14 +79,13 @@ if ( ! wpBlocks || ! wpBlocksEditor ) {
                 }, String( i + 1 ) );
             } );
 
-            var slideSelectorPanel = el( PanelBody, { title: 'Slide Selection', initialOpen: true },
+            var slideSelectorPanel = el( wpComponents.PanelBody, { title: 'Slide Selection', initialOpen: true },
                 el( 'div', { style: { display: 'flex', gap: '10px' } }, slideSelectorButtons )
             );
 
-            // Settings inputs
+            // Settings content
             var settingsContent = [];
 
-            // Title
             settingsContent.push( el( 'div', { key: 'title', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Title' ),
                 el( 'input', {
@@ -102,7 +96,6 @@ if ( ! wpBlocks || ! wpBlocksEditor ) {
                 } )
             ) );
 
-            // Description
             settingsContent.push( el( 'div', { key: 'desc', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Description' ),
                 el( 'textarea', {
@@ -112,10 +105,9 @@ if ( ! wpBlocks || ! wpBlocksEditor ) {
                 } )
             ) );
 
-            // Background image with MediaUpload
             settingsContent.push( el( 'div', { key: 'bg', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Background Image' ),
-                el( MediaUpload, {
+                el( wpBlocksEditor.MediaUpload, {
                     onSelect: function( media ) { updateSlide( currentSlideIndex, 'background', media.url ); },
                     allowedTypes: [ 'image' ],
                     render: function( obj ) {
@@ -136,7 +128,6 @@ if ( ! wpBlocks || ! wpBlocksEditor ) {
                 } )
             ) );
 
-            // Button text
             settingsContent.push( el( 'div', { key: 'btn-text', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Button Text' ),
                 el( 'input', {
@@ -147,7 +138,6 @@ if ( ! wpBlocks || ! wpBlocksEditor ) {
                 } )
             ) );
 
-            // Button URL
             settingsContent.push( el( 'div', { key: 'btn-url', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Button URL' ),
                 el( 'input', {
@@ -158,7 +148,6 @@ if ( ! wpBlocks || ! wpBlocksEditor ) {
                 } )
             ) );
 
-            // Button style
             settingsContent.push( el( 'div', { key: 'btn-style', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Button Style' ),
                 el( 'div', { style: { display: 'flex', gap: '8px' } },
@@ -181,7 +170,6 @@ if ( ! wpBlocks || ! wpBlocksEditor ) {
                 )
             ) );
 
-            // Duration
             settingsContent.push( el( 'div', { key: 'duration', style: { marginBottom: '15px', paddingTop: '15px', borderTop: '1px solid #ccc' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Duration (seconds)' ),
                 el( 'input', {
@@ -194,9 +182,9 @@ if ( ! wpBlocks || ! wpBlocksEditor ) {
                 } )
             ) );
 
-            var settingsPanel = el( PanelBody, { title: 'Slide Settings', initialOpen: true }, settingsContent );
+            var settingsPanel = el( wpComponents.PanelBody, { title: 'Slide Settings', initialOpen: true }, settingsContent );
 
-            var rightPanel = el( InspectorControls, null, slideSelectorPanel, settingsPanel );
+            var rightPanel = el( wpBlocksEditor.InspectorControls, null, slideSelectorPanel, settingsPanel );
 
             // Preview
             var previewNavButtons = slides.map( function( s, i ) {
