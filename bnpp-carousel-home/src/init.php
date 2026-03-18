@@ -135,7 +135,6 @@ function bnpp_carousel_render_block( $attributes ) {
         $style = ! empty( $background ) ? ' style="background-image: url(' . $background . ');"' : '';
         $output .= '<div class="bnpp-slide"' . $style . '>';
         $output .= '<div class="bnpp-overlay">';
-        $output .= '<h2>' . esc_html( $title ) . '</h2>';
         $output .= '<p>' . esc_html( $description ) . '</p>';
         $output .= '<a href="' . $link_url . '" class="bnpp-button ' . $link_class . '">' . esc_html( $link_text ) . '</a>';
         $output .= '</div></div>';
