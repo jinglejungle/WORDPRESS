@@ -263,7 +263,6 @@ document.addEventListener( 'DOMContentLoaded', function() {
         };
 
         var next = function() { showSlide( ( currentSlide + 1 ) % slides.length ); };
-        var prev = function() { showSlide( ( currentSlide - 1 + slides.length ) % slides.length ); };
         
         var startAutoplay = function() {
             if ( autoplayInterval ) clearInterval( autoplayInterval );
@@ -279,7 +278,7 @@ document.addEventListener( 'DOMContentLoaded', function() {
             if ( pauseBtn ) pauseBtn.textContent = 'Play';
         };
 
-        // Init
+        // Init - show first slide and start
         showSlide( 0 );
         startAutoplay();
 
@@ -293,7 +292,8 @@ document.addEventListener( 'DOMContentLoaded', function() {
 
         // Pause/Play button
         if ( pauseBtn ) {
-            pauseBtn.addEventListener( 'click', function() { 
+            pauseBtn.addEventListener( 'click', function( e ) { 
+                e.preventDefault();
                 if ( isPlaying ) {
                     stopAutoplay();
                 } else {
@@ -302,20 +302,14 @@ document.addEventListener( 'DOMContentLoaded', function() {
             } );
         }
 
-        // Keyboard
-        document.addEventListener( 'keydown', function( e ) { 
-            if ( e.key === 'ArrowRight' ) { next(); startAutoplay(); }
-            if ( e.key === 'ArrowLeft' ) { prev(); startAutoplay(); }
-        } );
-
-        // Hover - pause on enter, resume on leave
+        // Hover - pause on enter
         carousel.addEventListener( 'mouseenter', function() { 
-            if ( isPlaying ) stopAutoplay(); 
+            stopAutoplay();
         } );
 
+        // Hover - resume on leave only if it was playing before
         carousel.addEventListener( 'mouseleave', function() { 
-            if ( ! isPlaying ) return;
-            startAutoplay(); 
+            startAutoplay();
         } );
     } );
 } );
