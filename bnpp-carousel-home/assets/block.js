@@ -254,7 +254,7 @@ document.addEventListener( 'DOMContentLoaded', function() {
 
         var currentSlide = 0;
         var isPlaying = true;
-        var autoplayInterval;
+        var autoplayInterval = null;
 
         var showSlide = function( idx ) {
             slides.forEach( function( s, i ) { s.classList.toggle( 'active', i === idx ); } );
@@ -264,16 +264,58 @@ document.addEventListener( 'DOMContentLoaded', function() {
 
         var next = function() { showSlide( ( currentSlide + 1 ) % slides.length ); };
         var prev = function() { showSlide( ( currentSlide - 1 + slides.length ) % slides.length ); };
-        var start = function() { autoplayInterval = setInterval( next, config.autoplaySpeed ); isPlaying = true; };
-        var stop = function() { clearInterval( autoplayInterval ); isPlaying = false; };
+        
+        var startAutoplay = function() {
+            if ( autoplayInterval ) clearInterval( autoplayInterval );
+            autoplayInterval = setInterval( next, config.autoplaySpeed );
+            isPlaying = true;
+            if ( pauseBtn ) pauseBtn.textContent = 'Pause';
+        };
 
+        var stopAutoplay = function() {
+            if ( autoplayInterval ) clearInterval( autoplayInterval );
+            autoplayInterval = null;
+            isPlaying = false;
+            if ( pauseBtn ) pauseBtn.textContent = 'Play';
+        };
+
+        // Init
         showSlide( 0 );
-        start();
+        startAutoplay();
 
-        navButtons.forEach( function( btn, idx ) { btn.addEventListener( 'click', function() { showSlide( idx ); } ); } );
-        if ( pauseBtn ) pauseBtn.addEventListener( 'click', function() { isPlaying ? stop() : start(); pauseBtn.textContent = isPlaying ? 'Pause' : 'Play'; } );
-        document.addEventListener( 'keydown', function( e ) { if ( e.key === 'ArrowRight' ) next(); if ( e.key === 'ArrowLeft' ) prev(); } );
-        carousel.addEventListener( 'mouseenter', function() { if ( isPlaying ) stop(); } );
-        carousel.addEventListener( 'mouseleave', function() { if ( isPlaying ) start(); } );
+        // Navigation buttons
+        navButtons.forEach( function( btn, idx ) { 
+            btn.addEventListener( 'click', function() { 
+                showSlide( idx );
+                startAutoplay();
+            } ); 
+        } );
+
+        // Pause/Play button
+        if ( pauseBtn ) {
+            pauseBtn.addEventListener( 'click', function() { 
+                if ( isPlaying ) {
+                    stopAutoplay();
+                } else {
+                    startAutoplay();
+                }
+            } );
+        }
+
+        // Keyboard
+        document.addEventListener( 'keydown', function( e ) { 
+            if ( e.key === 'ArrowRight' ) { next(); startAutoplay(); }
+            if ( e.key === 'ArrowLeft' ) { prev(); startAutoplay(); }
+        } );
+
+        // Hover - pause on enter, resume on leave
+        carousel.addEventListener( 'mouseenter', function() { 
+            if ( isPlaying ) stopAutoplay(); 
+        } );
+
+        carousel.addEventListener( 'mouseleave', function() { 
+            if ( ! isPlaying ) return;
+            startAutoplay(); 
+        } );
     } );
 } );
