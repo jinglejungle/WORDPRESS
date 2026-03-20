@@ -138,7 +138,7 @@ function bnpp_carousel_render_block( $attributes ) {
     $output .= '</div>';
 
     $output .= '<div class="bnpp-carousel-nav" role="tablist">';
-    $output .= '<div style="position: absolute; left: 50%; transform: translateX(-50%); width: 80%; display: flex; gap: 6px; flex-wrap: nowrap; justify-content: flex-start;">';
+    $output .= '<div style="width: 80%; margin: 0 auto; display: flex; gap: 6px; flex-wrap: nowrap; justify-content: flex-start;">';
     foreach ( $slides as $index => $slide ) {
         $title = isset( $slide['title'] ) ? sanitize_text_field( $slide['title'] ) : 'Slide ' . ( $index + 1 );
         $aria_selected = $index === 0 ? 'true' : 'false';
