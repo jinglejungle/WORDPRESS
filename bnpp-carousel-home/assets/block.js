@@ -16,9 +16,9 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             slides: {
                 type: 'array',
                 default: [
-                    { title: 'Slide 1', description: 'Description 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
-                    { title: 'Slide 2', description: 'Description 2', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
-                    { title: 'Slide 3', description: 'Description 3', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } }
+                    { title: 'Slide 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
+                    { title: 'Slide 2', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
+                    { title: 'Slide 3', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } }
                 ]
             },
             autoplaySpeed: {
@@ -41,9 +41,9 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             if ( ! slides || ! slides.length ) {
                 setAttributes( {
                     slides: [
-                        { title: 'Slide 1', description: 'Description 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
-                        { title: 'Slide 2', description: 'Description 2', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
-                        { title: 'Slide 3', description: 'Description 3', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } }
+                        { title: 'Slide 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
+                        { title: 'Slide 2', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
+                        { title: 'Slide 3', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } }
                     ]
                 } );
                 return 'Loading...';
@@ -96,14 +96,6 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 } )
             ) );
 
-            settingsContent.push( el( 'div', { key: 'desc', style: { marginBottom: '15px' } },
-                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Description' ),
-                el( 'textarea', {
-                    value: slide.description,
-                    onInput: function( e ) { updateSlide( currentSlideIndex, 'description', e.target.value ); },
-                    style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', minHeight: '80px', boxSizing: 'border-box', fontFamily: 'inherit' }
-                } )
-            ) );
 
             settingsContent.push( el( 'div', { key: 'bg', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Background Image' ),
@@ -247,7 +239,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                                 fontStyle: 'normal',
                                 fontWeight: '400'
                             } 
-                        }, slide.description ),
+                        }, slide.title ),
                         el( 'a', { href: slide.link.url, className: 'bnpp-button ' + slide.link.class }, slide.link.text )
                     )
                 ),

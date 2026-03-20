@@ -53,7 +53,6 @@ function bnpp_carousel_register_block() {
                         'type' => 'object',
                         'properties' => array(
                             'title' => array( 'type' => 'string' ),
-                            'description' => array( 'type' => 'string' ),
                             'background' => array( 'type' => 'string' ),
                             'link' => array(
                                 'type' => 'object',
@@ -68,7 +67,6 @@ function bnpp_carousel_register_block() {
                     'default' => array(
                         array(
                             'title'       => 'Slide 1',
-                            'description' => 'Description 1',
                             'background'  => '',
                             'link'        => array(
                                 'text'  => 'Learn more',
@@ -78,7 +76,6 @@ function bnpp_carousel_register_block() {
                         ),
                         array(
                             'title'       => 'Slide 2',
-                            'description' => 'Description 2',
                             'background'  => '',
                             'link'        => array(
                                 'text'  => 'Learn more',
@@ -88,7 +85,6 @@ function bnpp_carousel_register_block() {
                         ),
                         array(
                             'title'       => 'Slide 3',
-                            'description' => 'Description 3',
                             'background'  => '',
                             'link'        => array(
                                 'text'  => 'Learn more',
@@ -125,7 +121,6 @@ function bnpp_carousel_render_block( $attributes ) {
 
     foreach ( $slides as $slide ) {
         $title = isset( $slide['title'] ) ? sanitize_text_field( $slide['title'] ) : '';
-        $description = isset( $slide['description'] ) ? sanitize_text_field( $slide['description'] ) : '';
         $background = isset( $slide['background'] ) ? esc_url( $slide['background'] ) : '';
         $link = isset( $slide['link'] ) ? $slide['link'] : array();
         $link_text = isset( $link['text'] ) ? sanitize_text_field( $link['text'] ) : '';
@@ -135,7 +130,7 @@ function bnpp_carousel_render_block( $attributes ) {
         $style = ! empty( $background ) ? ' style="background: linear-gradient(270deg, rgba(12, 39, 40, 0.03) 38.74%, rgba(12, 39, 40, 0.70) 57.43%), url(' . $background . ') lightgray 0px -404px / 100% 200% no-repeat;"' : '';
         $output .= '<div class="bnpp-slide"' . $style . '>';
         $output .= '<div class="bnpp-overlay dark" style="background:transparent">';
-        $output .= '<p>' . esc_html( $description ) . '</p>';
+        $output .= '<p>' . esc_html( $title ) . '</p>';
         $output .= '<a href="' . $link_url . '" class="bnpp-button ' . $link_class . '">' . esc_html( $link_text ) . '</a>';
         $output .= '</div></div>';
     }
