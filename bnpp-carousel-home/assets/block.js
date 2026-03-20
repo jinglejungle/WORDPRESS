@@ -267,65 +267,20 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             background: 'transparent',
                             display: 'flex',
                             flexDirection: 'column',
-                            justifyContent: 'flex-start',
-                            position: 'relative'
+                            justifyContent: 'flex-start'
                         } 
                     },
-                        el( 'div', {
-                            key: 'preview-title-' + currentSlideIndex,
-                            style: {
-                                position: 'relative',
+                        el( 'p', { 
+                            style: { 
                                 margin: '15px 0',
                                 lineHeight: '95px',
                                 width: '689px',
                                 fontFamily: '"BNPP Sans Condensed"',
                                 fontSize: '100px',
                                 fontStyle: 'normal',
-                                fontWeight: '400',
-                                cursor: 'text',
-                                minHeight: '95px',
-                                outline: '1px dotted rgba(255,255,255,0.3)',
-                                outlineOffset: '2px'
-                            }
-                        },
-                            el( 'div', {
-                                style: {
-                                    position: 'absolute',
-                                    top: '0',
-                                    left: '0',
-                                    right: '0',
-                                    bottom: '0',
-                                    display: 'flex',
-                                    alignItems: 'center'
-                                }
-                            }, slide.title ),
-                            el( 'input', {
-                                type: 'text',
-                                value: slide.title,
-                                onInput: function( e ) { handleTitleChange( e.target.value ); },
-                                onPaste: handleTitlePaste,
-                                style: {
-                                    position: 'absolute',
-                                    top: '0',
-                                    left: '0',
-                                    width: '100%',
-                                    height: '100%',
-                                    lineHeight: '95px',
-                                    fontFamily: '"BNPP Sans Condensed"',
-                                    fontSize: '100px',
-                                    fontWeight: '400',
-                                    background: 'transparent',
-                                    color: '#fff',
-                                    border: 'none',
-                                    outline: 'none',
-                                    padding: '0',
-                                    margin: '0',
-                                    opacity: '0',
-                                    zIndex: '10'
-                                },
-                                maxLength: 70
-                            } )
-                        ),
+                                fontWeight: '400'
+                            } 
+                        }, slide.title ),
                         el( 'a', { href: slide.link.url, className: 'bnpp-button ' + slide.link.class }, slide.link.text )
                     )
                 ),
