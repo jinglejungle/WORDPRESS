@@ -289,9 +289,9 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             justifyContent: 'flex-start'
                         } 
                     },
-                        el( 'div', { 
-                            contentEditable: 'true',
-                            style: { 
+                        el( 'div', {
+                            style: {
+                                position: 'relative',
                                 margin: '15px 0',
                                 lineHeight: '95px',
                                 width: '689px',
@@ -299,49 +299,52 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                                 fontSize: '100px',
                                 fontStyle: 'normal',
                                 fontWeight: '400',
-                                outline: 'none',
-                                whiteSpace: 'pre-wrap',
-                                wordWrap: 'break-word'
-                            },
-                            onKeyDown: function( e ) {
-                                var text = e.currentTarget.innerText || e.currentTarget.textContent || '';
-                                var limit = getCharLimit( text );
-                                // Block if at limit and trying to add character (not backspace, delete, etc)
-                                if ( text.length >= limit && e.key && e.key.length === 1 && !e.ctrlKey && !e.metaKey ) {
-                                    e.preventDefault();
-                                }
-                            },
-                            onInput: function( e ) {
-                                var text = e.currentTarget.innerText || e.currentTarget.textContent || '';
-                                // Remove newlines
-                                text = text.replace( /\n/g, '' );
-                                var limit = getCharLimit( text );
-                                if ( text.length > limit ) {
-                                    text = text.substring( 0, limit );
-                                }
-                                e.currentTarget.innerText = text;
-                                handleTitleChange( text );
-                            },
-                            onPaste: function( e ) {
-                                e.preventDefault();
-                                var pastedText = ( e.clipboardData || window.clipboardData ).getData( 'text' );
-                                // Remove newlines from pasted text
-                                pastedText = pastedText.replace( /\n/g, '' );
-                                var limit = getCharLimit( pastedText );
-                                if ( pastedText.length > limit ) {
-                                    pastedText = pastedText.substring( 0, limit );
-                                    // Show truncation message
-                                    window.bnppTruncationState[ truncationKey ] = true;
-                                    setAttributes( { currentSlideIndex: currentSlideIndex } );
-                                    setTimeout( function() {
-                                        window.bnppTruncationState[ truncationKey ] = false;
-                                        setAttributes( { currentSlideIndex: currentSlideIndex } );
-                                    }, 3000 );
-                                }
-                                e.currentTarget.innerText = pastedText;
-                                handleTitleChange( pastedText );
+                                minHeight: '95px'
                             }
-                        }, slide.title ),
+                        },
+                            el( 'div', {
+                                style: {
+                                    position: 'absolute',
+                                    top: '0',
+                                    left: '0',
+                                    width: '100%',
+                                    lineHeight: '95px',
+                                    fontSize: '100px',
+                                    fontWeight: '400',
+                                    fontFamily: '"BNPP Sans Condensed"',
+                                    color: '#fff',
+                                    pointerEvents: 'none',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap'
+                                }
+                            }, slide.title ),
+                            el( 'input', {
+                                type: 'text',
+                                value: slide.title,
+                                onInput: function( e ) { handleTitleChange( e.target.value ); },
+                                onPaste: handleTitlePaste,
+                                style: {
+                                    position: 'absolute',
+                                    top: '0',
+                                    left: '0',
+                                    width: '100%',
+                                    height: '100%',
+                                    fontSize: '100px',
+                                    fontWeight: '400',
+                                    fontFamily: '"BNPP Sans Condensed"',
+                                    background: 'transparent',
+                                    color: 'transparent',
+                                    caret: '#fff',
+                                    border: 'none',
+                                    outline: 'none',
+                                    padding: '0',
+                                    margin: '0',
+                                    zIndex: '10'
+                                },
+                                maxLength: 70
+                            } )
+                        ),
                         el( 'a', { href: slide.link.url, className: 'bnpp-button ' + slide.link.class }, slide.link.text )
                     )
                 ),
