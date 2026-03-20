@@ -192,15 +192,23 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                     key: i,
                     onClick: function() { setAttributes( { currentSlideIndex: i } ); },
                     style: {
-                        background: i === currentSlideIndex ? '#fff' : 'rgba(0,0,0,0.5)',
-                        color: i === currentSlideIndex ? '#000' : '#fff',
-                        border: '2px solid #fff',
-                        padding: '8px 12px',
-                        borderRadius: '4px',
+                        color: '#fff',
+                        opacity: i === currentSlideIndex ? '1' : '0.75',
                         cursor: 'pointer',
-                        fontWeight: 'bold',
-                        fontSize: '0.85em'
-                    }
+                        background: 'transparent',
+                        fontFamily: '"BNPP Sans Condensed"',
+                        fontSize: '40px',
+                        fontWeight: '400',
+                        lineHeight: '45px',
+                        height: '90px',
+                        width: '393px',
+                        paddingLeft: '22px',
+                        textAlign: 'left',
+                        border: '0px solid transparent',
+                        borderLeft: i === currentSlideIndex ? '2px solid #ffffff' : '2px solid #C8CED1',
+                        transition: 'all 0.3s ease'
+                    },
+                    'aria-selected': i === currentSlideIndex ? 'true' : 'false'
                 }, s.title );
             } );
 
@@ -215,12 +223,31 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
+                        alignItems: 'flex-start',
+                        justifyContent: 'flex-start',
+                        position: 'relative'
                     }
                 },
-                    el( 'div', { style: { backgroundColor: 'rgba(0,0,0,0.65)', color: '#fff', padding: '30px', textAlign: 'center', maxWidth: '600px', borderRadius: '8px' } },
-                        el( 'p', { style: { margin: '15px 0' } }, slide.description ),
+                    el( 'div', { 
+                        className: 'bnpp-overlay',
+                        style: { 
+                            background: 'transparent',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'flex-start'
+                        } 
+                    },
+                        el( 'p', { 
+                            style: { 
+                                margin: '15px 0',
+                                lineHeight: '95px',
+                                width: '689px',
+                                fontFamily: '"BNPP Sans Condensed"',
+                                fontSize: '100px',
+                                fontStyle: 'normal',
+                                fontWeight: '400'
+                            } 
+                        }, slide.description ),
                         el( 'a', { href: slide.link.url, className: 'bnpp-button ' + slide.link.class }, slide.link.text )
                     )
                 ),
