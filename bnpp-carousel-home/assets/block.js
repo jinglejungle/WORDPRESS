@@ -270,9 +270,10 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                     style: {
                         width: '100%',
                         height: '100%',
-                        backgroundImage: slide.background ? 'url(' + slide.background + ')' : 'none',
+                        backgroundImage: slide.background ? 'linear-gradient(270deg, rgba(12, 39, 40, 0.03) 38.74%, rgba(12, 39, 40, 0.70) 57.43%), url(' + slide.background + ')' : 'linear-gradient(270deg, rgba(12, 39, 40, 0.03) 38.74%, rgba(12, 39, 40, 0.70) 57.43%)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
                         display: 'flex',
                         alignItems: 'flex-start',
                         justifyContent: 'flex-start',
