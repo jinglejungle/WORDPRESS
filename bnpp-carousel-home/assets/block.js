@@ -263,6 +263,17 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 }, s.title );
             } );
 
+            // Helper to adjust textarea height
+            var adjustTextareaHeight = function() {
+                setTimeout( function() {
+                    var textarea = document.querySelector( '.bnpp-preview-title-' + currentSlideIndex );
+                    if ( textarea ) {
+                        textarea.style.height = 'auto';
+                        textarea.style.height = textarea.scrollHeight + 'px';
+                    }
+                }, 0 );
+            };
+
             var preview = el( 'div', {
                 style: { position: 'relative', width: '100%', height: '75vh', minHeight: '648px', background: '#000', overflow: 'hidden', borderRadius: '4px', marginBottom: '20px' }
             },
@@ -296,6 +307,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             }
                         },
                             el( 'textarea', {
+                                className: 'bnpp-preview-title-' + currentSlideIndex,
                                 value: slide.title,
                                 onInput: function( e ) {
                                     handleTitleChange( e.target.value );
@@ -311,6 +323,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                                         e.target.style.height = e.target.scrollHeight + 'px';
                                     }, 0 );
                                 },
+                                ref: adjustTextareaHeight,
                                 style: {
                                     display: 'block',
                                     width: '689px',
@@ -333,6 +346,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                                 maxLength: currentLimit
                             } )
                         ),
+                        adjustTextareaHeight(),
                         el( 'a', { href: slide.link.url, className: 'bnpp-button ' + slide.link.class }, slide.link.text )
                     )
                 ),
