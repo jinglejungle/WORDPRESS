@@ -130,7 +130,6 @@
     right:50%;
     margin-left:-50vw;
     margin-right:-50vw;
-    width:100vw;
     width:calc(100vw - (100vw - 100%));
 }
 .carousel-wrapper{
