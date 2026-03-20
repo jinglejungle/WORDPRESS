@@ -289,6 +289,14 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             justifyContent: 'flex-start'
                         } 
                     },
+            // Auto-resize textarea based on content
+            var autoResizeTextarea = function( textarea ) {
+                setTimeout( function() {
+                    textarea.style.height = 'auto';
+                    textarea.style.height = Math.max( textarea.scrollHeight, 100 ) + 'px';
+                }, 0 );
+            };
+
                         el( 'div', {
                             style: {
                                 margin: '15px 0',
@@ -302,8 +310,16 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                         },
                             el( 'textarea', {
                                 value: slide.title,
-                                onInput: function( e ) { handleTitleChange( e.target.value ); },
-                                onPaste: handleTitlePaste,
+                                onInput: function( e ) { 
+                                    handleTitleChange( e.target.value );
+                                    autoResizeTextarea( e.target );
+                                },
+                                onPaste: function( e ) {
+                                    handleTitlePaste( e );
+                                    setTimeout( function() {
+                                        autoResizeTextarea( e.target );
+                                    }, 0 );
+                                },
                                 style: {
                                     position: 'relative',
                                     display: 'block',
@@ -322,7 +338,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                                     wordWrap: 'break-word',
                                     resize: 'none',
                                     overflow: 'hidden',
-                                    minHeight: 'auto'
+                                    minHeight: '100px'
                                 },
                                 maxLength: 70
                             } )
