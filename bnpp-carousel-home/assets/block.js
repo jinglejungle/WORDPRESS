@@ -297,14 +297,11 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                                 fontFamily: '"BNPP Sans Condensed"',
                                 fontSize: '100px',
                                 fontStyle: 'normal',
-                                fontWeight: '400',
-                                lineHeight: '95px',
-                                minHeight: '95px'
+                                fontWeight: '400'
                             }
                         },
                             el( 'p', {
                                 style: {
-                                    position: 'relative',
                                     margin: '0',
                                     padding: '0',
                                     lineHeight: '1.2',
@@ -315,12 +312,10 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                                     fontWeight: '400',
                                     color: '#fff',
                                     whiteSpace: 'normal',
-                                    wordWrap: 'break-word',
-                                    overflow: 'hidden'
+                                    wordWrap: 'break-word'
                                 }
                             }, slide.title ),
-                            el( 'input', {
-                                type: 'text',
+                            el( 'textarea', {
                                 value: slide.title,
                                 onInput: function( e ) { handleTitleChange( e.target.value ); },
                                 onPaste: handleTitlePaste,
@@ -329,7 +324,6 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                                     top: '0',
                                     left: '0',
                                     width: '689px',
-                                    height: '100%',
                                     fontSize: '100px',
                                     fontWeight: '400',
                                     fontFamily: '"BNPP Sans Condensed"',
@@ -340,7 +334,12 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                                     padding: '0',
                                     margin: '0',
                                     zIndex: '10',
-                                    lineHeight: '95px'
+                                    lineHeight: '1.2',
+                                    whiteSpace: 'normal',
+                                    wordWrap: 'break-word',
+                                    resize: 'none',
+                                    overflow: 'hidden',
+                                    minHeight: '100px'
                                 },
                                 maxLength: 70
                             } )
