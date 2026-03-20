@@ -146,37 +146,3 @@
     cursor: pointer;
     border: 2px solid transparent;
 }
-
-.wp-block-bnpp-carousel-homepage .primary {
-    background-color: #007bff;
-    color: #fff;
-}
-
-.wp-block-bnpp-carousel-homepage .primary:hover {
-    background-color: #0056b3;
-}
-
-.wp-block-bnpp-carousel-homepage .secondary {
-    background-color: #6c757d;
-    color: #fff;
-}
-
-.wp-block-bnpp-carousel-homepage .secondary:hover {
-    background-color: #545b62;
-}
-
-.wp-block-bnpp-carousel-homepage .tertiary {
-    background-color: transparent;
-    color: #fff;
-    border-color: #fff;
-}
-
-.wp-block-bnpp-carousel-homepage .tertiary:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.wp-block-bnpp-carousel-homepage .ghost {
-    background-color: transparent;
-    color: #fff;
-    text-decoration: underline;
-}
