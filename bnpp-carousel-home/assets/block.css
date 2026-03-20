@@ -127,9 +127,11 @@
 .bnpp-carousel-wrapper{
     position:relative;
     left:50%;
-    transform:translateX(-50%);
+    right:auto;
     width:100vw;
-    max-width:100%;
+    width:100%;
+    max-width:none;
+    margin-left:-50%;
     overflow:hidden;
 }
 .carousel-wrapper{
