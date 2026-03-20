@@ -127,12 +127,11 @@
 .bnpp-carousel-wrapper{
     position:relative;
     left:50%;
-    right:auto;
+    right:50%;
+    margin-left:-50vw;
+    margin-right:-50vw;
     width:100vw;
-    width:100%;
-    max-width:none;
-    margin-left:-50%;
-    overflow:hidden;
+    width:calc(100vw - (100vw - 100%));
 }
 .carousel-wrapper{
     overflow-x:hidden;
