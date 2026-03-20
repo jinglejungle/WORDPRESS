@@ -293,30 +293,30 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             style: {
                                 position: 'relative',
                                 margin: '15px 0',
-                                lineHeight: '95px',
                                 width: '689px',
                                 fontFamily: '"BNPP Sans Condensed"',
                                 fontSize: '100px',
                                 fontStyle: 'normal',
                                 fontWeight: '400',
+                                lineHeight: '95px',
                                 minHeight: '95px'
                             }
                         },
-                            el( 'div', {
+                            el( 'p', {
                                 style: {
-                                    position: 'absolute',
-                                    top: '0',
-                                    left: '0',
-                                    width: '100%',
+                                    position: 'relative',
+                                    margin: '0',
+                                    padding: '0',
                                     lineHeight: '95px',
-                                    fontSize: '100px',
-                                    fontWeight: '400',
+                                    width: '689px',
                                     fontFamily: '"BNPP Sans Condensed"',
+                                    fontSize: '100px',
+                                    fontStyle: 'normal',
+                                    fontWeight: '400',
                                     color: '#fff',
-                                    pointerEvents: 'none',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap'
+                                    whiteSpace: 'normal',
+                                    wordWrap: 'break-word',
+                                    overflow: 'hidden'
                                 }
                             }, slide.title ),
                             el( 'input', {
@@ -328,19 +328,19 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                                     position: 'absolute',
                                     top: '0',
                                     left: '0',
-                                    width: '100%',
+                                    width: '689px',
                                     height: '100%',
                                     fontSize: '100px',
                                     fontWeight: '400',
                                     fontFamily: '"BNPP Sans Condensed"',
                                     background: 'transparent',
-                                    color: 'transparent',
-                                    caret: '#fff',
+                                    color: '#fff',
                                     border: 'none',
                                     outline: 'none',
                                     padding: '0',
                                     margin: '0',
-                                    zIndex: '10'
+                                    zIndex: '10',
+                                    lineHeight: '95px'
                                 },
                                 maxLength: 70
                             } )
