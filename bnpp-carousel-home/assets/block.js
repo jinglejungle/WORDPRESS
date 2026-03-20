@@ -38,6 +38,13 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             var autoplaySpeed = attributes.autoplaySpeed;
             var currentSlideIndex = attributes.currentSlideIndex;
 
+            // Track truncation message state
+            if ( ! window.bnppTruncationState ) {
+                window.bnppTruncationState = {};
+            }
+            var truncationKey = 'slide_' + currentSlideIndex;
+            var showTruncationMsg = window.bnppTruncationState[ truncationKey ] || false;
+
             if ( ! slides || ! slides.length ) {
                 setAttributes( {
                     slides: [
@@ -115,6 +122,17 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                     e.preventDefault();
                     var truncated = pastedText.substring( 0, limit );
                     updateSlide( currentSlideIndex, 'title', truncated );
+                    
+                    // Show truncation message
+                    window.bnppTruncationState[ truncationKey ] = true;
+                    // Force re-render by triggering an update
+                    setAttributes( { currentSlideIndex: currentSlideIndex } );
+                    
+                    // Hide message after 3 seconds
+                    setTimeout( function() {
+                        window.bnppTruncationState[ truncationKey ] = false;
+                        setAttributes( { currentSlideIndex: currentSlideIndex } );
+                    }, 3000 );
                 }
             };
 
@@ -123,18 +141,18 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
 
             settingsContent.push( el( 'div', { key: 'title', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Title' ),
-                el( 'input', {
-                    type: 'text',
+                el( 'textarea', {
                     value: slide.title,
                     onInput: function( e ) { handleTitleChange( e.target.value ); },
                     onPaste: handleTitlePaste,
-                    style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' },
+                    style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box', minHeight: '80px', fontFamily: 'inherit', resize: 'vertical' },
                     maxLength: 70
                 } ),
                 el( 'div', { style: { marginTop: '5px', fontSize: '12px', color: '#666' } },
                     el( 'span', null, currentCharCount + ' / ' + currentLimit + ' characters' ),
                     isAtLimit ? el( 'span', { style: { marginLeft: '10px', color: '#f87171' } }, '(max reached)' ) : null
-                )
+                ),
+                showTruncationMsg ? el( 'div', { style: { marginTop: '5px', fontSize: '12px', color: '#f97316', fontWeight: 'bold' } }, 'Text was truncated to fit the character limit.' ) : null
             ) );
 
 
