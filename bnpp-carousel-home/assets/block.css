@@ -130,7 +130,9 @@
     right:50%;
     margin-left:-50vw;
     margin-right:-50vw;
-    width:calc(100vw - (100vw - 100%));
+    width:100vw;
+    max-width:100vw;
+    box-sizing:border-box;
 }
 .carousel-wrapper{
     overflow-x:hidden;
