@@ -307,7 +307,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                                     position: 'relative',
                                     margin: '0',
                                     padding: '0',
-                                    lineHeight: '95px',
+                                    lineHeight: '1.2',
                                     width: '689px',
                                     fontFamily: '"BNPP Sans Condensed"',
                                     fontSize: '100px',
