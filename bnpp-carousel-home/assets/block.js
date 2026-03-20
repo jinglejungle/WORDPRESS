@@ -213,7 +213,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             } );
 
             var preview = el( 'div', {
-                style: { position: 'relative', width: '100%', height: '400px', background: '#000', overflow: 'hidden', borderRadius: '4px', marginBottom: '20px' }
+                style: { position: 'relative', width: '100%', height: '75vh', minHeight: '648px', background: '#000', overflow: 'hidden', borderRadius: '4px', marginBottom: '20px' }
             },
                 el( 'div', {
                     style: {
