@@ -83,6 +83,41 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 el( 'div', { style: { display: 'flex', gap: '10px' } }, slideSelectorButtons )
             );
 
+            // Title validation helpers
+            var hasAsianChars = function( text ) {
+                return /[\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF\uAC00-\uD7AF]/.test( text );
+            };
+
+            var getCharLimit = function( text ) {
+                return hasAsianChars( text ) ? 50 : 70;
+            };
+
+            var getDisplayLength = function( text ) {
+                return text.length;
+            };
+
+            var currentCharCount = getDisplayLength( slide.title );
+            var currentLimit = getCharLimit( slide.title );
+            var isAtLimit = currentCharCount >= currentLimit;
+
+            var handleTitleChange = function( newValue ) {
+                var limit = getCharLimit( newValue );
+                if ( newValue.length > limit ) {
+                    newValue = newValue.substring( 0, limit );
+                }
+                updateSlide( currentSlideIndex, 'title', newValue );
+            };
+
+            var handleTitlePaste = function( e ) {
+                var pastedText = ( e.clipboardData || window.clipboardData ).getData( 'text' );
+                var limit = getCharLimit( pastedText );
+                if ( pastedText.length > limit ) {
+                    e.preventDefault();
+                    var truncated = pastedText.substring( 0, limit );
+                    updateSlide( currentSlideIndex, 'title', truncated );
+                }
+            };
+
             // Settings content
             var settingsContent = [];
 
@@ -91,9 +126,15 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 el( 'input', {
                     type: 'text',
                     value: slide.title,
-                    onInput: function( e ) { updateSlide( currentSlideIndex, 'title', e.target.value ); },
-                    style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
-                } )
+                    onInput: function( e ) { handleTitleChange( e.target.value ); },
+                    onPaste: handleTitlePaste,
+                    style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' },
+                    maxLength: 70
+                } ),
+                el( 'div', { style: { marginTop: '5px', fontSize: '12px', color: '#666' } },
+                    el( 'span', null, currentCharCount + ' / ' + currentLimit + ' characters' ),
+                    isAtLimit ? el( 'span', { style: { marginLeft: '10px', color: '#f87171' } }, '(max reached)' ) : null
+                )
             ) );
 
 
@@ -226,20 +267,65 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             background: 'transparent',
                             display: 'flex',
                             flexDirection: 'column',
-                            justifyContent: 'flex-start'
+                            justifyContent: 'flex-start',
+                            position: 'relative'
                         } 
                     },
-                        el( 'p', { 
-                            style: { 
+                        el( 'div', {
+                            key: 'preview-title-' + currentSlideIndex,
+                            style: {
+                                position: 'relative',
                                 margin: '15px 0',
                                 lineHeight: '95px',
                                 width: '689px',
                                 fontFamily: '"BNPP Sans Condensed"',
                                 fontSize: '100px',
                                 fontStyle: 'normal',
-                                fontWeight: '400'
-                            } 
-                        }, slide.title ),
+                                fontWeight: '400',
+                                cursor: 'text',
+                                minHeight: '95px',
+                                outline: '1px dotted rgba(255,255,255,0.3)',
+                                outlineOffset: '2px'
+                            }
+                        },
+                            el( 'div', {
+                                style: {
+                                    position: 'absolute',
+                                    top: '0',
+                                    left: '0',
+                                    right: '0',
+                                    bottom: '0',
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                }
+                            }, slide.title ),
+                            el( 'input', {
+                                type: 'text',
+                                value: slide.title,
+                                onInput: function( e ) { handleTitleChange( e.target.value ); },
+                                onPaste: handleTitlePaste,
+                                style: {
+                                    position: 'absolute',
+                                    top: '0',
+                                    left: '0',
+                                    width: '100%',
+                                    height: '100%',
+                                    lineHeight: '95px',
+                                    fontFamily: '"BNPP Sans Condensed"',
+                                    fontSize: '100px',
+                                    fontWeight: '400',
+                                    background: 'transparent',
+                                    color: '#fff',
+                                    border: 'none',
+                                    outline: 'none',
+                                    padding: '0',
+                                    margin: '0',
+                                    opacity: '0',
+                                    zIndex: '10'
+                                },
+                                maxLength: 70
+                            } )
+                        ),
                         el( 'a', { href: slide.link.url, className: 'bnpp-button ' + slide.link.class }, slide.link.text )
                     )
                 ),
