@@ -150,7 +150,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
 
             settingsContent.push( el( 'div', { key: 'btn-style', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Button Style' ),
-                el( 'div', { style: { display: 'flex', gap: '8px', flexWrap: 'wrap' } },
+                el( 'div', { style: { display: 'flex', gap: '8px' } },
                     [ 'primary', 'secondary', 'tertiary', 'ghost' ].map( function( style ) {
                         return el( 'button', {
                             key: style,
