@@ -289,7 +289,8 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             justifyContent: 'flex-start'
                         } 
                     },
-                        el( 'p', { 
+                        el( 'div', { 
+                            contentEditable: 'true',
                             style: { 
                                 margin: '15px 0',
                                 lineHeight: '95px',
@@ -297,8 +298,41 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                                 fontFamily: '"BNPP Sans Condensed"',
                                 fontSize: '100px',
                                 fontStyle: 'normal',
-                                fontWeight: '400'
-                            } 
+                                fontWeight: '400',
+                                outline: 'none',
+                                whiteSpace: 'pre-wrap',
+                                wordWrap: 'break-word'
+                            },
+                            onInput: function( e ) {
+                                var text = e.currentTarget.innerText || e.currentTarget.textContent || '';
+                                // Remove newlines
+                                text = text.replace( /\n/g, '' );
+                                var limit = getCharLimit( text );
+                                if ( text.length > limit ) {
+                                    text = text.substring( 0, limit );
+                                }
+                                e.currentTarget.innerText = text;
+                                handleTitleChange( text );
+                            },
+                            onPaste: function( e ) {
+                                e.preventDefault();
+                                var pastedText = ( e.clipboardData || window.clipboardData ).getData( 'text' );
+                                // Remove newlines from pasted text
+                                pastedText = pastedText.replace( /\n/g, '' );
+                                var limit = getCharLimit( pastedText );
+                                if ( pastedText.length > limit ) {
+                                    pastedText = pastedText.substring( 0, limit );
+                                    // Show truncation message
+                                    window.bnppTruncationState[ truncationKey ] = true;
+                                    setAttributes( { currentSlideIndex: currentSlideIndex } );
+                                    setTimeout( function() {
+                                        window.bnppTruncationState[ truncationKey ] = false;
+                                        setAttributes( { currentSlideIndex: currentSlideIndex } );
+                                    }, 3000 );
+                                }
+                                e.currentTarget.innerText = pastedText;
+                                handleTitleChange( pastedText );
+                            }
                         }, slide.title ),
                         el( 'a', { href: slide.link.url, className: 'bnpp-button ' + slide.link.class }, slide.link.text )
                     )
