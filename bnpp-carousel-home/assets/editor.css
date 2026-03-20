@@ -1,0 +1,182 @@
+/* Editor Preview Styles - match block.css but scoped to editor */
+
+.wp-block-bnpp-carousel-homepage {
+    margin: 0;
+    padding: 0;
+}
+
+.wp-block-bnpp-carousel-homepage .bnpp-carousel-wrapper {
+    position: relative;
+    overflow: hidden;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    width: 100vw;
+    max-width: 100vw;
+}
+
+.wp-block-bnpp-carousel-homepage .bnpp-carousel {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    min-height: 400px;
+}
+
+.wp-block-bnpp-carousel-homepage .bnpp-slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.6s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    justify-content: left;
+    align-items: unset;
+}
+
+.wp-block-bnpp-carousel-homepage .bnpp-slide.active {
+    opacity: 1;
+}
+
+.wp-block-bnpp-carousel-homepage .bnpp-overlay {
+    color: #fff;
+    text-align: left;
+    width: 80%;
+    margin: 0 auto;
+    max-width: var(--wp--style--global--wide-size);
+    padding-top: 40px;
+    padding-left: 10px;
+    display: block !important;
+}
+
+.wp-block-bnpp-carousel-homepage .bnpp-overlay h2 {
+    font-size: 2.5em;
+    margin: 0 0 15px 0;
+    font-weight: 700;
+}
+
+.wp-block-bnpp-carousel-homepage .bnpp-overlay p {
+    margin: 15px 0;
+    line-height: 1.6;
+    width: 689px;
+    font-family: "BNPP Sans Condensed";
+    font-size: 100px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 95px;
+}
+
+.wp-block-bnpp-carousel-homepage .bnpp-carousel-nav {
+    position: absolute;
+    bottom: 20px;
+    z-index: 10;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    background: rgba(12, 39, 40, 0.30);
+    backdrop-filter: blur(7.5px);
+    padding: 8px 0px 8px 0px;
+}
+
+.wp-block-bnpp-carousel-homepage .bnpp-carousel-nav button {
+    color: #fff;
+    opacity: 75%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent;
+    font-family: "BNPP Sans Condensed";
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 45px;
+    height: 90px;
+    width: 393px;
+    padding-left: 22px;
+    text-align: left;
+    border: 0px solid transparent;
+    border-left: 2px solid #C8CED1;
+}
+
+.wp-block-bnpp-carousel-homepage .bnpp-carousel-nav button[aria-selected="true"] {
+    border-left: 2px solid #ffffff;
+    opacity: 100%;
+}
+
+.wp-block-bnpp-carousel-homepage .bnpp-pause-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: 2px solid #fff;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 4px;
+    z-index: 15;
+    transition: all 0.3s ease;
+}
+
+.wp-block-bnpp-carousel-homepage .bnpp-pause-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.wp-block-bnpp-carousel-homepage .sr-only {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.wp-block-bnpp-carousel-homepage .bnpp-button {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 12px 28px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.wp-block-bnpp-carousel-homepage .primary {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.wp-block-bnpp-carousel-homepage .primary:hover {
+    background-color: #0056b3;
+}
+
+.wp-block-bnpp-carousel-homepage .secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.wp-block-bnpp-carousel-homepage .secondary:hover {
+    background-color: #545b62;
+}
+
+.wp-block-bnpp-carousel-homepage .tertiary {
+    background-color: transparent;
+    color: #fff;
+    border-color: #fff;
+}
+
+.wp-block-bnpp-carousel-homepage .tertiary:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.wp-block-bnpp-carousel-homepage .ghost {
+    background-color: transparent;
+    color: #fff;
+    text-decoration: underline;
+}
