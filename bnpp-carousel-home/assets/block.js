@@ -280,7 +280,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                     }
                 },
                     el( 'div', { 
-                        className: 'bnpp-overlay',
+                        className: 'bnpp-overlay dark',
                         style: { 
                             background: 'transparent',
                             display: 'flex',
