@@ -303,6 +303,14 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                                 whiteSpace: 'pre-wrap',
                                 wordWrap: 'break-word'
                             },
+                            onKeyDown: function( e ) {
+                                var text = e.currentTarget.innerText || e.currentTarget.textContent || '';
+                                var limit = getCharLimit( text );
+                                // Block if at limit and trying to add character (not backspace, delete, etc)
+                                if ( text.length >= limit && e.key && e.key.length === 1 && !e.ctrlKey && !e.metaKey ) {
+                                    e.preventDefault();
+                                }
+                            },
                             onInput: function( e ) {
                                 var text = e.currentTarget.innerText || e.currentTarget.textContent || '';
                                 // Remove newlines
