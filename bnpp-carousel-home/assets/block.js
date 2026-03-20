@@ -289,58 +289,48 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             justifyContent: 'flex-start'
                         } 
                     },
-            // Auto-resize textarea based on content
-            var autoResizeTextarea = function( textarea ) {
-                setTimeout( function() {
-                    textarea.style.height = 'auto';
-                    textarea.style.height = Math.max( textarea.scrollHeight, 100 ) + 'px';
-                }, 0 );
-            };
-
                         el( 'div', {
                             style: {
                                 margin: '15px 0',
-                                width: '689px',
-                                fontFamily: '"BNPP Sans Condensed"',
-                                fontSize: '100px',
-                                fontStyle: 'normal',
-                                fontWeight: '400',
-                                position: 'relative'
+                                width: '689px'
                             }
                         },
                             el( 'textarea', {
                                 value: slide.title,
-                                onInput: function( e ) { 
+                                onInput: function( e ) {
                                     handleTitleChange( e.target.value );
-                                    autoResizeTextarea( e.target );
+                                    // Auto adjust height
+                                    e.target.style.height = 'auto';
+                                    e.target.style.height = e.target.scrollHeight + 'px';
                                 },
                                 onPaste: function( e ) {
                                     handleTitlePaste( e );
+                                    // Auto adjust height after paste
                                     setTimeout( function() {
-                                        autoResizeTextarea( e.target );
+                                        e.target.style.height = 'auto';
+                                        e.target.style.height = e.target.scrollHeight + 'px';
                                     }, 0 );
                                 },
                                 style: {
-                                    position: 'relative',
                                     display: 'block',
                                     width: '689px',
                                     fontSize: '100px',
                                     fontWeight: '400',
                                     fontFamily: '"BNPP Sans Condensed"',
-                                    background: 'transparent',
                                     color: '#fff',
+                                    background: 'transparent',
                                     border: 'none',
                                     outline: 'none',
                                     padding: '0',
                                     margin: '0',
                                     lineHeight: '1.2',
-                                    whiteSpace: 'normal',
-                                    wordWrap: 'break-word',
                                     resize: 'none',
                                     overflow: 'hidden',
-                                    minHeight: '100px'
+                                    minHeight: '120px',
+                                    whiteSpace: 'pre-wrap',
+                                    wordBreak: 'break-word'
                                 },
-                                maxLength: 70
+                                maxLength: currentLimit
                             } )
                         ),
                         el( 'a', { href: slide.link.url, className: 'bnpp-button ' + slide.link.class }, slide.link.text )
