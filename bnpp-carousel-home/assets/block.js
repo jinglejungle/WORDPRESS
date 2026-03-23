@@ -121,7 +121,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
 
             var slideSelectorPanel = el( wpComponents.PanelBody, { title: 'Slide Selection', initialOpen: true },
                 el( 'div', { style: { marginBottom: '15px' } },
-                    el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Number of Slides' ),
+                    el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Number of Slides to Display' ),
                     el( 'div', { style: { display: 'flex', gap: '8px' } },
                         [ 1, 2, 3 ].map( function( num ) {
                             return el( 'button', {
@@ -141,7 +141,10 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                         } )
                     )
                 ),
-                el( 'div', { style: { display: 'flex', gap: '10px', marginTop: '15px' } }, slideSelectorButtons )
+                el( 'div', { style: { borderTop: '2px solid #ddd', paddingTop: '15px', marginTop: '15px' } },
+                    el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Select Active Slide' ),
+                    el( 'div', { style: { display: 'flex', gap: '10px' } }, slideSelectorButtons )
+                )
             );
 
             // Title validation helpers
