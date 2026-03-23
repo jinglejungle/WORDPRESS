@@ -146,3 +146,7 @@
     cursor: pointer;
     border: 2px solid transparent;
 }
+
+.wp-block-bnpp-carousel-homepage .slide-title-category {
+    display: block;
+}

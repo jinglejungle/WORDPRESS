@@ -16,9 +16,9 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             slides: {
                 type: 'array',
                 default: [
-                    { title: 'Slide 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false } },
-                    { title: 'Slide 2', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false } },
-                    { title: 'Slide 3', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false } }
+                    { title: 'Slide 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '' } },
+                    { title: 'Slide 2', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '' } },
+                    { title: 'Slide 3', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '' } }
                 ]
             },
             autoplaySpeed: {
@@ -48,9 +48,9 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             if ( ! slides || ! slides.length ) {
                 setAttributes( {
                     slides: [
-                        { title: 'Slide 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false } },
-                        { title: 'Slide 2', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false } },
-                        { title: 'Slide 3', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false } }
+                        { title: 'Slide 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '' } },
+                        { title: 'Slide 2', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '' } },
+                        { title: 'Slide 3', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '' } }
                     ]
                 } );
                 return 'Loading...';
@@ -136,6 +136,52 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 }
             };
 
+            // Category helpers
+            var hasCategoryAsianChars = function( text ) {
+                return /[\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF\uAC00-\uD7AF]/.test( text );
+            };
+
+            var getCategoryCharLimit = function( text ) {
+                return hasCategoryAsianChars( text ) ? 20 : 35;
+            };
+
+            var handleCategoryChange = function( newValue ) {
+                var limit = getCategoryCharLimit( newValue );
+                if ( newValue.length > limit ) {
+                    newValue = newValue.substring( 0, limit );
+                }
+                updateSlide( currentSlideIndex, 'link', { category: newValue } );
+            };
+
+            var handleCategoryPaste = function( e ) {
+                var pastedText = ( e.clipboardData || window.clipboardData ).getData( 'text' );
+                var limit = getCategoryCharLimit( pastedText );
+                if ( pastedText.length > limit ) {
+                    e.preventDefault();
+                    var truncated = pastedText.substring( 0, limit );
+                    updateSlide( currentSlideIndex, 'link', { category: truncated } );
+                    
+                    // Show truncation message
+                    if ( ! window.bnppCategoryTruncationState ) {
+                        window.bnppCategoryTruncationState = {};
+                    }
+                    window.bnppCategoryTruncationState[ currentSlideIndex ] = true;
+                    setAttributes( { currentSlideIndex: currentSlideIndex } );
+                    
+                    setTimeout( function() {
+                        if ( window.bnppCategoryTruncationState ) {
+                            window.bnppCategoryTruncationState[ currentSlideIndex ] = false;
+                        }
+                    }, 3000 );
+                }
+            };
+
+            // Category state
+            var categoryCharCount = slide.link.category ? slide.link.category.length : 0;
+            var categoryLimit = getCategoryCharLimit( slide.link.category || '' );
+            var isCategoryAtLimit = categoryCharCount >= categoryLimit;
+            var showCategoryTruncationMsg = window.bnppCategoryTruncationState && window.bnppCategoryTruncationState[ currentSlideIndex ];
+
             // Settings content
             var settingsContent = [];
 
@@ -177,6 +223,23 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                         );
                     }
                 } )
+            ) );
+
+            settingsContent.push( el( 'div', { key: 'btn-category', style: { marginBottom: '15px' } },
+                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Category' ),
+                el( 'input', {
+                    type: 'text',
+                    placeholder: 'Category...',
+                    value: slide.link.category || '',
+                    onInput: function( e ) { handleCategoryChange( e.target.value ); },
+                    onPaste: handleCategoryPaste,
+                    style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
+                } ),
+                el( 'div', { style: { marginTop: '5px', fontSize: '12px', color: '#666' } },
+                    el( 'span', null, categoryCharCount + ' / ' + categoryLimit + ' characters' ),
+                    isCategoryAtLimit ? el( 'span', { style: { marginLeft: '10px', color: '#f87171' } }, '(max reached)' ) : null
+                ),
+                showCategoryTruncationMsg ? el( 'div', { style: { marginTop: '5px', fontSize: '12px', color: '#f97316', fontWeight: 'bold' } }, 'Text was truncated to fit the character limit.' ) : null
             ) );
 
             settingsContent.push( el( 'div', { key: 'btn-text', style: { marginBottom: '15px' } },
@@ -305,7 +368,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                     },
                     'aria-selected': i === currentSlideIndex ? 'true' : 'false'
                 },
-                    el( 'span', { className: 'slide-title-category' } ),
+                    el( 'span', { className: 'slide-title-category' }, s.link.category || '' ),
                     el( 'span', { className: 'slide_title' }, s.title )
                 );
             } );
@@ -395,7 +458,8 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                         ),
                         adjustTextareaHeight(),
                         el( 'a', { href: slide.link.url, className: 'bnpp-button ' + slide.link.class, target: slide.link.target || '_self' },
-                            slide.link.text,
+                            el( 'span', { className: 'slide-title-category' }, slide.link.category || '' ),
+                            el( 'span', { className: 'slide_title' }, slide.link.text ),
                             slide.link.showIcon ? el( 'span', { className: 'button-icon' } ) : null
                         )
                     )
