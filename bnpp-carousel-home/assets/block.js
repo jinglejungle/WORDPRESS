@@ -76,9 +76,9 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                     style: {
                         flex: 1,
                         padding: '12px',
-                        background: i === currentSlideIndex ? '#007bff' : '#f0f0f0',
+                        background: i === currentSlideIndex ? '#000' : '#f0f0f0',
                         color: i === currentSlideIndex ? '#fff' : '#000',
-                        border: '2px solid ' + ( i === currentSlideIndex ? '#007bff' : '#ccc' ),
+                        border: '2px solid ' + ( i === currentSlideIndex ? '#000' : '#ccc' ),
                         borderRadius: '4px',
                         cursor: 'pointer',
                         fontWeight: 'bold'
