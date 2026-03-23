@@ -383,7 +383,6 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                         fontSize: '40px',
                         fontWeight: '400',
                         lineHeight: '45px',
-                        height: '90px',
                         width: '393px',
                         paddingLeft: '22px',
                         textAlign: 'left',
