@@ -161,11 +161,6 @@ function bnpp_carousel_render_block( $attributes ) {
         $aria_selected = $index === 0 ? 'true' : 'false';
         $link = isset( $slide['link'] ) ? $slide['link'] : array();
         $category = isset( $link['category'] ) ? sanitize_text_field( $link['category'] ) : '';
-        
-        // Debug
-        error_log( 'Slide ' . $index . ' - Category: ' . print_r( $category, true ) );
-        error_log( 'Slide ' . $index . ' - Link: ' . print_r( $link, true ) );
-        
         $category_html = ! empty( $category ) ? '<span class="slide-title-category">' . esc_html( $category ) . '</span>' : '<span class="slide-title-category"></span>';
         $output .= '<button role="tab" aria-selected="' . $aria_selected . '">' . $category_html . '<span class="slide_title">' . esc_html( $title ) . '</span></button>';
     }

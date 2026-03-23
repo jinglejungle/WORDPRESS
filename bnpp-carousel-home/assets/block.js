@@ -471,7 +471,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                                     outline: 'none',
                                     padding: '0',
                                     margin: '0',
-                                    lineHeight: '1.2',
+                                    lineHeight: '95px',
                                     resize: 'none',
                                     overflow: 'hidden',
                                     minHeight: '120px',
