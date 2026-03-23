@@ -16,9 +16,9 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             slides: {
                 type: 'array',
                 default: [
-                    { title: 'Slide 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
-                    { title: 'Slide 2', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
-                    { title: 'Slide 3', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } }
+                    { title: 'Slide 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false } },
+                    { title: 'Slide 2', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false } },
+                    { title: 'Slide 3', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false } }
                 ]
             },
             autoplaySpeed: {
@@ -48,9 +48,9 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             if ( ! slides || ! slides.length ) {
                 setAttributes( {
                     slides: [
-                        { title: 'Slide 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
-                        { title: 'Slide 2', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } },
-                        { title: 'Slide 3', background: '', link: { text: 'Learn more', url: '#', class: 'primary' } }
+                        { title: 'Slide 1', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false } },
+                        { title: 'Slide 2', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false } },
+                        { title: 'Slide 3', background: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false } }
                     ]
                 } );
                 return 'Loading...';
@@ -197,6 +197,50 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                     onInput: function( e ) { updateSlide( currentSlideIndex, 'link', { url: e.target.value } ); },
                     style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
                 } )
+            ) );
+
+            settingsContent.push( el( 'div', { key: 'btn-target', style: { marginBottom: '15px' } },
+                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Open Link in' ),
+                el( 'div', { style: { display: 'flex', gap: '8px' } },
+                    [ { label: 'Same Tab', value: '_self' }, { label: 'New Tab', value: '_blank' } ].map( function( option ) {
+                        return el( 'button', {
+                            key: option.value,
+                            onClick: function() { updateSlide( currentSlideIndex, 'link', { target: option.value } ); },
+                            style: {
+                                flex: 1,
+                                padding: '8px',
+                                border: '2px solid ' + ( slide.link.target === option.value ? '#007bff' : '#ccc' ),
+                                background: slide.link.target === option.value ? '#007bff' : '#fff',
+                                color: slide.link.target === option.value ? '#fff' : '#000',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: 'bold'
+                            }
+                        }, option.label );
+                    } )
+                )
+            ) );
+
+            settingsContent.push( el( 'div', { key: 'btn-icon', style: { marginBottom: '15px' } },
+                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Button Icon' ),
+                el( 'div', { style: { display: 'flex', gap: '8px' } },
+                    [ { label: 'Hide', value: false }, { label: 'Show', value: true } ].map( function( option ) {
+                        return el( 'button', {
+                            key: option.value ? 'show' : 'hide',
+                            onClick: function() { updateSlide( currentSlideIndex, 'link', { showIcon: option.value } ); },
+                            style: {
+                                flex: 1,
+                                padding: '8px',
+                                border: '2px solid ' + ( slide.link.showIcon === option.value ? '#007bff' : '#ccc' ),
+                                background: slide.link.showIcon === option.value ? '#007bff' : '#fff',
+                                color: slide.link.showIcon === option.value ? '#fff' : '#000',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: 'bold'
+                            }
+                        }, option.label );
+                    } )
+                )
             ) );
 
             settingsContent.push( el( 'div', { key: 'btn-style', style: { marginBottom: '15px' } },
@@ -347,7 +391,10 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             } )
                         ),
                         adjustTextareaHeight(),
-                        el( 'a', { href: slide.link.url, className: 'bnpp-button ' + slide.link.class }, slide.link.text )
+                        el( 'a', { href: slide.link.url, className: 'bnpp-button ' + slide.link.class, target: slide.link.target || '_self' },
+                            slide.link.text,
+                            slide.link.showIcon ? el( 'span', { className: 'button-icon' } ) : null
+                        )
                     )
                 ),
                 el( 'div', { style: { position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '6px' } }, previewNavButtons )

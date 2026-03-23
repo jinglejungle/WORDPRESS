@@ -60,6 +60,8 @@ function bnpp_carousel_register_block() {
                                     'text' => array( 'type' => 'string' ),
                                     'url' => array( 'type' => 'string' ),
                                     'class' => array( 'type' => 'string' ),
+                                    'target' => array( 'type' => 'string', 'default' => '_self' ),
+                                    'showIcon' => array( 'type' => 'boolean', 'default' => false ),
                                 ),
                             ),
                         ),
@@ -72,6 +74,8 @@ function bnpp_carousel_register_block() {
                                 'text'  => 'Learn more',
                                 'url'   => '#',
                                 'class' => 'primary',
+                                'target' => '_self',
+                                'showIcon' => false,
                             ),
                         ),
                         array(
@@ -81,6 +85,8 @@ function bnpp_carousel_register_block() {
                                 'text'  => 'Learn more',
                                 'url'   => '#',
                                 'class' => 'primary',
+                                'target' => '_self',
+                                'showIcon' => false,
                             ),
                         ),
                         array(
@@ -90,6 +96,8 @@ function bnpp_carousel_register_block() {
                                 'text'  => 'Learn more',
                                 'url'   => '#',
                                 'class' => 'primary',
+                                'target' => '_self',
+                                'showIcon' => false,
                             ),
                         ),
                     ),
@@ -126,12 +134,15 @@ function bnpp_carousel_render_block( $attributes ) {
         $link_text = isset( $link['text'] ) ? sanitize_text_field( $link['text'] ) : '';
         $link_url = isset( $link['url'] ) ? esc_url( $link['url'] ) : '#';
         $link_class = isset( $link['class'] ) ? sanitize_text_field( $link['class'] ) : 'primary';
+        $link_target = isset( $link['target'] ) ? sanitize_text_field( $link['target'] ) : '_self';
+        $link_show_icon = isset( $link['showIcon'] ) && $link['showIcon'] ? true : false;
 
         $style = ! empty( $background ) ? ' style="background: linear-gradient(270deg, rgba(12, 39, 40, 0.03) 38.74%, rgba(12, 39, 40, 0.70) 57.43%), url(' . $background . ') lightgray 0px -404px / 100% 200% no-repeat;"' : '';
         $output .= '<div class="bnpp-slide"' . $style . '>';
         $output .= '<div class="bnpp-overlay dark" style="background:transparent">';
         $output .= '<p>' . esc_html( $title ) . '</p>';
-        $output .= '<a href="' . $link_url . '" class="bnpp-button ' . $link_class . '">' . esc_html( $link_text ) . '</a>';
+        $icon_html = $link_show_icon ? '<span class="button-icon"></span>' : '';
+        $output .= '<a href="' . $link_url . '" class="bnpp-button ' . $link_class . '" target="' . $link_target . '">' . esc_html( $link_text ) . $icon_html . '</a>';
         $output .= '</div></div>';
     }
 
