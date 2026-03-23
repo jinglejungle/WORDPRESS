@@ -56,6 +56,31 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 return 'Loading...';
             }
 
+            // Ensure all slides have the category property
+            var slidesNeedsMigration = false;
+            var migratedSlides = slides.map( function( s ) {
+                if ( ! s.link ) {
+                    s.link = {};
+                }
+                if ( ! s.link.hasOwnProperty( 'category' ) ) {
+                    s.link.category = '';
+                    slidesNeedsMigration = true;
+                }
+                if ( ! s.link.hasOwnProperty( 'target' ) ) {
+                    s.link.target = '_self';
+                    slidesNeedsMigration = true;
+                }
+                if ( ! s.link.hasOwnProperty( 'showIcon' ) ) {
+                    s.link.showIcon = false;
+                    slidesNeedsMigration = true;
+                }
+                return s;
+            } );
+
+            if ( slidesNeedsMigration ) {
+                setAttributes( { slides: migratedSlides } );
+            }
+
             var updateSlide = function( idx, key, value ) {
                 var newSlides = JSON.parse( JSON.stringify( slides ) );
                 if ( key === 'link' ) {
