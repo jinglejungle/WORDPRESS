@@ -114,6 +114,10 @@ function bnpp_carousel_register_block() {
                     'type'    => 'number',
                     'default' => 0,
                 ),
+                'numSlides' => array(
+                    'type'    => 'number',
+                    'default' => 3,
+                ),
             ),
         )
     );
@@ -123,6 +127,11 @@ add_action( 'init', 'bnpp_carousel_register_block' );
 function bnpp_carousel_render_block( $attributes ) {
     $slides = isset( $attributes['slides'] ) ? $attributes['slides'] : array();
     $autoplay_speed = isset( $attributes['autoplaySpeed'] ) ? intval( $attributes['autoplaySpeed'] ) : 4;
+    $num_slides = isset( $attributes['numSlides'] ) ? intval( $attributes['numSlides'] ) : 3;
+    
+    // Limit to the specified number of slides (max 3)
+    $num_slides = min( $num_slides, 3 );
+    $slides = array_slice( $slides, 0, $num_slides );
 
     if ( empty( $slides ) ) {
         return '';

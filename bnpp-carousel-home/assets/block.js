@@ -28,6 +28,10 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             currentSlideIndex: {
                 type: 'number',
                 default: 0
+            },
+            numSlides: {
+                type: 'number',
+                default: 3
             }
         },
         
@@ -37,6 +41,10 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             var slides = attributes.slides;
             var autoplaySpeed = attributes.autoplaySpeed;
             var currentSlideIndex = attributes.currentSlideIndex;
+            var numSlides = attributes.numSlides;
+            
+            // Limit slides to numSlides
+            var visibleSlides = slides.slice( 0, numSlides );
 
             // Track truncation message state
             if ( ! window.bnppTruncationState ) {
@@ -93,8 +101,8 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
 
             var slide = slides[ currentSlideIndex ];
 
-            // Slide selector buttons
-            var slideSelectorButtons = slides.map( function( s, i ) {
+            // Slide selector buttons - only for visible slides
+            var slideSelectorButtons = visibleSlides.map( function( s, i ) {
                 return el( 'button', {
                     key: i,
                     onClick: function() { setAttributes( { currentSlideIndex: i } ); },
@@ -112,7 +120,28 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             } );
 
             var slideSelectorPanel = el( wpComponents.PanelBody, { title: 'Slide Selection', initialOpen: true },
-                el( 'div', { style: { display: 'flex', gap: '10px' } }, slideSelectorButtons )
+                el( 'div', { style: { marginBottom: '15px' } },
+                    el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Number of Slides' ),
+                    el( 'div', { style: { display: 'flex', gap: '8px' } },
+                        [ 1, 2, 3 ].map( function( num ) {
+                            return el( 'button', {
+                                key: num,
+                                onClick: function() { setAttributes( { numSlides: num } ); },
+                                style: {
+                                    flex: 1,
+                                    padding: '8px',
+                                    border: '2px solid ' + ( numSlides === num ? '#000' : '#ccc' ),
+                                    background: numSlides === num ? '#000' : '#fff',
+                                    color: numSlides === num ? '#fff' : '#000',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontWeight: 'bold'
+                                }
+                            }, String( num ) );
+                        } )
+                    )
+                ),
+                el( 'div', { style: { display: 'flex', gap: '10px', marginTop: '15px' } }, slideSelectorButtons )
             );
 
             // Title validation helpers
