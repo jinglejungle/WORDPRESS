@@ -488,7 +488,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                         )
                     )
                 ),
-                el( 'div', { style: { position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '6px' } }, previewNavButtons )
+                el( 'div', { className: 'bnpp-carousel-nav', style: { position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '6px' } }, previewNavButtons )
             );
 
             return el( Fragment, null, rightPanel, preview );
