@@ -458,8 +458,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                         ),
                         adjustTextareaHeight(),
                         el( 'a', { href: slide.link.url, className: 'bnpp-button ' + slide.link.class, target: slide.link.target || '_self' },
-                            el( 'span', { className: 'slide-title-category' }, slide.link.category || '' ),
-                            el( 'span', { className: 'slide_title' }, slide.link.text ),
+                            slide.link.text,
                             slide.link.showIcon ? el( 'span', { className: 'button-icon' } ) : null
                         )
                     )

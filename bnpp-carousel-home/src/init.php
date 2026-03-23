@@ -148,7 +148,7 @@ function bnpp_carousel_render_block( $attributes ) {
         $output .= '<p>' . esc_html( $title ) . '</p>';
         $category_html = ! empty( $link_category ) ? '<span class="slide-title-category">' . esc_html( $link_category ) . '</span>' : '<span class="slide-title-category"></span>';
         $icon_html = $link_show_icon ? '<span class="button-icon"></span>' : '';
-        $output .= '<a href="' . $link_url . '" class="bnpp-button ' . $link_class . '" target="' . $link_target . '">' . $category_html . '<span class="slide_title">' . esc_html( $link_text ) . '</span>' . $icon_html . '</a>';
+        $output .= '<a href="' . $link_url . '" class="bnpp-button ' . $link_class . '" target="' . $link_target . '">' . esc_html( $link_text ) . $icon_html . '</a>';
         $output .= '</div></div>';
     }
 
