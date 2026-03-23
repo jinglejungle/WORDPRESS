@@ -304,7 +304,10 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                         transition: 'all 0.3s ease'
                     },
                     'aria-selected': i === currentSlideIndex ? 'true' : 'false'
-                }, s.title );
+                },
+                    el( 'span', { className: 'slide-title-category' } ),
+                    el( 'span', { className: 'slide_title' }, s.title )
+                );
             } );
 
             // Helper to adjust textarea height

@@ -153,7 +153,7 @@ function bnpp_carousel_render_block( $attributes ) {
     foreach ( $slides as $index => $slide ) {
         $title = isset( $slide['title'] ) ? sanitize_text_field( $slide['title'] ) : 'Slide ' . ( $index + 1 );
         $aria_selected = $index === 0 ? 'true' : 'false';
-        $output .= '<button role="tab" aria-selected="' . $aria_selected . '">' . esc_html( $title ) . '</button>';
+        $output .= '<button role="tab" aria-selected="' . $aria_selected . '"><span class="slide-title-category"></span><span class="slide_title">' . esc_html( $title ) . '</span></button>';
     }
     $output .= '</div>';
     $output .= '</div>';
