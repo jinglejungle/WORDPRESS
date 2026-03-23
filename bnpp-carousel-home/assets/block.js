@@ -209,8 +209,8 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             style: {
                                 flex: 1,
                                 padding: '8px',
-                                border: '2px solid ' + ( slide.link.target === option.value ? '#007bff' : '#ccc' ),
-                                background: slide.link.target === option.value ? '#007bff' : '#fff',
+                                border: '2px solid ' + ( slide.link.target === option.value ? '#000' : '#ccc' ),
+                                background: slide.link.target === option.value ? '#000' : '#fff',
                                 color: slide.link.target === option.value ? '#fff' : '#000',
                                 borderRadius: '4px',
                                 cursor: 'pointer',
@@ -231,8 +231,8 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             style: {
                                 flex: 1,
                                 padding: '8px',
-                                border: '2px solid ' + ( slide.link.showIcon === option.value ? '#007bff' : '#ccc' ),
-                                background: slide.link.showIcon === option.value ? '#007bff' : '#fff',
+                                border: '2px solid ' + ( slide.link.showIcon === option.value ? '#000' : '#ccc' ),
+                                background: slide.link.showIcon === option.value ? '#000' : '#fff',
                                 color: slide.link.showIcon === option.value ? '#fff' : '#000',
                                 borderRadius: '4px',
                                 cursor: 'pointer',
@@ -253,8 +253,8 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             style: {
                                 flex: 1,
                                 padding: '8px',
-                                border: '2px solid ' + ( slide.link.class === style ? '#007bff' : '#ccc' ),
-                                background: slide.link.class === style ? '#007bff' : '#fff',
+                                border: '2px solid ' + ( slide.link.class === style ? '#000' : '#ccc' ),
+                                background: slide.link.class === style ? '#000' : '#fff',
                                 color: slide.link.class === style ? '#fff' : '#000',
                                 borderRadius: '4px',
                                 cursor: 'pointer',
