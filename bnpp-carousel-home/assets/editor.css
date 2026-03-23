@@ -101,6 +101,9 @@
     text-align: left;
     border: 0px solid transparent;
     border-left: 2px solid #C8CED1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .wp-block-bnpp-carousel-homepage .bnpp-carousel-nav button[aria-selected="true"] {
@@ -149,4 +152,8 @@
 
 .wp-block-bnpp-carousel-homepage .slide-title-category {
     display: block;
+    font-size: 30px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-style: normal;
 }
