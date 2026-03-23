@@ -120,8 +120,8 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             } );
 
             var slideSelectorPanel = el( wpComponents.PanelBody, { title: 'Slide Selection', initialOpen: true },
-                el( 'div', { style: { marginBottom: '15px' } },
-                    el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Number of Slides to Display' ),
+                el( 'div', { style: { marginBottom: '20px' } },
+                    el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px', color: '#333' } }, 'Number of Slides to Display' ),
                     el( 'div', { style: { display: 'flex', gap: '8px' } },
                         [ 1, 2, 3 ].map( function( num ) {
                             return el( 'button', {
@@ -129,21 +129,40 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                                 onClick: function() { setAttributes( { numSlides: num } ); },
                                 style: {
                                     flex: 1,
-                                    padding: '8px',
+                                    padding: '10px',
                                     border: '2px solid ' + ( numSlides === num ? '#000' : '#ccc' ),
-                                    background: numSlides === num ? '#000' : '#fff',
+                                    background: numSlides === num ? '#000' : '#f5f5f5',
                                     color: numSlides === num ? '#fff' : '#000',
                                     borderRadius: '4px',
                                     cursor: 'pointer',
-                                    fontWeight: 'bold'
+                                    fontWeight: 'bold',
+                                    fontSize: '16px'
                                 }
                             }, String( num ) );
                         } )
                     )
                 ),
-                el( 'div', { style: { borderTop: '2px solid #ddd', paddingTop: '15px', marginTop: '15px' } },
-                    el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Select Active Slide' ),
-                    el( 'div', { style: { display: 'flex', gap: '10px' } }, slideSelectorButtons )
+                el( 'div', { style: { borderTop: '2px solid #ddd', paddingTop: '20px', marginTop: '0' } },
+                    el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px', color: '#666', fontSize: '12px' } }, 'Edit Slide Content' ),
+                    el( 'div', { style: { display: 'flex', gap: '8px' } }, 
+                        visibleSlides.map( function( s, i ) {
+                            return el( 'button', {
+                                key: i,
+                                onClick: function() { setAttributes( { currentSlideIndex: i } ); },
+                                style: {
+                                    flex: 1,
+                                    padding: '8px 4px',
+                                    border: '1px solid ' + ( currentSlideIndex === i ? '#333' : '#ddd' ),
+                                    background: currentSlideIndex === i ? '#333' : '#fff',
+                                    color: currentSlideIndex === i ? '#fff' : '#666',
+                                    borderRadius: '3px',
+                                    cursor: 'pointer',
+                                    fontWeight: currentSlideIndex === i ? 'bold' : 'normal',
+                                    fontSize: '13px'
+                                }
+                            }, 'Slide ' + ( i + 1 ) );
+                        } )
+                    )
                 )
             );
 
