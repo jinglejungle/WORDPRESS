@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scroll to Top Button</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        section {
+            background: white;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Lien scroll to top */
+        a.scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: green;
+            opacity: 0;
+            border-radius: 4px;
+            transition: opacity 0.3s ease, background 0.3s ease;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            outline: none;
+            display: flex;
+            pointer-events: none;
+        }
+
+        /* Afficher le lien quand la classe "visible" est appliquée */
+        a.scroll-to-top.visible {
+            opacity: 0.5;
+            pointer-events: auto;
+        }
+
+        /* Au hover */
+        a.scroll-to-top:hover {
+            background: black;
+            opacity: 0.5;
+        }
+
+        /* Au focus (Tab) - devient visible et change de couleur */
+        a.scroll-to-top:focus {
+            background: black;
+            opacity: 0.5;
+            box-shadow: 0 0 0 3px rgba(0, 255, 0, 0.5);
+            pointer-events: auto;
+        }
+
+        /* SVG à l'intérieur du lien */
+        a.scroll-to-top svg {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Scroll to Top Button</h1>
+        <p>Scroll vers le bas pour voir apparaître le bouton. Le bouton ne s'affiche que si:</p>
+        <ul>
+            <li>La page fait plus de 1700px de hauteur</li>
+            <li>Vous êtes descendu de plus de 25% de la hauteur</li>
+        </ul>
+
+        <section>
+            <h2>Section 1</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </section>
+
+        <section>
+            <h2>Section 2</h2>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </section>
+
+        <section>
+            <h2>Section 3</h2>
+            <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+        </section>
+
+        <section>
+            <h2>Section 4</h2>
+            <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+        </section>
+
+        <section>
+            <h2>Section 5</h2>
+            <p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.</p>
+        </section>
+
+        <section>
+            <h2>Section 6</h2>
+            <p>Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut quid ex ea commodi consequatur.</p>
+        </section>
+
+        <section>
+            <h2>Section 7</h2>
+            <p>Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.</p>
+        </section>
+
+        <section>
+            <h2>Section 8</h2>
+            <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+        </section>
+
+        <section>
+            <h2>Section 9</h2>
+            <p>Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.</p>
+        </section>
+
+        <section>
+            <h2>Section 10</h2>
+            <p>Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.</p>
+        </section>
+    </main>
+
+    <!-- Lien scroll to top -->
+    <a href="#" class="scroll-to-top" aria-label="Revenir au haut" title="Revenir au haut">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </a>
+
+    <script>
+        const scrollToTopButton = document.querySelector('.scroll-to-top');
+        let hasScrolledPastThreshold = false;
+
+        function checkPageHeight() {
+            const pageHeight = document.documentElement.scrollHeight;
+            return pageHeight > 1700;
+        }
+
+        function getScrollThreshold() {
+            const pageHeight = document.documentElement.scrollHeight;
+            return pageHeight * 0.25;
+        }
+
+        function updateButtonVisibility() {
+            const pageHeight = document.documentElement.scrollHeight;
+            const scrollThreshold = getScrollThreshold();
+            const currentScroll = window.scrollY;
+
+            // Vérifier si la page fait plus de 1700px
+            if (!checkPageHeight()) {
+                scrollToTopButton.classList.remove('visible');
+                hasScrolledPastThreshold = false;
+                return;
+            }
+
+            // Vérifier si on est descendu de plus de 25%
+            if (currentScroll > scrollThreshold) {
+                scrollToTopButton.classList.add('visible');
+                hasScrolledPastThreshold = true;
+            }
+            // Si on remonte de plus de 25%, le lien redevient invisible
+            else if (currentScroll < scrollThreshold && hasScrolledPastThreshold) {
+                scrollToTopButton.classList.remove('visible');
+                hasScrolledPastThreshold = false;
+            }
+        }
+
+        // Écouter le scroll
+        window.addEventListener('scroll', updateButtonVisibility);
+
+        // Clic sur le bouton pour revenir au haut
+        scrollToTopButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Initialiser au chargement
+        updateButtonVisibility();
+    </script>
+
+</body>
+</html>
