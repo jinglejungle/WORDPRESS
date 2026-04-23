@@ -159,11 +159,11 @@
 }
 
 .bnpp-carousel-nav-sub-container{
-    width: 80%;
-    margin: 0 auto;
-    display: flex;
-    gap: 6px;
-    flex-wrap: nowrap;
+    width: 80%; 
+    margin: 0 auto; 
+    display: flex; 
+    gap: 6px; 
+    flex-wrap: nowrap; 
     justify-content: flex-start;
 }
 
@@ -172,10 +172,10 @@
         width:100%!important;
         padding-left:20px;
         padding-right:20px;
-    }
+    }   
 
     .bnpp-carousel-nav-sub-container{
-        width: 100%!important;
+        width: 100%!important; 
         padding-left:20px;
         padding-right:20px;
     }
@@ -187,7 +187,7 @@
     }
 
 
-    .bnpp-overlay .bnpp-button
+    .bnpp-overlay .bnpp-button 
     {
     width:100%!important;
     padding: 10px 24px!important;
