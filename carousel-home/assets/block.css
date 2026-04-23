@@ -159,12 +159,12 @@
 }
 
 .bnpp-carousel-nav-sub-container{
-    width: 80%; 
-    margin: 0 auto; 
-    display: flex; 
-    gap: 6px; 
-    flex-wrap: nowrap; 
-    justify-content: flex-start;
+	width: 80%; 
+	margin: 0 auto; 
+	display: flex; 
+	gap: 6px; 
+	flex-wrap: nowrap; 
+	justify-content: flex-start;
 }
 
 @media only screen and (max-width: 768px){
@@ -175,7 +175,7 @@
     }   
 
     .bnpp-carousel-nav-sub-container{
-        width: 100%!important; 
+	    width: 100%!important; 
         padding-left:20px;
         padding-right:20px;
     }
