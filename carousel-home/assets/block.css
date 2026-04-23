@@ -175,7 +175,7 @@
     }
 
     .bnpp-carousel-nav-sub-container{
-        width:100%!important;
+        width: 100%!important;
         padding-left:20px;
         padding-right:20px;
     }
@@ -185,6 +185,7 @@
     font-size: 48px !important;
     line-height: 45px !important;
     }
+
 
     .bnpp-overlay .bnpp-button
     {
@@ -216,13 +217,13 @@
         background-repeat: no-repeat !important;
     }
 
-    /* si l'image est trop grande */
+    /* Si l'image est trop grande */
     .bnpp-slide img {
         width: 100% !important;
         height: auto !important;
     }
 
-    .bnpp-carousel-nav button {
+    .bnpp-carousel-nav button{
         display:none;
     }
 
