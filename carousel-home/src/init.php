@@ -196,6 +196,16 @@ function bnpp_carousel_render_block( $attributes ) {
     $output .= '<div class="bnpp-carousel">';
 
     foreach ( $slides as $slide ) {
+        // Initialize all variables for this iteration
+        $title = '';
+        $category = '';
+        $background = '';
+        $link_url = '#';
+        $link_text = '';
+        $link_class = 'primary';
+        $link_target = '_self';
+        $link_show_icon = false;
+        
         // Determine if this slide is automatic
         $is_automatic = isset( $slide['mode'] ) && $slide['mode'] === 'automatic';
         
@@ -216,13 +226,10 @@ function bnpp_carousel_render_block( $attributes ) {
             $link_text = isset( $link['text'] ) ? sanitize_text_field( $link['text'] ) : '';
             $link_url = isset( $link['url'] ) ? esc_url( $link['url'] ) : '#';
             $category = isset( $link['category'] ) ? sanitize_text_field( $link['category'] ) : '';
+            $link_class = isset( $link['class'] ) ? sanitize_text_field( $link['class'] ) : 'primary';
+            $link_target = isset( $link['target'] ) ? sanitize_text_field( $link['target'] ) : '_self';
+            $link_show_icon = isset( $link['showIcon'] ) && $link['showIcon'] ? true : false;
         }
-        
-        // Get link properties from manual mode (or defaults for automatic)
-        $link = ! $is_automatic && isset( $slide['link'] ) ? $slide['link'] : array();
-        $link_class = isset( $link['class'] ) ? sanitize_text_field( $link['class'] ) : 'primary';
-        $link_target = isset( $link['target'] ) ? sanitize_text_field( $link['target'] ) : '_self';
-        $link_show_icon = isset( $link['showIcon'] ) && $link['showIcon'] ? true : false;
 
         $style = ! empty( $background ) ? ' style="background: linear-gradient(270deg, rgba(12, 39, 40, 0.03) 38.74%, rgba(12, 39, 40, 0.70) 57.43%), url(' . $background . ') lightgray 0px -404px / 100% 200% no-repeat;"' : '';
         $output .= '<div class="bnpp-slide"' . $style . '>';
