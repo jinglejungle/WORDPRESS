@@ -188,27 +188,50 @@ function bnpp_carousel_render_block( $attributes ) {
         return '';
     }
 
+    // Get all recent posts for automatic slides
+    $recent_posts = bnpp_carousel_get_recent_posts( 3 );
+    $post_index = 0;
+
     $output = '<section class="bnpp-carousel-wrapper" role="region" aria-roledescription="carousel" aria-label="Carousel">';
     $output .= '<div class="bnpp-carousel">';
 
     foreach ( $slides as $slide ) {
-        $title = isset( $slide['title'] ) ? sanitize_text_field( $slide['title'] ) : '';
-        $background = isset( $slide['background'] ) ? esc_url( $slide['background'] ) : '';
-        $link = isset( $slide['link'] ) ? $slide['link'] : array();
-        $link_text = isset( $link['text'] ) ? sanitize_text_field( $link['text'] ) : '';
-        $link_url = isset( $link['url'] ) ? esc_url( $link['url'] ) : '#';
+        // Determine if this slide is automatic
+        $is_automatic = isset( $slide['mode'] ) && $slide['mode'] === 'automatic';
+        
+        // Get slide data based on mode
+        if ( $is_automatic && isset( $recent_posts[ $post_index ] ) ) {
+            $post_data = $recent_posts[ $post_index ];
+            $title = $post_data['title'];
+            $category = $post_data['category'];
+            $background = $post_data['image'];
+            $link_url = $post_data['url'];
+            $link_text = 'Read More';
+            $post_index++;
+        } else {
+            // Manual mode
+            $title = isset( $slide['title'] ) ? sanitize_text_field( $slide['title'] ) : '';
+            $background = isset( $slide['background'] ) ? esc_url( $slide['background'] ) : '';
+            $link = isset( $slide['link'] ) ? $slide['link'] : array();
+            $link_text = isset( $link['text'] ) ? sanitize_text_field( $link['text'] ) : '';
+            $link_url = isset( $link['url'] ) ? esc_url( $link['url'] ) : '#';
+            $category = isset( $link['category'] ) ? sanitize_text_field( $link['category'] ) : '';
+        }
+        
+        // Get link properties from manual mode (or defaults for automatic)
+        $link = ! $is_automatic && isset( $slide['link'] ) ? $slide['link'] : array();
         $link_class = isset( $link['class'] ) ? sanitize_text_field( $link['class'] ) : 'primary';
         $link_target = isset( $link['target'] ) ? sanitize_text_field( $link['target'] ) : '_self';
         $link_show_icon = isset( $link['showIcon'] ) && $link['showIcon'] ? true : false;
-        $link_category = isset( $link['category'] ) ? sanitize_text_field( $link['category'] ) : '';
 
         $style = ! empty( $background ) ? ' style="background: linear-gradient(270deg, rgba(12, 39, 40, 0.03) 38.74%, rgba(12, 39, 40, 0.70) 57.43%), url(' . $background . ') lightgray 0px -404px / 100% 200% no-repeat;"' : '';
         $output .= '<div class="bnpp-slide"' . $style . '>';
         $output .= '<div class="bnpp-overlay dark" style="background:transparent">';
         $output .= '<p>' . esc_html( $title ) . '</p>';
-        $category_html = ! empty( $link_category ) ? '<span class="slide-title-category">' . esc_html( $link_category ) . '</span>' : '<span class="slide-title-category"></span>';
+        $category_html = ! empty( $category ) ? '<span class="slide-title-category">' . esc_html( $category ) . '</span>' : '<span class="slide-title-category"></span>';
         $icon_html = $link_show_icon ? '<span class="button-icon"></span>' : '';
-        $output .= '<a href="' . $link_url . '" class="bnpp-button ' . $link_class . '" target="' . $link_target . '">' . esc_html( $link_text ) . $icon_html . '</a>';
+        $rel_attr = $link_target === '_blank' ? ' rel="noopener noreferrer"' : '';
+        $output .= '<a href="' . $link_url . '" class="bnpp-button ' . $link_class . '" target="' . $link_target . '"' . $rel_attr . ' >' . esc_html( $link_text ) . $icon_html . '</a>';
         $output .= '</div></div>';
     }
 
