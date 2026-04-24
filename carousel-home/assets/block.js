@@ -329,14 +329,16 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             ) );
 
             settingsContent.push( el( 'div', { key: 'btn-url', style: { marginBottom: '15px' } },
-                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Button URL' ),
-                el( 'input', {
-                    type: 'url',
-                    value: slide.link.url,
-                    onInput: function( e ) { updateSlide( currentSlideIndex, 'link', { url: e.target.value } ); },
-                    style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
-                } )
-            ) );
+                el( wpBlocksEditor.LinkControl, {
+                        value: slide.link.url && slide.link.url !== '#' ? { url: slide.link.url } : {},
+                        onChange: function ( linkValue ){
+                            updateSlide(currentSlideIndex, 'link', { url : linkValue.url || '' } );
+                        },
+                        placeholder: 'Search or type Url',
+                        settings : []
+                    }
+                )
+            ) );     
 
             settingsContent.push( el( 'div', { key: 'btn-target', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Open Link in' ),
@@ -360,6 +362,9 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 )
             ) );
 
+
+
+            
             settingsContent.push( el( 'div', { key: 'btn-icon', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Button Icon' ),
                 el( 'div', { style: { display: 'flex', gap: '8px' } },
