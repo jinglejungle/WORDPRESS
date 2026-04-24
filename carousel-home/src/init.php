@@ -4,6 +4,53 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+/**
+ * Get recent published posts with cache (1 hour)
+ * Returns array of posts with title, category, featured image, and URL
+ */
+function bnpp_carousel_get_recent_posts( $count = 3 ) {
+    $cache_key = 'bnpp_carousel_recent_posts_' . $count;
+    $cached_posts = get_transient( $cache_key );
+    
+    if ( $cached_posts !== false ) {
+        return $cached_posts;
+    }
+    
+    $posts = get_posts( array(
+        'numberposts'      => $count,
+        'orderby'          => 'date',
+        'order'            => 'DESC',
+        'post_type'        => 'post',
+        'post_status'      => 'publish',
+        'suppress_filters' => false,
+    ) );
+    
+    $formatted_posts = array();
+    
+    foreach ( $posts as $post ) {
+        // Get first category
+        $categories = get_the_category( $post->ID );
+        $category_name = ! empty( $categories ) ? $categories[0]->name : '';
+        
+        // Get featured image
+        $image_id = get_post_thumbnail_id( $post->ID );
+        $image_url = $image_id ? wp_get_attachment_image_src( $image_id, 'full' )[0] : '';
+        
+        $formatted_posts[] = array(
+            'title'    => $post->post_title,
+            'category' => $category_name,
+            'image'    => $image_url,
+            'url'      => get_permalink( $post->ID ),
+        );
+    }
+    
+    // Cache for 1 hour (3600 seconds)
+    set_transient( $cache_key, $formatted_posts, 3600 );
+    
+    return $formatted_posts;
+}
+
+
 function bnpp_carousel_register_block_assets() {
     wp_register_script(
         'bnpp-carousel-editor',
@@ -54,6 +101,7 @@ function bnpp_carousel_register_block() {
                         'properties' => array(
                             'title' => array( 'type' => 'string' ),
                             'background' => array( 'type' => 'string' ),
+                            'mode' => array( 'type' => 'string', 'default' => 'manual' ),
                             'link' => array(
                                 'type' => 'object',
                                 'properties' => array(
@@ -71,6 +119,7 @@ function bnpp_carousel_register_block() {
                         array(
                             'title'       => 'Slide 1',
                             'background'  => '',
+                            'mode'        => 'manual',
                             'link'        => array(
                                 'text'  => 'Learn more',
                                 'url'   => '#',
@@ -83,6 +132,7 @@ function bnpp_carousel_register_block() {
                         array(
                             'title'       => 'Slide 2',
                             'background'  => '',
+                            'mode'        => 'manual',
                             'link'        => array(
                                 'text'  => 'Learn more',
                                 'url'   => '#',
@@ -95,6 +145,7 @@ function bnpp_carousel_register_block() {
                         array(
                             'title'       => 'Slide 3',
                             'background'  => '',
+                            'mode'        => 'manual',
                             'link'        => array(
                                 'text'  => 'Learn more',
                                 'url'   => '#',
