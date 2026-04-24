@@ -330,11 +330,11 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
 
             settingsContent.push( el( 'div', { key: 'btn-url', style: { marginBottom: '15px' } },
                 el( wpBlocksEditor.LinkControl, {
-                        value: slide.link.url && slide.link.url !== '#' ? { url: slide.link.url } : {},
+                        value: slide.link.url && slide.link.url !== '#' ? { url: slide.link.url } : {} ,
                         onChange: function ( linkValue ){
                             updateSlide(currentSlideIndex, 'link', { url : linkValue.url || '' } );
                         },
-                        placeholder: 'Search or type Url',
+                        placeholder: 'Search or type Url', 
                         settings : []
                     }
                 )
@@ -364,7 +364,6 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
 
 
 
-            
             settingsContent.push( el( 'div', { key: 'btn-icon', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Button Icon' ),
                 el( 'div', { style: { display: 'flex', gap: '8px' } },
