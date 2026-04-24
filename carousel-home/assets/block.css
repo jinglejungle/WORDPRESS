@@ -21,10 +21,12 @@
     justify-content: center;
     background-size: cover;
     background-position: center;
+    pointer-events: none;
 }
 
 .bnpp-slide.active {
     opacity: 1;
+    pointer-events: auto;
 }
 
 .bnpp-overlay {

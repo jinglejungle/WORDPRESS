@@ -195,7 +195,7 @@ function bnpp_carousel_render_block( $attributes ) {
     $output = '<section class="bnpp-carousel-wrapper" role="region" aria-roledescription="carousel" aria-label="Carousel">';
     $output .= '<div class="bnpp-carousel">';
 
-    foreach ( $slides as $slide ) {
+    foreach ( $slides as $slide_index => $slide ) {
         // Initialize all variables for this iteration
         $title = '';
         $category = '';
@@ -205,6 +205,9 @@ function bnpp_carousel_render_block( $attributes ) {
         $link_class = 'primary';
         $link_target = '_self';
         $link_show_icon = false;
+        
+        // Debug
+        $output .= '<!-- DEBUG SLIDE ' . $slide_index . ': ' . esc_html( json_encode( $slide ) ) . ' -->';
         
         // Determine if this slide is automatic
         $is_automatic = isset( $slide['mode'] ) && $slide['mode'] === 'automatic';
