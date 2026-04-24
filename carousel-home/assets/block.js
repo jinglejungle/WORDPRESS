@@ -351,7 +351,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             ) );
 
             settingsContent.push( el( 'div', { key: 'btn-url', style: { marginBottom: '15px' } },
-                el( wpBlockEditor.LinkControl, {
+                el( wpBlocksEditor.LinkControl, {
                         key: 'btn-url-' + currentSlideIndex,
                         value: slide.link.url && slide.link.url !== '#' ? { url: slide.link.url } : {} ,
                         onChange: function ( linkValue ){
