@@ -592,7 +592,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 var truncatedTitle = truncateTitle( postData.title );
                 console.log( 'DEBUG displayData: Using post at index', postIndex, 'title=', postData.title, 'truncated=', truncatedTitle );
                 displayData.title = truncatedTitle;
-                displayData.background = slide.background;
+                displayData.background = postData.image || '';
                 displayData.category = postData.category || '';
                 displayData.text = 'Read More';
                 displayData.url = postData.url || '#';
