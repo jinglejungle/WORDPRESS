@@ -13,7 +13,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
      * Fetch recent posts from REST API
      */
     function fetchRecentPosts() {
-        return fetch( '/wp-json/wp/v2/posts?per_page=3&orderby=date&order=desc&_fields=id,title,link,featured_media,_links' )
+        return fetch( '/wp-json/wp/v2/posts?per_page=3&orderby=date&order=desc&status=publish' )
             .then( function( response ) {
                 return response.json();
             } )
@@ -545,17 +545,20 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             var displayData = {};
             var postIndex = 0;
             
-            // Calculate post index by counting automatic slides before current
+            // Calculate post index by simulating PHP loop - count only automatic slides up to current
             for ( var i = 0; i < currentSlideIndex; i++ ) {
-                if ( slides[i].mode === 'automatic' ) {
+                if ( slides[i] && slides[i].mode === 'automatic' ) {
                     postIndex++;
                 }
             }
+            
+            // If current slide is also automatic, it uses the post at postIndex (then postIndex would increment)
+            // So we don't increment here - postIndex is already correct for the current slide
 
             if ( slide.mode === 'automatic' && recentPosts[ postIndex ] ) {
                 var postData = recentPosts[ postIndex ];
                 displayData.title = postData.title || '';
-                displayData.background = postData.featured_media ? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' : slide.background;
+                displayData.background = slide.background; // Use manual background if set, otherwise post image
                 displayData.category = '';
                 displayData.text = 'Read More';
                 displayData.url = postData.url || '#';
