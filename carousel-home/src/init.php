@@ -294,18 +294,19 @@ function bnpp_carousel_render_block( $attributes ) {
         // Determine if this slide is automatic
         $is_automatic = isset( $slide['mode'] ) && $slide['mode'] === 'automatic';
         
-        // Get title based on mode
+        // Get title and category based on mode
         if ( $is_automatic && isset( $recent_posts[ $post_index ] ) ) {
             $post_data = $recent_posts[ $post_index ];
             $title = bnpp_carousel_truncate_title( $post_data['title'] );
+            $category = $post_data['category'] ? sanitize_text_field( $post_data['category'] ) : '';
             $post_index++;
         } else {
             $title = isset( $slide['title'] ) ? sanitize_text_field( $slide['title'] ) : 'Slide ' . ( $index + 1 );
+            $link = isset( $slide['link'] ) ? $slide['link'] : array();
+            $category = isset( $link['category'] ) ? sanitize_text_field( $link['category'] ) : '';
         }
         
         $aria_selected = $index === 0 ? 'true' : 'false';
-        $link = isset( $slide['link'] ) ? $slide['link'] : array();
-        $category = isset( $link['category'] ) ? sanitize_text_field( $link['category'] ) : '';
         $category_html = ! empty( $category ) ? '<span class="slide-title-category">' . esc_html( $category ) . '</span>' : '<span class="slide-title-category"></span>';
         $output .= '<button role="tab" aria-selected="' . $aria_selected . '">' . $category_html . '<span class="slide_title">' . esc_html( $title ) . '</span></button>';
     }

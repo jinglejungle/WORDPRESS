@@ -516,8 +516,9 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
 
             // Preview
             var previewNavButtons = slides.map( function( s, i ) {
-                // Determine which title to display
+                // Determine which title and category to display
                 var buttonTitle = s.title;
+                var buttonCategory = s.link.category || '';
                 
                 if ( s.mode === 'automatic' ) {
                     // Calculate post index for this slide
@@ -528,9 +529,10 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                         }
                     }
                     
-                    // Get title from post data if available
+                    // Get title and category from post data if available
                     if ( recentPosts[ buttonPostIndex ] ) {
                         buttonTitle = truncateTitle( recentPosts[ buttonPostIndex ].title );
+                        buttonCategory = recentPosts[ buttonPostIndex ].category || '';
                     }
                 }
                 
@@ -556,7 +558,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                     },
                     'aria-selected': i === currentSlideIndex ? 'true' : 'false'
                 },
-                    el( 'span', { className: 'slide-title-category' }, s.link.category || '' ),
+                    el( 'span', { className: 'slide-title-category' }, buttonCategory ),
                     el( 'span', { className: 'slide_title' }, buttonTitle )
                 );
             } );
@@ -591,7 +593,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 console.log( 'DEBUG displayData: Using post at index', postIndex, 'title=', postData.title, 'truncated=', truncatedTitle );
                 displayData.title = truncatedTitle;
                 displayData.background = slide.background;
-                displayData.category = '';
+                displayData.category = postData.category || '';
                 displayData.text = 'Read More';
                 displayData.url = postData.url || '#';
             } else {
