@@ -260,6 +260,9 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
 
             // Settings content
             var settingsContent = [];
+            
+            // Debug: Log slide mode
+            console.log( 'DEBUG: Current slide index:', currentSlideIndex, 'slide.mode:', slide.mode );
 
             settingsContent.push( el( 'div', { key: 'mode', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Slide Mode' ),
