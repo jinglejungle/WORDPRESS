@@ -5,6 +5,36 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Check if text contains Asian characters
+ */
+function bnpp_carousel_has_asian_chars( $text ) {
+    return preg_match( '/[\x{4E00}-\x{9FFF}\x{3040}-\x{309F}\x{30A0}-\x{30FF}\x{AC00}-\x{D7AF}]/u', $text );
+}
+
+/**
+ * Get character limit based on text content (50 for Asian, 70 for European)
+ */
+function bnpp_carousel_get_char_limit( $text ) {
+    return bnpp_carousel_has_asian_chars( $text ) ? 50 : 70;
+}
+
+/**
+ * Truncate title to max length, removing 3 chars and adding "..."
+ */
+function bnpp_carousel_truncate_title( $title ) {
+    $limit = bnpp_carousel_get_char_limit( $title );
+    $length = mb_strlen( $title );
+    
+    if ( $length > $limit ) {
+        // Remove 3 characters and add "..."
+        $truncated = mb_substr( $title, 0, $limit - 3 );
+        return $truncated . '...';
+    }
+    
+    return $title;
+}
+
+/**
  * Get recent published posts with cache (1 hour)
  * Returns array of posts with title, category, featured image, and URL
  */
@@ -206,16 +236,13 @@ function bnpp_carousel_render_block( $attributes ) {
         $link_target = '_self';
         $link_show_icon = false;
         
-        // Debug
-        $output .= '<!-- DEBUG SLIDE ' . $slide_index . ': ' . esc_html( json_encode( $slide ) ) . ' -->';
-        
         // Determine if this slide is automatic
         $is_automatic = isset( $slide['mode'] ) && $slide['mode'] === 'automatic';
         
         // Get slide data based on mode
         if ( $is_automatic && isset( $recent_posts[ $post_index ] ) ) {
             $post_data = $recent_posts[ $post_index ];
-            $title = $post_data['title'];
+            $title = bnpp_carousel_truncate_title( $post_data['title'] );
             $category = $post_data['category'];
             $background = $post_data['image'];
             $link_url = $post_data['url'];
