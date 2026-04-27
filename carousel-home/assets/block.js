@@ -263,7 +263,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             
             // Debug: Log slide mode
             console.log( 'DEBUG: Current slide index:', currentSlideIndex, 'slide.mode:', slide.mode );
-
+            
             settingsContent.push( el( 'div', { key: 'mode', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Slide Mode' ),
                 el( 'div', { style: { display: 'flex', gap: '8px' } },
@@ -457,6 +457,9 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             var settingsPanel = el( wpComponents.PanelBody, { title: 'Slide Settings', initialOpen: true }, settingsContent );
 
             var rightPanel = el( wpBlocksEditor.InspectorControls, null, slideSelectorPanel, settingsPanel );
+            
+            // Debug: Log number of settings fields
+            console.log( 'DEBUG: settingsContent length:', settingsContent.length );
 
             // Preview
             var previewNavButtons = slides.map( function( s, i ) {
