@@ -6,6 +6,32 @@ var wpElement = window.wp && window.wp.element;
 if ( wpBlocks && wpBlocksEditor && wpElement ) {
     var el = wpElement.createElement;
     var Fragment = wpElement.Fragment;
+    var useState = wpElement.useState;
+    var useEffect = wpElement.useEffect;
+
+    /**
+     * Fetch recent posts from REST API
+     */
+    function fetchRecentPosts() {
+        return fetch( '/wp-json/wp/v2/posts?per_page=3&orderby=date&order=desc&_fields=id,title,link,featured_media,_links' )
+            .then( function( response ) {
+                return response.json();
+            } )
+            .then( function( posts ) {
+                return posts.map( function( post ) {
+                    return {
+                        title: post.title.rendered || '',
+                        url: post.link || '',
+                        featured_media: post.featured_media || 0,
+                        id: post.id
+                    };
+                } );
+            } )
+            .catch( function( error ) {
+                console.error( 'Error fetching posts:', error );
+                return [];
+            } );
+    }
 
     wpBlocks.registerBlockType( 'bnpp/carousel-homepage', {
         title: 'Carousel Homepage',
@@ -42,6 +68,16 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             var autoplaySpeed = attributes.autoplaySpeed;
             var currentSlideIndex = attributes.currentSlideIndex;
             var numSlides = attributes.numSlides;
+            
+            // State for recent posts
+            var recentPostsState = useState( [] );
+            var recentPosts = recentPostsState[0];
+            var setRecentPosts = recentPostsState[1];
+
+            // Fetch recent posts on component mount
+            useEffect( function() {
+                fetchRecentPosts().then( setRecentPosts );
+            }, [] );
             
             // Limit slides to numSlides
             var visibleSlides = slides.slice( 0, numSlides );
@@ -505,6 +541,32 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 }, 0 );
             };
 
+            // Determine display data based on slide mode
+            var displayData = {};
+            var postIndex = 0;
+            
+            // Calculate post index by counting automatic slides before current
+            for ( var i = 0; i < currentSlideIndex; i++ ) {
+                if ( slides[i].mode === 'automatic' ) {
+                    postIndex++;
+                }
+            }
+
+            if ( slide.mode === 'automatic' && recentPosts[ postIndex ] ) {
+                var postData = recentPosts[ postIndex ];
+                displayData.title = postData.title || '';
+                displayData.background = postData.featured_media ? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' : slide.background;
+                displayData.category = '';
+                displayData.text = 'Read More';
+                displayData.url = postData.url || '#';
+            } else {
+                displayData.title = slide.title;
+                displayData.background = slide.background;
+                displayData.category = slide.link.category || '';
+                displayData.text = slide.link.text;
+                displayData.url = slide.link.url;
+            }
+
             var preview = el( 'div', {
                 style: { position: 'relative', width: '100%', height: '75vh', minHeight: '648px', background: '#000', overflow: 'hidden', borderRadius: '4px', marginBottom: '20px' }
             },
@@ -512,7 +574,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                     style: {
                         width: '100%',
                         height: '100%',
-                        backgroundImage: slide.background ? 'linear-gradient(270deg, rgba(12, 39, 40, 0.03) 38.74%, rgba(12, 39, 40, 0.70) 57.43%), url(' + slide.background + ')' : 'linear-gradient(270deg, rgba(12, 39, 40, 0.03) 38.74%, rgba(12, 39, 40, 0.70) 57.43%)',
+                        backgroundImage: displayData.background ? 'linear-gradient(270deg, rgba(12, 39, 40, 0.03) 38.74%, rgba(12, 39, 40, 0.70) 57.43%), url(' + displayData.background + ')' : 'linear-gradient(270deg, rgba(12, 39, 40, 0.03) 38.74%, rgba(12, 39, 40, 0.70) 57.43%)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
@@ -539,9 +601,12 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                         },
                             el( 'textarea', {
                                 className: 'bnpp-preview-title-' + currentSlideIndex,
-                                value: slide.title,
+                                value: slide.mode === 'automatic' ? displayData.title : slide.title,
+                                readOnly: slide.mode === 'automatic',
                                 onInput: function( e ) {
-                                    handleTitleChange( e.target.value );
+                                    if ( ! slide.mode || slide.mode === 'manual' ) {
+                                        handleTitleChange( e.target.value );
+                                    }
                                     // Auto adjust height
                                     e.target.style.height = 'auto';
                                     e.target.style.height = e.target.scrollHeight + 'px';
@@ -578,8 +643,8 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             } )
                         ),
                         adjustTextareaHeight(),
-                        el( 'a', { href: slide.link.url, className: 'bnpp-button ' + slide.link.class, target: slide.link.target || '_self' },
-                            slide.link.text,
+                        el( 'a', { href: displayData.url, className: 'bnpp-button ' + slide.link.class, target: slide.link.target || '_self' },
+                            displayData.text,
                             slide.link.showIcon ? el( 'span', { className: 'button-icon' } ) : null
                         )
                     )
