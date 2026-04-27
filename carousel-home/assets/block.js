@@ -18,7 +18,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 return response.json();
             } )
             .then( function( posts ) {
-                return posts.map( function( post ) {
+                var formattedPosts = posts.map( function( post ) {
                     return {
                         title: post.title.rendered || '',
                         url: post.link || '',
@@ -26,6 +26,8 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                         id: post.id
                     };
                 } );
+                console.log( 'DEBUG fetchRecentPosts: API returned', formattedPosts );
+                return formattedPosts;
             } )
             .catch( function( error ) {
                 console.error( 'Error fetching posts:', error );
@@ -552,17 +554,18 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 }
             }
             
-            // If current slide is also automatic, it uses the post at postIndex (then postIndex would increment)
-            // So we don't increment here - postIndex is already correct for the current slide
+            console.log( 'DEBUG displayData: currentSlideIndex=', currentSlideIndex, 'slide.mode=', slide.mode, 'postIndex=', postIndex, 'recentPosts=', recentPosts );
 
             if ( slide.mode === 'automatic' && recentPosts[ postIndex ] ) {
                 var postData = recentPosts[ postIndex ];
+                console.log( 'DEBUG displayData: Using post at index', postIndex, 'title=', postData.title );
                 displayData.title = postData.title || '';
-                displayData.background = slide.background; // Use manual background if set, otherwise post image
+                displayData.background = slide.background;
                 displayData.category = '';
                 displayData.text = 'Read More';
                 displayData.url = postData.url || '#';
             } else {
+                console.log( 'DEBUG displayData: Using manual data' );
                 displayData.title = slide.title;
                 displayData.background = slide.background;
                 displayData.category = slide.link.category || '';
