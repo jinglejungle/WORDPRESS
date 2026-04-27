@@ -516,6 +516,24 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
 
             // Preview
             var previewNavButtons = slides.map( function( s, i ) {
+                // Determine which title to display
+                var buttonTitle = s.title;
+                
+                if ( s.mode === 'automatic' ) {
+                    // Calculate post index for this slide
+                    var buttonPostIndex = 0;
+                    for ( var j = 0; j < i; j++ ) {
+                        if ( slides[j] && slides[j].mode === 'automatic' ) {
+                            buttonPostIndex++;
+                        }
+                    }
+                    
+                    // Get title from post data if available
+                    if ( recentPosts[ buttonPostIndex ] ) {
+                        buttonTitle = truncateTitle( recentPosts[ buttonPostIndex ].title );
+                    }
+                }
+                
                 return el( 'button', {
                     key: i,
                     onClick: function() { setAttributes( { currentSlideIndex: i } ); },
@@ -539,7 +557,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                     'aria-selected': i === currentSlideIndex ? 'true' : 'false'
                 },
                     el( 'span', { className: 'slide-title-category' }, s.link.category || '' ),
-                    el( 'span', { className: 'slide_title' }, s.title )
+                    el( 'span', { className: 'slide_title' }, buttonTitle )
                 );
             } );
 
