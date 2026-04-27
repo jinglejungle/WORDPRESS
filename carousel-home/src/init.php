@@ -90,6 +90,16 @@ function bnpp_carousel_register_block_assets() {
         true
     );
 
+    // Localize recent posts data for JavaScript
+    $recent_posts = bnpp_carousel_get_recent_posts( 3 );
+    wp_localize_script(
+        'bnpp-carousel-editor',
+        'bnppCarouselData',
+        array(
+            'recentPosts' => $recent_posts
+        )
+    );
+
     wp_register_style(
         'bnpp-carousel-editor-style',
         BNPP_CAROUSEL_URL . 'assets/editor.css',
@@ -304,7 +314,7 @@ function bnpp_carousel_render_block( $attributes ) {
 
     $output .= '<button class="bnpp-pause-btn" aria-pressed="false">Pause</button>';
     $output .= '<div class="sr-only" aria-live="polite" id="bnpp-carousel-status"></div>';
-    $output .= '<script type="application/json" class="bnpp-carousel-config">' . wp_json_encode( array( 'autoplaySpeed' => $autoplay_speed * 1000, 'totalSlides' => count( $slides ) ) ) . '</script>';
+    $output .= '<script type="application/json" class="bnpp-carousel-config">' . wp_json_encode( array( 'autoplaySpeed' => $autoplay_speed * 1000, 'totalSlides' => count( $slides ), 'recentPosts' => $recent_posts ) ) . '</script>';
     $output .= '</section>';
 
     return $output;

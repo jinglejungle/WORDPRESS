@@ -10,29 +10,15 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
     var useEffect = wpElement.useEffect;
 
     /**
-     * Fetch recent posts from REST API
+     * Get recent posts from localized data (passed from PHP)
      */
-    function fetchRecentPosts() {
-        return fetch( '/wp-json/wp/v2/posts?per_page=3&orderby=date&order=desc&status=publish' )
-            .then( function( response ) {
-                return response.json();
-            } )
-            .then( function( posts ) {
-                var formattedPosts = posts.map( function( post ) {
-                    return {
-                        title: post.title.rendered || '',
-                        url: post.link || '',
-                        featured_media: post.featured_media || 0,
-                        id: post.id
-                    };
-                } );
-                console.log( 'DEBUG fetchRecentPosts: API returned', formattedPosts );
-                return formattedPosts;
-            } )
-            .catch( function( error ) {
-                console.error( 'Error fetching posts:', error );
-                return [];
-            } );
+    function getRecentPosts() {
+        if ( window.bnppCarouselData && window.bnppCarouselData.recentPosts ) {
+            console.log( 'DEBUG getRecentPosts: Using localized data', window.bnppCarouselData.recentPosts );
+            return Promise.resolve( window.bnppCarouselData.recentPosts );
+        }
+        console.log( 'DEBUG getRecentPosts: No localized data available' );
+        return Promise.resolve( [] );
     }
 
     wpBlocks.registerBlockType( 'bnpp/carousel-homepage', {
@@ -78,7 +64,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
 
             // Fetch recent posts on component mount
             useEffect( function() {
-                fetchRecentPosts().then( setRecentPosts );
+                getRecentPosts().then( setRecentPosts );
             }, [] );
             
             // Limit slides to numSlides
