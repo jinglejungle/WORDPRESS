@@ -10,6 +10,31 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
     var useEffect = wpElement.useEffect;
 
     /**
+     * Check if text contains Asian characters
+     */
+    function hasAsianChars( text ) {
+        return /[\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF\uAC00-\uD7AF]/.test( text );
+    }
+
+    /**
+     * Get character limit based on text content (50 for Asian, 70 for European)
+     */
+    function getCharLimit( text ) {
+        return hasAsianChars( text ) ? 50 : 70;
+    }
+
+    /**
+     * Truncate title to max length, removing 3 chars and adding "..."
+     */
+    function truncateTitle( title ) {
+        var limit = getCharLimit( title );
+        if ( title.length > limit ) {
+            return title.substring( 0, limit - 3 ) + '...';
+        }
+        return title;
+    }
+
+    /**
      * Get recent posts from localized data (passed from PHP)
      */
     function getRecentPosts() {
@@ -544,8 +569,9 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
 
             if ( slide.mode === 'automatic' && recentPosts[ postIndex ] ) {
                 var postData = recentPosts[ postIndex ];
-                console.log( 'DEBUG displayData: Using post at index', postIndex, 'title=', postData.title );
-                displayData.title = postData.title || '';
+                var truncatedTitle = truncateTitle( postData.title );
+                console.log( 'DEBUG displayData: Using post at index', postIndex, 'title=', postData.title, 'truncated=', truncatedTitle );
+                displayData.title = truncatedTitle;
                 displayData.background = slide.background;
                 displayData.category = '';
                 displayData.text = 'Read More';
