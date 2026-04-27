@@ -260,10 +260,9 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
 
             // Settings content
             var settingsContent = [];
-            
-            // Debug: Log slide mode
-            console.log( 'DEBUG: Current slide index:', currentSlideIndex, 'slide.mode:', slide.mode );
-            
+            var isAutomatic = slide.mode === 'automatic';
+
+            // Mode toggle - always visible
             settingsContent.push( el( 'div', { key: 'mode', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Slide Mode' ),
                 el( 'div', { style: { display: 'flex', gap: '8px' } },
@@ -286,7 +285,8 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 )
             ) );
 
-            if ( slide.mode !== 'automatic' ) {
+            // Title - only in manual mode
+            if ( ! isAutomatic ) {
                 settingsContent.push( el( 'div', { key: 'title', style: { marginBottom: '15px' } },
                     el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Title' ),
                     el( 'textarea', {
@@ -304,8 +304,8 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 ) );
             }
 
-
-            if ( slide.mode !== 'automatic' ) {
+            // Background Image - only in manual mode
+            if ( ! isAutomatic ) {
                 settingsContent.push( el( 'div', { key: 'bg', style: { marginBottom: '15px' } },
                     el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Background Image' ),
                     el( wpBlocksEditor.MediaUpload, {
@@ -330,7 +330,8 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 ) );
             }
 
-            if ( slide.mode !== 'automatic' ) {
+            // Category - only in manual mode
+            if ( ! isAutomatic ) {
                 settingsContent.push( el( 'div', { key: 'btn-category', style: { marginBottom: '15px' } },
                     el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Category' ),
                     el( 'input', {
@@ -349,7 +350,8 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 ) );
             }
 
-            if ( slide.mode !== 'automatic' ) {
+            // Button Text - only in manual mode
+            if ( ! isAutomatic ) {
                 settingsContent.push( el( 'div', { key: 'btn-text', style: { marginBottom: '15px' } },
                     el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Button Text' ),
                     el( 'input', {
@@ -360,7 +362,6 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                     } )
                 ) );
             }
-
             settingsContent.push( el( 'div', { key: 'btn-url', style: { marginBottom: '15px' } },
                 el( wpBlocksEditor.LinkControl, {
                         key: 'btn-url-' + currentSlideIndex,
