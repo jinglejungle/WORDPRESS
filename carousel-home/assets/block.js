@@ -283,72 +283,80 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 )
             ) );
 
-            settingsContent.push( el( 'div', { key: 'title', style: { marginBottom: '15px' } },
-                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Title' ),
-                el( 'textarea', {
-                    value: slide.title,
-                    onInput: function( e ) { handleTitleChange( e.target.value ); },
-                    onPaste: handleTitlePaste,
-                    style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box', minHeight: '80px', fontFamily: 'inherit', resize: 'vertical' },
-                    maxLength: 70
-                } ),
-                el( 'div', { style: { marginTop: '5px', fontSize: '12px', color: '#666' } },
-                    el( 'span', null, currentCharCount + ' / ' + currentLimit + ' characters' ),
-                    isAtLimit ? el( 'span', { style: { marginLeft: '10px', color: '#f87171' } }, '(max reached)' ) : null
-                ),
-                showTruncationMsg ? el( 'div', { style: { marginTop: '5px', fontSize: '12px', color: '#f97316', fontWeight: 'bold' } }, 'Text was truncated to fit the character limit.' ) : null
-            ) );
+            if ( slide.mode !== 'automatic' ) {
+                settingsContent.push( el( 'div', { key: 'title', style: { marginBottom: '15px' } },
+                    el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Title' ),
+                    el( 'textarea', {
+                        value: slide.title,
+                        onInput: function( e ) { handleTitleChange( e.target.value ); },
+                        onPaste: handleTitlePaste,
+                        style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box', minHeight: '80px', fontFamily: 'inherit', resize: 'vertical' },
+                        maxLength: 70
+                    } ),
+                    el( 'div', { style: { marginTop: '5px', fontSize: '12px', color: '#666' } },
+                        el( 'span', null, currentCharCount + ' / ' + currentLimit + ' characters' ),
+                        isAtLimit ? el( 'span', { style: { marginLeft: '10px', color: '#f87171' } }, '(max reached)' ) : null
+                    ),
+                    showTruncationMsg ? el( 'div', { style: { marginTop: '5px', fontSize: '12px', color: '#f97316', fontWeight: 'bold' } }, 'Text was truncated to fit the character limit.' ) : null
+                ) );
+            }
 
 
-            settingsContent.push( el( 'div', { key: 'bg', style: { marginBottom: '15px' } },
-                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Background Image' ),
-                el( wpBlocksEditor.MediaUpload, {
-                    onSelect: function( media ) { updateSlide( currentSlideIndex, 'background', media.url ); },
-                    allowedTypes: [ 'image' ],
-                    render: function( obj ) {
-                        return el( 'div', null,
-                            el( 'button', {
-                                onClick: obj.open,
-                                style: { width: '100%', padding: '10px', background: '#f0f0f0', border: '2px solid #ccc', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }
-                            }, slide.background ? 'Change Image' : 'Select Image' ),
-                            slide.background ? el( 'div', { style: { marginTop: '10px' } },
-                                el( 'img', { src: slide.background, style: { maxWidth: '100%', height: 'auto', borderRadius: '4px' } } ),
+            if ( slide.mode !== 'automatic' ) {
+                settingsContent.push( el( 'div', { key: 'bg', style: { marginBottom: '15px' } },
+                    el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Background Image' ),
+                    el( wpBlocksEditor.MediaUpload, {
+                        onSelect: function( media ) { updateSlide( currentSlideIndex, 'background', media.url ); },
+                        allowedTypes: [ 'image' ],
+                        render: function( obj ) {
+                            return el( 'div', null,
                                 el( 'button', {
-                                    onClick: function() { updateSlide( currentSlideIndex, 'background', '' ); },
-                                    style: { width: '100%', marginTop: '10px', padding: '8px', background: '#d32f2f', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }
-                                }, 'Remove Image' )
-                            ) : null
-                        );
-                    }
-                } )
-            ) );
+                                    onClick: obj.open,
+                                    style: { width: '100%', padding: '10px', background: '#f0f0f0', border: '2px solid #ccc', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }
+                                }, slide.background ? 'Change Image' : 'Select Image' ),
+                                slide.background ? el( 'div', { style: { marginTop: '10px' } },
+                                    el( 'img', { src: slide.background, style: { maxWidth: '100%', height: 'auto', borderRadius: '4px' } } ),
+                                    el( 'button', {
+                                        onClick: function() { updateSlide( currentSlideIndex, 'background', '' ); },
+                                        style: { width: '100%', marginTop: '10px', padding: '8px', background: '#d32f2f', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }
+                                    }, 'Remove Image' )
+                                ) : null
+                            );
+                        }
+                    } )
+                ) );
+            }
 
-            settingsContent.push( el( 'div', { key: 'btn-category', style: { marginBottom: '15px' } },
-                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Category' ),
-                el( 'input', {
-                    type: 'text',
-                    placeholder: 'Category...',
-                    value: slide.link.category || '',
-                    onInput: function( e ) { handleCategoryChange( e.target.value ); },
-                    onPaste: handleCategoryPaste,
-                    style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
-                } ),
-                el( 'div', { style: { marginTop: '5px', fontSize: '12px', color: '#666' } },
-                    el( 'span', null, categoryCharCount + ' / ' + categoryLimit + ' characters' ),
-                    isCategoryAtLimit ? el( 'span', { style: { marginLeft: '10px', color: '#f87171' } }, '(max reached)' ) : null
-                ),
-                showCategoryTruncationMsg ? el( 'div', { style: { marginTop: '5px', fontSize: '12px', color: '#f97316', fontWeight: 'bold' } }, 'Text was truncated to fit the character limit.' ) : null
-            ) );
+            if ( slide.mode !== 'automatic' ) {
+                settingsContent.push( el( 'div', { key: 'btn-category', style: { marginBottom: '15px' } },
+                    el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Category' ),
+                    el( 'input', {
+                        type: 'text',
+                        placeholder: 'Category...',
+                        value: slide.link.category || '',
+                        onInput: function( e ) { handleCategoryChange( e.target.value ); },
+                        onPaste: handleCategoryPaste,
+                        style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
+                    } ),
+                    el( 'div', { style: { marginTop: '5px', fontSize: '12px', color: '#666' } },
+                        el( 'span', null, categoryCharCount + ' / ' + categoryLimit + ' characters' ),
+                        isCategoryAtLimit ? el( 'span', { style: { marginLeft: '10px', color: '#f87171' } }, '(max reached)' ) : null
+                    ),
+                    showCategoryTruncationMsg ? el( 'div', { style: { marginTop: '5px', fontSize: '12px', color: '#f97316', fontWeight: 'bold' } }, 'Text was truncated to fit the character limit.' ) : null
+                ) );
+            }
 
-            settingsContent.push( el( 'div', { key: 'btn-text', style: { marginBottom: '15px' } },
-                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Button Text' ),
-                el( 'input', {
-                    type: 'text',
-                    value: slide.link.text,
-                    onInput: function( e ) { updateSlide( currentSlideIndex, 'link', { text: e.target.value } ); },
-                    style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
-                } )
-            ) );
+            if ( slide.mode !== 'automatic' ) {
+                settingsContent.push( el( 'div', { key: 'btn-text', style: { marginBottom: '15px' } },
+                    el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Button Text' ),
+                    el( 'input', {
+                        type: 'text',
+                        value: slide.link.text,
+                        onInput: function( e ) { updateSlide( currentSlideIndex, 'link', { text: e.target.value } ); },
+                        style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
+                    } )
+                ) );
+            }
 
             settingsContent.push( el( 'div', { key: 'btn-url', style: { marginBottom: '15px' } },
                 el( wpBlocksEditor.LinkControl, {
