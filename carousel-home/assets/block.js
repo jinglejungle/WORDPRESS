@@ -362,18 +362,21 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                     } )
                 ) );
             }
-            settingsContent.push( el( 'div', { key: 'btn-url', style: { marginBottom: '15px' } },
-                el( wpBlocksEditor.LinkControl, {
-                        key: 'btn-url-' + currentSlideIndex,
-                        value: slide.link.url && slide.link.url !== '#' ? { url: slide.link.url } : {} ,
-                        onChange: function ( linkValue ){
-                            updateSlide(currentSlideIndex, 'link', { url : linkValue.url || '' } );
-                        },
-                        placeholder: 'Search or type Url', 
-                        settings : []
-                    }
-                )
-            ) );     
+            // Button URL - only in manual mode
+            if ( ! isAutomatic ) {
+                settingsContent.push( el( 'div', { key: 'btn-url', style: { marginBottom: '15px' } },
+                    el( wpBlocksEditor.LinkControl, {
+                            key: 'btn-url-' + currentSlideIndex,
+                            value: slide.link.url && slide.link.url !== '#' ? { url: slide.link.url } : {} ,
+                            onChange: function ( linkValue ){
+                                updateSlide(currentSlideIndex, 'link', { url : linkValue.url || '' } );
+                            },
+                            placeholder: 'Search or type Url', 
+                            settings : []
+                        }
+                    )
+                ) );
+            }
 
             settingsContent.push( el( 'div', { key: 'btn-target', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Open Link in' ),
