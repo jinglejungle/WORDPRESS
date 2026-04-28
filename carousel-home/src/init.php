@@ -260,7 +260,7 @@ function bnpp_carousel_render_block( $attributes ) {
             $post_index++;
         } else {
             // Manual mode
-            $title = isset( $slide['title'] ) ? sanitize_text_field( $slide['title'] ) : '';
+            $title = isset( $slide['title'] ) ? wp_kses_post( $slide['title'] ) : '';
             $background = isset( $slide['background'] ) ? esc_url( $slide['background'] ) : '';
             $link = isset( $slide['link'] ) ? $slide['link'] : array();
             $link_text = isset( $link['text'] ) ? sanitize_text_field( $link['text'] ) : '';
@@ -274,7 +274,7 @@ function bnpp_carousel_render_block( $attributes ) {
         $style = ! empty( $background ) ? ' style="background: linear-gradient(270deg, rgba(12, 39, 40, 0.03) 38.74%, rgba(12, 39, 40, 0.70) 57.43%), url(' . $background . ') lightgray 0px -404px / 100% 200% no-repeat;"' : '';
         $output .= '<div class="bnpp-slide"' . $style . '>';
         $output .= '<div class="bnpp-overlay dark" style="background:transparent">';
-        $output .= '<p>' . esc_html( $title ) . '</p>';
+        $output .= '<p>' . nl2br( $title ) . '</p>';
         $category_html = ! empty( $category ) ? '<span class="slide-title-category">' . esc_html( $category ) . '</span>' : '<span class="slide-title-category"></span>';
         $icon_html = $link_show_icon ? '<span class="button-icon"></span>' : '';
         $rel_attr = $link_target === '_blank' ? ' rel="noopener noreferrer"' : '';
