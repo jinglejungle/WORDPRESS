@@ -294,12 +294,14 @@ function bnpp_carousel_render_block( $attributes ) {
             $slide_description = isset( $slide['slideDescription'] ) ? wp_kses_post( $slide['slideDescription'] ) : '';
             
             if ( ! empty( $slide_description_title ) || ! empty( $slide_description ) ) {
+                $output .= '<div id="bnpp-slide-paragraph-section">';
                 if ( ! empty( $slide_description_title ) ) {
                     $output .= '<h3 id="bnpp-slide-description-title">' . nl2br( $slide_description_title ) . '</h3>';
                 }
                 if ( ! empty( $slide_description ) ) {
                     $output .= '<p id="bnpp-slide-description">' . nl2br( $slide_description ) . '</p>';
                 }
+                $output .= '</div>';
             }
         }
         $output .= '</div></div>';

@@ -708,7 +708,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             displayData.text,
                             slide.link.showIcon ? el( 'span', { className: 'button-icon' } ) : null
                         ),
-                        numSlides === 1 && ( slide.slideDescriptionTitle || slide.slideDescription ) ? el( 'div', null,
+                        numSlides === 1 && ( slide.slideDescriptionTitle || slide.slideDescription ) ? el( 'div', { id: 'bnpp-slide-paragraph-section' },
                             slide.slideDescriptionTitle ? el( 'h3', { id: 'bnpp-slide-description-title', style: { marginTop: '20px', whiteSpace: 'pre-wrap' } }, slide.slideDescriptionTitle ) : null,
                             slide.slideDescription ? el( 'p', { id: 'bnpp-slide-description', style: { marginTop: '10px', whiteSpace: 'pre-wrap' } }, slide.slideDescription ) : null
                         ) : null
