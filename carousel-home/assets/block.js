@@ -55,9 +55,9 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             slides: {
                 type: 'array',
                 default: [
-                    { title: 'Slide 1', background: '', mode: 'manual', slideDescription: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '' } },
-                    { title: 'Slide 2', background: '', mode: 'manual', slideDescription: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '' } },
-                    { title: 'Slide 3', background: '', mode: 'manual', slideDescription: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '' } }
+                    { title: 'Slide 1', background: '', mode: 'manual', slideDescription: '', slideDescriptionTitle: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '' } },
+                    { title: 'Slide 2', background: '', mode: 'manual', slideDescription: '', slideDescriptionTitle: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '' } },
+                    { title: 'Slide 3', background: '', mode: 'manual', slideDescription: '', slideDescriptionTitle: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '' } }
                 ]
             },
             autoplaySpeed: {
@@ -427,17 +427,6 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 ) );
             }
 
-            // Slide description - only visible if numSlides === 1
-            if ( numSlides === 1 ) {
-                settingsContent.push( el( 'div', { key: 'slide-description', style: { marginBottom: '15px' } },
-                    el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Slide Description' ),
-                    el( 'textarea', {
-                        value: slide.slideDescription || '',
-                        onInput: function( e ) { updateSlide( currentSlideIndex, 'slideDescription', e.target.value ); },
-                        placeholder: 'Enter additional description text...',
-                        style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box', minHeight: '100px', fontFamily: 'inherit', resize: 'vertical' }
-                    } )
-                ) );
             }
 
             settingsContent.push( el( 'div', { key: 'btn-target', style: { marginBottom: '15px' } },
@@ -507,6 +496,32 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                     } )
                 )
             ) );
+
+            // Paragraph section - only visible if numSlides === 1 AND it's slide 1 (currentSlideIndex === 0)
+            if ( numSlides === 1 && currentSlideIndex === 0 ) {
+                // Paragraph title
+                settingsContent.push( el( 'div', { key: 'slide-paragraph-title', style: { marginBottom: '15px' } },
+                    el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Paragraph Title' ),
+                    el( 'input', {
+                        type: 'text',
+                        value: slide.slideDescriptionTitle || '',
+                        onInput: function( e ) { updateSlide( currentSlideIndex, 'slideDescriptionTitle', e.target.value ); },
+                        placeholder: 'Enter paragraph title...',
+                        style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }
+                    } )
+                ) );
+
+                // Paragraph content
+                settingsContent.push( el( 'div', { key: 'slide-paragraph', style: { marginBottom: '15px' } },
+                    el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Paragraph' ),
+                    el( 'textarea', {
+                        value: slide.slideDescription || '',
+                        onInput: function( e ) { updateSlide( currentSlideIndex, 'slideDescription', e.target.value ); },
+                        placeholder: 'Enter additional paragraph...',
+                        style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box', minHeight: '100px', fontFamily: 'inherit', resize: 'vertical' }
+                    } )
+                ) );
+            }
 
             settingsContent.push( el( 'div', { key: 'duration', style: { marginBottom: '15px', paddingTop: '15px', borderTop: '1px solid #ccc' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '5px' } }, 'Duration (seconds)' ),
@@ -695,7 +710,10 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             displayData.text,
                             slide.link.showIcon ? el( 'span', { className: 'button-icon' } ) : null
                         ),
-                        numSlides === 1 && slide.slideDescription ? el( 'p', { id: 'bnpp-slide-description', style: { marginTop: '20px', whiteSpace: 'pre-wrap' } }, slide.slideDescription ) : null
+                        numSlides === 1 && ( slide.slideDescriptionTitle || slide.slideDescription ) ? el( 'div', null,
+                            slide.slideDescriptionTitle ? el( 'h3', { id: 'bnpp-slide-description-title', style: { marginTop: '20px', whiteSpace: 'pre-wrap' } }, slide.slideDescriptionTitle ) : null,
+                            slide.slideDescription ? el( 'p', { id: 'bnpp-slide-description', style: { marginTop: '10px', whiteSpace: 'pre-wrap' } }, slide.slideDescription ) : null
+                        ) : null
                     )
                 ),
                 el( 'div', { style: { position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '6px' } }, numSlides === 1 ? null : previewNavButtons )

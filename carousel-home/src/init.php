@@ -143,6 +143,7 @@ function bnpp_carousel_register_block() {
                             'background' => array( 'type' => 'string' ),
                             'mode' => array( 'type' => 'string', 'default' => 'manual' ),
                             'slideDescription' => array( 'type' => 'string', 'default' => '' ),
+                            'slideDescriptionTitle' => array( 'type' => 'string', 'default' => '' ),
                             'link' => array(
                                 'type' => 'object',
                                 'properties' => array(
@@ -162,6 +163,7 @@ function bnpp_carousel_register_block() {
                             'background'  => '',
                             'mode'        => 'manual',
                             'slideDescription' => '',
+                            'slideDescriptionTitle' => '',
                             'link'        => array(
                                 'text'  => 'Learn more',
                                 'url'   => '#',
@@ -176,6 +178,7 @@ function bnpp_carousel_register_block() {
                             'background'  => '',
                             'mode'        => 'manual',
                             'slideDescription' => '',
+                            'slideDescriptionTitle' => '',
                             'link'        => array(
                                 'text'  => 'Learn more',
                                 'url'   => '#',
@@ -190,6 +193,7 @@ function bnpp_carousel_register_block() {
                             'background'  => '',
                             'mode'        => 'manual',
                             'slideDescription' => '',
+                            'slideDescriptionTitle' => '',
                             'link'        => array(
                                 'text'  => 'Learn more',
                                 'url'   => '#',
@@ -284,11 +288,18 @@ function bnpp_carousel_render_block( $attributes ) {
         $rel_attr = $link_target === '_blank' ? ' rel="noopener noreferrer"' : '';
         $output .= '<a href="' . $link_url . '" class="bnpp-button ' . $link_class . '" target="' . $link_target . '"' . $rel_attr . ' >' . esc_html( $link_text ) . $icon_html . '</a>';
         
-        // Display slide description only if numSlides is 1
-        if ( $num_slides === 1 ) {
+        // Display slide description only if numSlides is 1 AND this is slide 1 (index 0)
+        if ( $num_slides === 1 && $index === 0 ) {
+            $slide_description_title = isset( $slide['slideDescriptionTitle'] ) ? wp_kses_post( $slide['slideDescriptionTitle'] ) : '';
             $slide_description = isset( $slide['slideDescription'] ) ? wp_kses_post( $slide['slideDescription'] ) : '';
-            if ( ! empty( $slide_description ) ) {
-                $output .= '<p id="bnpp-slide-description">' . nl2br( $slide_description ) . '</p>';
+            
+            if ( ! empty( $slide_description_title ) || ! empty( $slide_description ) ) {
+                if ( ! empty( $slide_description_title ) ) {
+                    $output .= '<h3 id="bnpp-slide-description-title">' . nl2br( $slide_description_title ) . '</h3>';
+                }
+                if ( ! empty( $slide_description ) ) {
+                    $output .= '<p id="bnpp-slide-description">' . nl2br( $slide_description ) . '</p>';
+                }
             }
         }
         $output .= '</div></div>';
