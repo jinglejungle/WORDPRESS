@@ -77,6 +77,12 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
         edit: function( props ) {
             var attributes = props.attributes;
             var setAttributes = props.setAttributes;
+            
+            // Initialize numSlides if not set
+            if ( typeof attributes.numSlides === 'undefined' || attributes.numSlides === null ) {
+                setAttributes( { numSlides: 3 } );
+            }
+            
             var slides = attributes.slides;
             var autoplaySpeed = attributes.autoplaySpeed;
             var currentSlideIndex = attributes.currentSlideIndex;
