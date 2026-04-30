@@ -228,6 +228,19 @@ function bnpp_carousel_render_block( $attributes ) {
     $autoplay_speed = isset( $attributes['autoplaySpeed'] ) ? intval( $attributes['autoplaySpeed'] ) : 4;
     $num_slides = isset( $attributes['numSlides'] ) ? intval( $attributes['numSlides'] ) : 3;
     
+    // Migration: Ensure slideDescription and slideDescriptionTitle exist on all slides
+    $migrated_slides = array();
+    foreach ( $slides as $slide ) {
+        if ( ! isset( $slide['slideDescription'] ) ) {
+            $slide['slideDescription'] = '';
+        }
+        if ( ! isset( $slide['slideDescriptionTitle'] ) ) {
+            $slide['slideDescriptionTitle'] = '';
+        }
+        $migrated_slides[] = $slide;
+    }
+    $slides = $migrated_slides;
+    
     // Limit to the specified number of slides (max 3)
     $num_slides = min( $num_slides, 3 );
     $slides = array_slice( $slides, 0, $num_slides );
