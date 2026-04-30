@@ -524,11 +524,8 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
 
             var rightPanel = el( wpBlocksEditor.InspectorControls, null, slideSelectorPanel, settingsPanel );
             
-            // Debug: Log number of settings fields
-            console.log( 'DEBUG: settingsContent length:', settingsContent.length );
-
             // Preview
-            var previewNavButtons = slides.map( function( s, i ) {
+            var previewNavButtons = visibleSlides.map( function( s, i ) {
                 // Determine which title and category to display
                 var buttonTitle = s.title;
                 var buttonCategory = s.link.category || '';
@@ -537,7 +534,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                     // Calculate post index for this slide
                     var buttonPostIndex = 0;
                     for ( var j = 0; j < i; j++ ) {
-                        if ( slides[j] && slides[j].mode === 'automatic' ) {
+                        if ( visibleSlides[j] && visibleSlides[j].mode === 'automatic' ) {
                             buttonPostIndex++;
                         }
                     }
