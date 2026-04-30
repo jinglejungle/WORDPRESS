@@ -304,7 +304,7 @@ function bnpp_carousel_render_block( $attributes ) {
         $output .= '</div>';
         
         // Display slide description only if numSlides is 1 (only one slide displayed)
-        if ( $num_slides === 1 && $index === 0 ) {
+        if ( $num_slides === 1 && $slide_index === 0 ) {
             $slide_description_title = isset( $slide['slideDescriptionTitle'] ) ? wp_kses_post( $slide['slideDescriptionTitle'] ) : '';
             $slide_description = isset( $slide['slideDescription'] ) ? wp_kses_post( $slide['slideDescription'] ) : '';
             

@@ -83,6 +83,11 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 setAttributes( { numSlides: 3 } );
             }
             
+            // Force currentSlideIndex to 0 if it's out of range for visible slides
+            if ( attributes.currentSlideIndex >= attributes.numSlides ) {
+                setAttributes( { currentSlideIndex: 0 } );
+            }
+            
             var slides = attributes.slides;
             var autoplaySpeed = attributes.autoplaySpeed;
             var currentSlideIndex = attributes.currentSlideIndex;
