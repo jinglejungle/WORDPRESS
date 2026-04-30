@@ -301,7 +301,6 @@ function bnpp_carousel_render_block( $attributes ) {
         $rel_attr = $link_target === '_blank' ? ' rel="noopener noreferrer"' : '';
         $output .= '<a href="' . $link_url . '" class="bnpp-button ' . $link_class . '" target="' . $link_target . '"' . $rel_attr . ' >' . esc_html( $link_text ) . $icon_html . '</a>';
         $output .= '</div>';
-        $output .= '</div>';
         
         // Display slide description only if numSlides is 1 (only one slide displayed)
         if ( $num_slides === 1 && $slide_index === 0 ) {
@@ -318,10 +317,8 @@ function bnpp_carousel_render_block( $attributes ) {
                 }
                 $output .= '</div>';
             }
-        } else {
-            // TEST: If condition fails, output this
-            $output .= '<!-- TEST: num_slides=' . intval( $num_slides ) . ', index=' . intval( $index ) . ' -->';
         }
+        
         $output .= '</div>';
     }
 
