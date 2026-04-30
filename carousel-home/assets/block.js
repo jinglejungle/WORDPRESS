@@ -427,8 +427,6 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                 ) );
             }
 
-            }
-
             settingsContent.push( el( 'div', { key: 'btn-target', style: { marginBottom: '15px' } },
                 el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Open Link in' ),
                 el( 'div', { style: { display: 'flex', gap: '8px' } },
