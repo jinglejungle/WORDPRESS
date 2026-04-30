@@ -142,6 +142,7 @@ function bnpp_carousel_register_block() {
                             'title' => array( 'type' => 'string' ),
                             'background' => array( 'type' => 'string' ),
                             'mode' => array( 'type' => 'string', 'default' => 'manual' ),
+                            'slideDescription' => array( 'type' => 'string', 'default' => '' ),
                             'link' => array(
                                 'type' => 'object',
                                 'properties' => array(
@@ -160,6 +161,7 @@ function bnpp_carousel_register_block() {
                             'title'       => 'Slide 1',
                             'background'  => '',
                             'mode'        => 'manual',
+                            'slideDescription' => '',
                             'link'        => array(
                                 'text'  => 'Learn more',
                                 'url'   => '#',
@@ -173,6 +175,7 @@ function bnpp_carousel_register_block() {
                             'title'       => 'Slide 2',
                             'background'  => '',
                             'mode'        => 'manual',
+                            'slideDescription' => '',
                             'link'        => array(
                                 'text'  => 'Learn more',
                                 'url'   => '#',
@@ -186,6 +189,7 @@ function bnpp_carousel_register_block() {
                             'title'       => 'Slide 3',
                             'background'  => '',
                             'mode'        => 'manual',
+                            'slideDescription' => '',
                             'link'        => array(
                                 'text'  => 'Learn more',
                                 'url'   => '#',
@@ -279,41 +283,54 @@ function bnpp_carousel_render_block( $attributes ) {
         $icon_html = $link_show_icon ? '<span class="button-icon"></span>' : '';
         $rel_attr = $link_target === '_blank' ? ' rel="noopener noreferrer"' : '';
         $output .= '<a href="' . $link_url . '" class="bnpp-button ' . $link_class . '" target="' . $link_target . '"' . $rel_attr . ' >' . esc_html( $link_text ) . $icon_html . '</a>';
+        
+        // Display slide description only if numSlides is 1
+        if ( $num_slides === 1 ) {
+            $slide_description = isset( $slide['slideDescription'] ) ? wp_kses_post( $slide['slideDescription'] ) : '';
+            if ( ! empty( $slide_description ) ) {
+                $output .= '<p id="bnpp-slide-description">' . nl2br( $slide_description ) . '</p>';
+            }
+        }
         $output .= '</div></div>';
     }
 
     $output .= '</div>';
 
-    $output .= '<div class="bnpp-carousel-nav" role="tablist">';
-    $output .= '<div class="bnpp-carousel-nav-sub-container">';
-    
-    // Reset post index for nav button loop
-    $post_index = 0;
-    
-    foreach ( $slides as $index => $slide ) {
-        // Determine if this slide is automatic
-        $is_automatic = isset( $slide['mode'] ) && $slide['mode'] === 'automatic';
+    // Only show navigation if more than 1 slide
+    if ( $num_slides > 1 ) {
+        $output .= '<div class="bnpp-carousel-nav" role="tablist">';
+        $output .= '<div class="bnpp-carousel-nav-sub-container">';
         
-        // Get title and category based on mode
-        if ( $is_automatic && isset( $recent_posts[ $post_index ] ) ) {
-            $post_data = $recent_posts[ $post_index ];
-            $title = bnpp_carousel_truncate_title( $post_data['title'] );
-            $category = $post_data['category'] ? sanitize_text_field( $post_data['category'] ) : '';
-            $post_index++;
-        } else {
-            $title = isset( $slide['title'] ) ? sanitize_text_field( $slide['title'] ) : 'Slide ' . ( $index + 1 );
-            $link = isset( $slide['link'] ) ? $slide['link'] : array();
-            $category = isset( $link['category'] ) ? sanitize_text_field( $link['category'] ) : '';
+        // Reset post index for nav button loop
+        $post_index = 0;
+        
+        foreach ( $slides as $index => $slide ) {
+            // Determine if this slide is automatic
+            $is_automatic = isset( $slide['mode'] ) && $slide['mode'] === 'automatic';
+            
+            // Get title and category based on mode
+            if ( $is_automatic && isset( $recent_posts[ $post_index ] ) ) {
+                $post_data = $recent_posts[ $post_index ];
+                $title = bnpp_carousel_truncate_title( $post_data['title'] );
+                $category = $post_data['category'] ? sanitize_text_field( $post_data['category'] ) : '';
+                $post_index++;
+            } else {
+                $title = isset( $slide['title'] ) ? sanitize_text_field( $slide['title'] ) : 'Slide ' . ( $index + 1 );
+                $link = isset( $slide['link'] ) ? $slide['link'] : array();
+                $category = isset( $link['category'] ) ? sanitize_text_field( $link['category'] ) : '';
+            }
+            
+            $aria_selected = $index === 0 ? 'true' : 'false';
+            $category_html = ! empty( $category ) ? '<span class="slide-title-category">' . esc_html( $category ) . '</span>' : '<span class="slide-title-category"></span>';
+            $output .= '<button role="tab" aria-selected="' . $aria_selected . '">' . $category_html . '<span class="slide_title">' . esc_html( $title ) . '</span></button>';
         }
-        
-        $aria_selected = $index === 0 ? 'true' : 'false';
-        $category_html = ! empty( $category ) ? '<span class="slide-title-category">' . esc_html( $category ) . '</span>' : '<span class="slide-title-category"></span>';
-        $output .= '<button role="tab" aria-selected="' . $aria_selected . '">' . $category_html . '<span class="slide_title">' . esc_html( $title ) . '</span></button>';
-    }
-    $output .= '</div>';
-    $output .= '</div>';
+        $output .= '</div>';
+        $output .= '</div>';
 
-    $output .= '<button class="bnpp-pause-btn" aria-pressed="false">Pause</button>';
+        // Only show pause button if more than 1 slide
+        $output .= '<button class="bnpp-pause-btn" aria-pressed="false">Pause</button>';
+    }
+
     $output .= '<div class="sr-only" aria-live="polite" id="bnpp-carousel-status"></div>';
     $output .= '<script type="application/json" class="bnpp-carousel-config">' . wp_json_encode( array( 'autoplaySpeed' => $autoplay_speed * 1000, 'totalSlides' => count( $slides ), 'recentPosts' => $recent_posts ) ) . '</script>';
     $output .= '</section>';
