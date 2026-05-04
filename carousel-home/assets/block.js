@@ -760,6 +760,19 @@ document.addEventListener( 'DOMContentLoaded', function() {
         var showSlide = function( idx ) {
             slides.forEach( function( s, i ) { s.classList.toggle( 'active', i === idx ); } );
             navButtons.forEach( function( b, i ) { b.setAttribute( 'aria-selected', i === idx ? 'true' : 'false' ); } );
+            
+            // Update mobile indicators
+            var mobileIndicators = wrapper.querySelectorAll( '.bnpp-carousel-nav-mobile-indicator' );
+            mobileIndicators.forEach( function( indicator, i ) {
+                indicator.classList.toggle( 'active', i === idx );
+            } );
+            
+            // Update mobile title
+            var mobileTitle = wrapper.querySelector( '.bnpp-carousel-nav-mobile-title' );
+            if ( mobileTitle && config.recentPosts && idx < config.recentPosts.length ) {
+                mobileTitle.textContent = config.recentPosts[ idx ].title;
+            }
+            
             currentSlide = idx;
         };
 
