@@ -375,8 +375,8 @@ function bnpp_carousel_render_block( $attributes ) {
 
     $output .= '<div class="sr-only" aria-live="polite" id="bnpp-carousel-status"></div>';
     
-    // Mobile navigation - visible only on mobile devices
-    if ( count( $slides ) > 0 ) {
+    // Mobile navigation - visible only on mobile devices (and only if more than 1 slide)
+    if ( count( $slides ) > 1 ) {
         $output .= '<div class="bnpp-carousel-nav-mobile">';
         
         // Get current slide title and category for mobile
