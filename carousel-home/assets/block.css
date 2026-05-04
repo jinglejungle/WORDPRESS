@@ -58,6 +58,10 @@
     line-height: 95px; /* 95% */
 }
 
+.bnpp-carousel-nav-mobile {
+    display: none;
+}
+
 .bnpp-carousel-nav {
     position: absolute;
     bottom: 20px;
