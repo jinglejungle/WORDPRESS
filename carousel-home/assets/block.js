@@ -767,10 +767,21 @@ document.addEventListener( 'DOMContentLoaded', function() {
                 indicator.classList.toggle( 'active', i === idx );
             } );
             
-            // Update mobile title
+            // Update mobile title and category
             var mobileTitle = wrapper.querySelector( '.bnpp-carousel-nav-mobile-title' );
             if ( mobileTitle && config.recentPosts && idx < config.recentPosts.length ) {
-                mobileTitle.textContent = config.recentPosts[ idx ].title;
+                var category = config.recentPosts[ idx ].category ? config.recentPosts[ idx ].category : '';
+                var title = config.recentPosts[ idx ].title;
+                
+                var categorySpan = mobileTitle.querySelector( '.slide-title-category' );
+                var titleSpan = mobileTitle.querySelector( '.slide_title_mobile' );
+                
+                if ( categorySpan ) {
+                    categorySpan.textContent = category;
+                }
+                if ( titleSpan ) {
+                    titleSpan.textContent = title;
+                }
             }
             
             currentSlide = idx;
@@ -833,20 +844,8 @@ document.addEventListener( 'DOMContentLoaded', function() {
                 e.preventDefault();
                 var slideNum = parseInt( this.getAttribute( 'data-slide' ), 10 );
                 
-                // Update slide
+                // Update slide (this will handle indicators and title via showSlide)
                 showSlide( slideNum );
-                
-                // Update active indicator
-                mobileIndicators.forEach( function( ind ) {
-                    ind.classList.remove( 'active' );
-                } );
-                indicator.classList.add( 'active' );
-                
-                // Update mobile title
-                var mobileTitle = document.querySelector( '.bnpp-carousel-nav-mobile-title' );
-                if ( mobileTitle && config.recentPosts && slideNum < config.recentPosts.length ) {
-                    mobileTitle.textContent = config.recentPosts[ slideNum ].title;
-                }
                 
                 // Restart autoplay
                 stopAutoplay();

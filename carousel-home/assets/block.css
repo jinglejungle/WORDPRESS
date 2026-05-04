@@ -235,6 +235,13 @@
         font-weight: 700;
         color: #fff;
         text-align: left;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .slide_title_mobile {
+        display: block;
     }
 
     .bnpp-carousel-nav-mobile-indicators {

@@ -365,14 +365,25 @@ function bnpp_carousel_render_block( $attributes ) {
     if ( count( $slides ) > 0 ) {
         $output .= '<div class="bnpp-carousel-nav-mobile">';
         
-        // Get current slide title for mobile
+        // Get current slide title and category for mobile
         $current_slide = $slides[0];
         $mobile_title = $current_slide['title'];
+        $mobile_category = '';
+        
         if ( isset( $current_slide['mode'] ) && $current_slide['mode'] === 'automatic' && isset( $recent_posts[0] ) ) {
             $mobile_title = $recent_posts[0]['title'];
+            $mobile_category = $recent_posts[0]['category'] ? sanitize_text_field( $recent_posts[0]['category'] ) : '';
+        } else {
+            $link = isset( $current_slide['link'] ) ? $current_slide['link'] : array();
+            $mobile_category = isset( $link['category'] ) ? sanitize_text_field( $link['category'] ) : '';
         }
         
-        $output .= '<div class="bnpp-carousel-nav-mobile-title">' . esc_html( $mobile_title ) . '</div>';
+        $output .= '<div class="bnpp-carousel-nav-mobile-title">';
+        if ( ! empty( $mobile_category ) ) {
+            $output .= '<span class="slide-title-category">' . esc_html( $mobile_category ) . '</span>';
+        }
+        $output .= '<span class="slide_title_mobile">' . esc_html( $mobile_title ) . '</span>';
+        $output .= '</div>';
         
         // Indicator lines for each slide
         $output .= '<div class="bnpp-carousel-nav-mobile-indicators">';
