@@ -254,7 +254,19 @@ function bnpp_carousel_render_block( $attributes ) {
     $post_index = 0;
 
     $output = '<section class="bnpp-carousel-wrapper" role="region" aria-roledescription="carousel" aria-label="Carousel">';
-    $output .= '<div class="bnpp-carousel">';
+    $output .= '<div class="bnpp-carousel';
+    
+    // Add class if single slide without paragraph
+    if ( $num_slides === 1 ) {
+        $first_slide = $slides[0];
+        $has_paragraph = ( isset( $first_slide['slideDescription'] ) && ! empty( $first_slide['slideDescription'] ) ) || 
+                         ( isset( $first_slide['slideDescriptionTitle'] ) && ! empty( $first_slide['slideDescriptionTitle'] ) );
+        if ( ! $has_paragraph ) {
+            $output .= ' bnpp-single-slide-no-paragraph';
+        }
+    }
+    
+    $output .= '">';
 
     foreach ( $slides as $slide_index => $slide ) {
         // Initialize all variables for this iteration

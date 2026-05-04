@@ -10,6 +10,11 @@
     min-height: 648px;
 }
 
+.bnpp-carousel.bnpp-single-slide-no-paragraph {
+    height: 489px;
+    min-height: 489px;
+}
+
 .bnpp-slide {
     position: absolute;
     width: 100%;
