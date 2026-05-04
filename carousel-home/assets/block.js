@@ -769,11 +769,12 @@ document.addEventListener( 'DOMContentLoaded', function() {
                 indicator.classList.toggle( 'active', i === idx );
             } );
             
-            // Update mobile title and category
+            // Update mobile title and category using slidesData
             var mobileTitle = wrapper.querySelector( '.bnpp-carousel-nav-mobile-title' );
-            if ( mobileTitle && config.recentPosts && idx < config.recentPosts.length ) {
-                var category = config.recentPosts[ idx ].category ? config.recentPosts[ idx ].category : '';
-                var title = config.recentPosts[ idx ].title;
+            if ( mobileTitle && config.slidesData && idx < config.slidesData.length ) {
+                var slideData = config.slidesData[ idx ];
+                var category = slideData.category || '';
+                var title = slideData.title || '';
                 
                 var categorySpan = mobileTitle.querySelector( '.slide-title-category' );
                 var titleSpan = mobileTitle.querySelector( '.slide_title_mobile' );

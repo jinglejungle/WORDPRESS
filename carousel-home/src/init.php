@@ -387,7 +387,6 @@ function bnpp_carousel_render_block( $attributes ) {
         
         // Indicator lines for each slide
         $output .= '<div class="bnpp-carousel-nav-mobile-indicators">';
-        $post_idx = 0;
         for ( $i = 0; $i < count( $slides ); $i++ ) {
             $is_active = $i === 0 ? ' class="active"' : '';
             $output .= '<button class="bnpp-carousel-nav-mobile-indicator"' . $is_active . ' data-slide="' . $i . '" aria-label="Go to slide ' . ( $i + 1 ) . '"></button>';
@@ -397,7 +396,31 @@ function bnpp_carousel_render_block( $attributes ) {
         $output .= '</div>';
     }
     
-    $output .= '<script type="application/json" class="bnpp-carousel-config">' . wp_json_encode( array( 'autoplaySpeed' => $autoplay_speed * 1000, 'totalSlides' => count( $slides ), 'recentPosts' => $recent_posts ) ) . '</script>';
+    // Build slides data for JavaScript (for mobile nav title/category updates)
+    $slides_data = array();
+    $post_idx = 0;
+    foreach ( $slides as $idx => $slide ) {
+        $slide_title = isset( $slide['title'] ) ? sanitize_text_field( $slide['title'] ) : '';
+        $slide_category = '';
+        
+        if ( isset( $slide['mode'] ) && $slide['mode'] === 'automatic' ) {
+            if ( isset( $recent_posts[ $post_idx ] ) ) {
+                $slide_title = $recent_posts[ $post_idx ]['title'];
+                $slide_category = $recent_posts[ $post_idx ]['category'] ? sanitize_text_field( $recent_posts[ $post_idx ]['category'] ) : '';
+            }
+            $post_idx++;
+        } else {
+            $link = isset( $slide['link'] ) ? $slide['link'] : array();
+            $slide_category = isset( $link['category'] ) ? sanitize_text_field( $link['category'] ) : '';
+        }
+        
+        $slides_data[] = array(
+            'title' => $slide_title,
+            'category' => $slide_category
+        );
+    }
+    
+    $output .= '<script type="application/json" class="bnpp-carousel-config">' . wp_json_encode( array( 'autoplaySpeed' => $autoplay_speed * 1000, 'totalSlides' => count( $slides ), 'recentPosts' => $recent_posts, 'slidesData' => $slides_data ) ) . '</script>';
     $output .= '</section>';
 
     return $output;
