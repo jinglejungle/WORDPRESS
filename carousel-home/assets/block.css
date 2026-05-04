@@ -209,6 +209,53 @@
     font-weight: 400;
     line-height: 36px;
     }
+
+    .bnpp-carousel-nav {
+        display: none;
+    }
+
+    .bnpp-carousel-nav-mobile {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        background: rgba(12, 39, 40, 0.30);
+        backdrop-filter: blur(7.5px);
+        padding: 15px 0;
+    }
+
+    .bnpp-carousel-nav-mobile-title {
+        width: 100%;
+        padding: 0 15px 15px 15px;
+        font-family: "BNPP Sans Condensed";
+        font-size: 18px;
+        font-weight: 700;
+        color: #fff;
+        text-align: left;
+    }
+
+    .bnpp-carousel-nav-mobile-indicators {
+        display: flex;
+        width: 100%;
+        gap: 0;
+    }
+
+    .bnpp-carousel-nav-mobile-indicator {
+        flex: 1;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.4);
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .bnpp-carousel-nav-mobile-indicator.active {
+        background: rgba(255, 255, 255, 1);
+    }
+
+    .bnpp-carousel-nav-mobile-indicator:hover {
+        background: rgba(255, 255, 255, 0.7);
+    }
     div.bnpp-carousel-nav > div {
         width:100px;
     }

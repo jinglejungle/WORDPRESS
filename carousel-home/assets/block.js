@@ -812,5 +812,33 @@ document.addEventListener( 'DOMContentLoaded', function() {
         carousel.addEventListener( 'mouseleave', function() { 
             startAutoplay();
         } );
+
+        // Mobile indicators
+        var mobileIndicators = document.querySelectorAll( '.bnpp-carousel-nav-mobile-indicator' );
+        mobileIndicators.forEach( function( indicator ) {
+            indicator.addEventListener( 'click', function( e ) {
+                e.preventDefault();
+                var slideNum = parseInt( this.getAttribute( 'data-slide' ), 10 );
+                
+                // Update slide
+                showSlide( slideNum );
+                
+                // Update active indicator
+                mobileIndicators.forEach( function( ind ) {
+                    ind.classList.remove( 'active' );
+                } );
+                indicator.classList.add( 'active' );
+                
+                // Update mobile title
+                var mobileTitle = document.querySelector( '.bnpp-carousel-nav-mobile-title' );
+                if ( mobileTitle && config.recentPosts && slideNum < config.recentPosts.length ) {
+                    mobileTitle.textContent = config.recentPosts[ slideNum ].title;
+                }
+                
+                // Restart autoplay
+                stopAutoplay();
+                startAutoplay();
+            } );
+        } );
     } );
 } );

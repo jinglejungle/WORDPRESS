@@ -360,6 +360,32 @@ function bnpp_carousel_render_block( $attributes ) {
     }
 
     $output .= '<div class="sr-only" aria-live="polite" id="bnpp-carousel-status"></div>';
+    
+    // Mobile navigation - visible only on mobile devices
+    if ( count( $slides ) > 0 ) {
+        $output .= '<div class="bnpp-carousel-nav-mobile">';
+        
+        // Get current slide title for mobile
+        $current_slide = $slides[0];
+        $mobile_title = $current_slide['title'];
+        if ( isset( $current_slide['mode'] ) && $current_slide['mode'] === 'automatic' && isset( $recent_posts[0] ) ) {
+            $mobile_title = $recent_posts[0]['title'];
+        }
+        
+        $output .= '<div class="bnpp-carousel-nav-mobile-title">' . esc_html( $mobile_title ) . '</div>';
+        
+        // Indicator lines for each slide
+        $output .= '<div class="bnpp-carousel-nav-mobile-indicators">';
+        $post_idx = 0;
+        for ( $i = 0; $i < count( $slides ); $i++ ) {
+            $is_active = $i === 0 ? ' class="active"' : '';
+            $output .= '<button class="bnpp-carousel-nav-mobile-indicator"' . $is_active . ' data-slide="' . $i . '" aria-label="Go to slide ' . ( $i + 1 ) . '"></button>';
+        }
+        $output .= '</div>';
+        
+        $output .= '</div>';
+    }
+    
     $output .= '<script type="application/json" class="bnpp-carousel-config">' . wp_json_encode( array( 'autoplaySpeed' => $autoplay_speed * 1000, 'totalSlides' => count( $slides ), 'recentPosts' => $recent_posts ) ) . '</script>';
     $output .= '</section>';
 
