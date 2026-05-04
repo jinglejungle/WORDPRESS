@@ -250,10 +250,11 @@
         border: none;
         padding: 0;
         cursor: pointer;
-        transition: background 0.3s ease;
+        transition: background 0.3s ease, height 0.3s ease;
     }
 
     .bnpp-carousel-nav-mobile-indicator.active {
+        height: 6px;
         background: rgba(255, 255, 255, 1);
     }
 
