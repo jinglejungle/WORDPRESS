@@ -379,9 +379,7 @@ function bnpp_carousel_render_block( $attributes ) {
         }
         
         $output .= '<div class="bnpp-carousel-nav-mobile-title">';
-        if ( ! empty( $mobile_category ) ) {
-            $output .= '<span class="slide-title-category">' . esc_html( $mobile_category ) . '</span>';
-        }
+        $output .= '<span class="slide-title-category">' . ( ! empty( $mobile_category ) ? esc_html( $mobile_category ) : '' ) . '</span>';
         $output .= '<span class="slide_title_mobile">' . esc_html( $mobile_title ) . '</span>';
         $output .= '</div>';
         
