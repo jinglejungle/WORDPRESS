@@ -756,13 +756,15 @@ document.addEventListener( 'DOMContentLoaded', function() {
         var currentSlide = 0;
         var isPlaying = true;
         var autoplayInterval = null;
+        
+        // Cache mobile indicators
+        var mobileIndicators = wrapper.querySelectorAll( '.bnpp-carousel-nav-mobile-indicator' );
 
         var showSlide = function( idx ) {
             slides.forEach( function( s, i ) { s.classList.toggle( 'active', i === idx ); } );
             navButtons.forEach( function( b, i ) { b.setAttribute( 'aria-selected', i === idx ? 'true' : 'false' ); } );
             
             // Update mobile indicators
-            var mobileIndicators = wrapper.querySelectorAll( '.bnpp-carousel-nav-mobile-indicator' );
             mobileIndicators.forEach( function( indicator, i ) {
                 indicator.classList.toggle( 'active', i === idx );
             } );
