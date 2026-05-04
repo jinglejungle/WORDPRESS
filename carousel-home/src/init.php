@@ -299,7 +299,9 @@ function bnpp_carousel_render_block( $attributes ) {
         $category_html = ! empty( $category ) ? '<span class="slide-title-category">' . esc_html( $category ) . '</span>' : '<span class="slide-title-category"></span>';
         $icon_html = $link_show_icon ? '<span class="button-icon"></span>' : '';
         $rel_attr = $link_target === '_blank' ? ' rel="noopener noreferrer"' : '';
-        $output .= '<a href="' . $link_url . '" class="bnpp-button ' . $link_class . '" target="' . $link_target . '"' . $rel_attr . ' >' . esc_html( $link_text ) . $icon_html . '</a>';
+        if ( ! empty( $link_url ) && $link_url !== '#' ) {
+            $output .= '<a href="' . $link_url . '" class="bnpp-button ' . $link_class . '" target="' . $link_target . '"' . $rel_attr . ' >' . esc_html( $link_text ) . $icon_html . '</a>';
+        }
         
         // Display slide description only if numSlides is 1 (only one slide displayed)
         if ( $num_slides === 1 && $slide_index === 0 ) {
