@@ -294,6 +294,9 @@ function bnpp_carousel_render_block( $attributes ) {
             $background = $post_data['image'];
             $link_url = $post_data['url'];
             $link_text = 'Read More';
+            $link_class = 'primary';
+            $link_target = '_self';
+            $link_show_icon = false;
             $post_index++;
         } else {
             // Manual mode
@@ -304,12 +307,15 @@ function bnpp_carousel_render_block( $attributes ) {
             $link_url = isset( $link['url'] ) ? esc_url( $link['url'] ) : '#';
             $category = isset( $link['category'] ) ? sanitize_text_field( $link['category'] ) : '';
             $link_class = isset( $link['class'] ) ? sanitize_text_field( $link['class'] ) : 'primary';
-            $link_size = isset( $link['size'] ) ? sanitize_text_field( $link['size'] ) : 'default';
-            if ( $link_size === 'small' ) {
-                $link_class .= ' bnpp-button--small';
-            }
             $link_target = isset( $link['target'] ) ? sanitize_text_field( $link['target'] ) : '_self';
             $link_show_icon = isset( $link['showIcon'] ) && $link['showIcon'] ? true : false;
+        }
+        
+        // Handle link size for both modes
+        $link = isset( $slide['link'] ) ? $slide['link'] : array();
+        $link_size = isset( $link['size'] ) ? sanitize_text_field( $link['size'] ) : 'default';
+        if ( $link_size === 'small' ) {
+            $link_class .= ' bnpp-button--small';
         }
 
         $style = ! empty( $background ) ? ' style="background: linear-gradient(270deg, rgba(12, 39, 40, 0.03) 38.74%, rgba(12, 39, 40, 0.70) 57.43%), url(' . $background . ') lightgray 0px -404px / 100% 200% no-repeat;"' : '';
