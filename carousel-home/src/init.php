@@ -153,6 +153,7 @@ function bnpp_carousel_register_block() {
                                     'target' => array( 'type' => 'string', 'default' => '_self' ),
                                     'showIcon' => array( 'type' => 'boolean', 'default' => false ),
                                     'category' => array( 'type' => 'string', 'default' => '' ),
+                                    'size' => array( 'type' => 'string', 'default' => 'default' ),
                                 ),
                             ),
                         ),
@@ -171,6 +172,7 @@ function bnpp_carousel_register_block() {
                                 'target' => '_self',
                                 'showIcon' => false,
                                 'category' => '',
+                                'size' => 'default',
                             ),
                         ),
                         array(
@@ -186,6 +188,7 @@ function bnpp_carousel_register_block() {
                                 'target' => '_self',
                                 'showIcon' => false,
                                 'category' => '',
+                                'size' => 'default',
                             ),
                         ),
                         array(
@@ -201,6 +204,7 @@ function bnpp_carousel_register_block() {
                                 'target' => '_self',
                                 'showIcon' => false,
                                 'category' => '',
+                                'size' => 'default',
                             ),
                         ),
                     ),
@@ -300,6 +304,10 @@ function bnpp_carousel_render_block( $attributes ) {
             $link_url = isset( $link['url'] ) ? esc_url( $link['url'] ) : '#';
             $category = isset( $link['category'] ) ? sanitize_text_field( $link['category'] ) : '';
             $link_class = isset( $link['class'] ) ? sanitize_text_field( $link['class'] ) : 'primary';
+            $link_size = isset( $link['size'] ) ? sanitize_text_field( $link['size'] ) : 'default';
+            if ( $link_size === 'small' ) {
+                $link_class .= ' bnpp-button--small';
+            }
             $link_target = isset( $link['target'] ) ? sanitize_text_field( $link['target'] ) : '_self';
             $link_show_icon = isset( $link['showIcon'] ) && $link['showIcon'] ? true : false;
         }

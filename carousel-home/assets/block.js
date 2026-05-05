@@ -55,9 +55,9 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             slides: {
                 type: 'array',
                 default: [
-                    { title: 'Slide 1', background: '', mode: 'manual', slideDescription: '', slideDescriptionTitle: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '' } },
-                    { title: 'Slide 2', background: '', mode: 'manual', slideDescription: '', slideDescriptionTitle: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '' } },
-                    { title: 'Slide 3', background: '', mode: 'manual', slideDescription: '', slideDescriptionTitle: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '' } }
+                    { title: 'Slide 1', background: '', mode: 'manual', slideDescription: '', slideDescriptionTitle: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '', size: 'default' } },
+                    { title: 'Slide 2', background: '', mode: 'manual', slideDescription: '', slideDescriptionTitle: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '', size: 'default' } },
+                    { title: 'Slide 3', background: '', mode: 'manual', slideDescription: '', slideDescriptionTitle: '', link: { text: 'Learn more', url: '#', class: 'primary', target: '_self', showIcon: false, category: '', size: 'default' } }
                 ]
             },
             autoplaySpeed: {
@@ -503,6 +503,19 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             }
                         }, style.charAt( 0 ).toUpperCase() + style.slice( 1 ) );
                     } )
+                )
+            ) );
+
+            // Button Size
+            settingsContent.push( el( 'div', { key: 'btn-size', style: { marginBottom: '15px' } },
+                el( 'label', { style: { fontWeight: 'bold', display: 'block', marginBottom: '10px' } }, 'Button Size' ),
+                el( 'select', {
+                    value: slide.link.size || 'default',
+                    onChange: function( e ) { updateSlide( currentSlideIndex, 'link', { size: e.target.value } ); },
+                    style: { width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }
+                },
+                    el( 'option', { value: 'default' }, 'Default' ),
+                    el( 'option', { value: 'small' }, 'Small' )
                 )
             ) );
 
