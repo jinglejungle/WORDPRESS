@@ -728,7 +728,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
                             } )
                         ),
                         adjustTextareaHeight(),
-                        el( 'a', { href: displayData.url, className: 'bnpp-button ' + slide.link.class, target: slide.link.target || '_self' },
+                        el( 'a', { href: displayData.url, className: 'bnpp-button ' + slide.link.class + ( slide.link.size === 'small' ? ' bnpp-button--small' : '' ), target: slide.link.target || '_self' },
                             displayData.text,
                             slide.link.showIcon ? el( 'span', { className: 'button-icon' } ) : null
                         ),
