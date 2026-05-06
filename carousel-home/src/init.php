@@ -77,10 +77,15 @@ function bnpp_carousel_get_recent_posts( $count = 3 ) {
         if ( $image_id ) {
             $image_src = wp_get_attachment_image_src( $image_id, 'full' );
             $image_url = $image_src ? $image_src[0] : '';
+            
+            // Debug: check what wp_get_attachment_image_src returns
+            $debug_image_src = $image_src ? 'ARRAY: ' . wp_json_encode( $image_src ) : 'FALSE/NULL';
+        } else {
+            $debug_image_src = 'NO IMAGE ID';
         }
         
         // Debug output in HTML comments
-        $debug_output = '<!-- POST: ' . $post->post_title . ' | ID: ' . $post->ID . ' | IMAGE_ID: ' . ( $image_id ? $image_id : 'NULL' ) . ' | IMAGE_URL: ' . ( $image_url ? $image_url : 'EMPTY' ) . ' -->';
+        $debug_output = '<!-- POST: ' . $post->post_title . ' | ID: ' . $post->ID . ' | IMAGE_ID: ' . ( $image_id ? $image_id : 'NULL' ) . ' | IMAGE_SRC: ' . $debug_image_src . ' | IMAGE_URL: ' . ( $image_url ? $image_url : 'EMPTY' ) . ' -->';
         
         $formatted_posts[] = array(
             'title'    => $post->post_title,
