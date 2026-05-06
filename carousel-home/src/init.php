@@ -79,11 +79,15 @@ function bnpp_carousel_get_recent_posts( $count = 3 ) {
             $image_url = $image_src ? $image_src[0] : '';
         }
         
+        // Debug output in HTML comments
+        $debug_output = '<!-- POST: ' . $post->post_title . ' | ID: ' . $post->ID . ' | IMAGE_ID: ' . ( $image_id ? $image_id : 'NULL' ) . ' | IMAGE_URL: ' . ( $image_url ? $image_url : 'EMPTY' ) . ' -->';
+        
         $formatted_posts[] = array(
             'title'    => $post->post_title,
             'category' => $category_name,
             'image'    => $image_url,
             'url'      => get_permalink( $post->ID ),
+            'debug'    => $debug_output,
         );
     }
     
@@ -271,6 +275,14 @@ function bnpp_carousel_render_block( $attributes ) {
     $post_index = 0;
 
     $output = '<section class="bnpp-carousel-wrapper" role="region" aria-roledescription="carousel" aria-label="Carousel">';
+    
+    // Output debug comments
+    foreach ( $recent_posts as $post_data ) {
+        if ( isset( $post_data['debug'] ) ) {
+            $output .= $post_data['debug'];
+        }
+    }
+    
     $output .= '<div class="bnpp-carousel';
     
     // Add class if single slide without paragraph
