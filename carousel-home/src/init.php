@@ -75,17 +75,26 @@ function bnpp_carousel_get_recent_posts( $count = 3 ) {
         
         // Get image URL from ID
         if ( $image_id ) {
-            $image_src = wp_get_attachment_image_src( $image_id, 'full' );
-            $image_url = $image_src ? $image_src[0] : '';
+            // Try wp_get_attachment_url first
+            $image_url = wp_get_attachment_url( $image_id );
             
-            // Debug: check what wp_get_attachment_image_src returns
-            $debug_image_src = $image_src ? 'ARRAY: ' . wp_json_encode( $image_src ) : 'FALSE/NULL';
+            // If still empty, try getting from attachment metadata
+            if ( ! $image_url ) {
+                $attachment_meta = wp_get_attachment_metadata( $image_id );
+                if ( $attachment_meta && isset( $attachment_meta['file'] ) ) {
+                    $uploads = wp_upload_dir();
+                    $image_url = $uploads['baseurl'] . '/' . $attachment_meta['file'];
+                }
+            }
+            
+            $debug_image_url = $image_url ? $image_url : 'STILL EMPTY';
         } else {
-            $debug_image_src = 'NO IMAGE ID';
+            $debug_image_url = 'NO IMAGE ID';
+            $image_url = '';
         }
         
         // Debug output in HTML comments
-        $debug_output = '<!-- POST: ' . $post->post_title . ' | ID: ' . $post->ID . ' | IMAGE_ID: ' . ( $image_id ? $image_id : 'NULL' ) . ' | IMAGE_SRC: ' . $debug_image_src . ' | IMAGE_URL: ' . ( $image_url ? $image_url : 'EMPTY' ) . ' -->';
+        $debug_output = '<!-- POST: ' . $post->post_title . ' | ID: ' . $post->ID . ' | IMAGE_ID: ' . ( $image_id ? $image_id : 'NULL' ) . ' | IMAGE_URL: ' . $debug_image_url . ' -->';
         
         $formatted_posts[] = array(
             'title'    => $post->post_title,
