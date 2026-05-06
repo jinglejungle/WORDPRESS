@@ -75,10 +75,10 @@ function bnpp_carousel_get_recent_posts( $count = 3 ) {
         
         // Get image URL from ID
         if ( $image_id ) {
-            // Try wp_get_attachment_url first
+            // Method 1: wp_get_attachment_url
             $image_url = wp_get_attachment_url( $image_id );
             
-            // If still empty, try getting from attachment metadata
+            // Method 2: Get from attachment metadata
             if ( ! $image_url ) {
                 $attachment_meta = wp_get_attachment_metadata( $image_id );
                 if ( $attachment_meta && isset( $attachment_meta['file'] ) ) {
@@ -87,7 +87,16 @@ function bnpp_carousel_get_recent_posts( $count = 3 ) {
                 }
             }
             
-            $debug_image_url = $image_url ? $image_url : 'STILL EMPTY';
+            // Method 3: Query wp_posts directly for attachment post
+            if ( ! $image_url ) {
+                global $wpdb;
+                $attachment_post = $wpdb->get_row( $wpdb->prepare( "SELECT guid FROM {$wpdb->posts} WHERE ID = %d AND post_type = 'attachment'", $image_id ) );
+                if ( $attachment_post ) {
+                    $image_url = $attachment_post->guid;
+                }
+            }
+            
+            $debug_image_url = $image_url ? $image_url : 'STILL EMPTY AFTER ALL METHODS';
         } else {
             $debug_image_url = 'NO IMAGE ID';
             $image_url = '';
