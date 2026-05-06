@@ -62,9 +62,22 @@ function bnpp_carousel_get_recent_posts( $count = 3 ) {
         $categories = get_the_category( $post->ID );
         $category_name = ! empty( $categories ) ? $categories[0]->name : '';
         
-        // Get featured image
+        // Get featured image - try multiple methods
+        $image_url = '';
+        
+        // Method 1: get_post_thumbnail_id
         $image_id = get_post_thumbnail_id( $post->ID );
-        $image_url = $image_id ? wp_get_attachment_image_src( $image_id, 'full' )[0] : '';
+        
+        // Method 2: If not found, check post meta directly
+        if ( ! $image_id ) {
+            $image_id = get_post_meta( $post->ID, '_thumbnail_id', true );
+        }
+        
+        // Get image URL from ID
+        if ( $image_id ) {
+            $image_src = wp_get_attachment_image_src( $image_id, 'full' );
+            $image_url = $image_src ? $image_src[0] : '';
+        }
         
         $formatted_posts[] = array(
             'title'    => $post->post_title,
