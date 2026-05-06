@@ -73,37 +73,48 @@ function bnpp_carousel_get_recent_posts( $count = 3 ) {
             $image_id = get_post_meta( $post->ID, '_thumbnail_id', true );
         }
         
-        // Get image URL from ID
-        if ( $image_id ) {
-            // Method 1: wp_get_attachment_url
-            $image_url = wp_get_attachment_url( $image_id );
-            
-            // Method 2: Get from attachment metadata
-            if ( ! $image_url ) {
-                $attachment_meta = wp_get_attachment_metadata( $image_id );
-                if ( $attachment_meta && isset( $attachment_meta['file'] ) ) {
-                    $uploads = wp_upload_dir();
-                    $image_url = $uploads['baseurl'] . '/' . $attachment_meta['file'];
-                }
-            }
-            
-            // Method 3: Query wp_posts directly for attachment post
-            if ( ! $image_url ) {
-                global $wpdb;
-                $attachment_post = $wpdb->get_row( $wpdb->prepare( "SELECT guid FROM {$wpdb->posts} WHERE ID = %d AND post_type = 'attachment'", $image_id ) );
-                if ( $attachment_post ) {
-                    $image_url = $attachment_post->guid;
-                }
-            }
-            
-            $debug_image_url = $image_url ? $image_url : 'STILL EMPTY AFTER ALL METHODS';
-        } else {
-            $debug_image_url = 'NO IMAGE ID';
-            $image_url = '';
+        // Get featured image - try multiple methods
+        $image_url = '';
+        $debug_steps = array();
+        
+        // Method 1: get_post_thumbnail_id
+        $image_id = get_post_thumbnail_id( $post->ID );
+        $debug_steps[] = 'get_post_thumbnail_id=' . ( $image_id ? $image_id : 'NULL' );
+        
+        // Method 2: If not found, check post meta directly
+        if ( ! $image_id ) {
+            $image_id = get_post_meta( $post->ID, '_thumbnail_id', true );
+            $debug_steps[] = 'get_post_meta=' . ( $image_id ? $image_id : 'NULL' );
         }
         
-        // Debug output in HTML comments
-        $debug_output = '<!-- POST: ' . $post->post_title . ' | ID: ' . $post->ID . ' | IMAGE_ID: ' . ( $image_id ? $image_id : 'NULL' ) . ' | IMAGE_URL: ' . $debug_image_url . ' -->';
+        // Method 3: wp_get_attachment_url
+        if ( $image_id ) {
+            $image_url = wp_get_attachment_url( $image_id );
+            $debug_steps[] = 'wp_get_attachment_url=' . ( $image_url ? $image_url : 'NULL' );
+        }
+        
+        // Method 4: Get from attachment metadata
+        if ( ! $image_url && $image_id ) {
+            $attachment_meta = wp_get_attachment_metadata( $image_id );
+            $debug_steps[] = 'wp_get_attachment_metadata=' . ( $attachment_meta ? 'FOUND' : 'NULL' );
+            if ( $attachment_meta && isset( $attachment_meta['file'] ) ) {
+                $uploads = wp_upload_dir();
+                $image_url = $uploads['baseurl'] . '/' . $attachment_meta['file'];
+                $debug_steps[] = 'constructed_url=' . $image_url;
+            }
+        }
+        
+        // Method 5: Query wp_posts directly
+        if ( ! $image_url && $image_id ) {
+            global $wpdb;
+            $attachment_post = $wpdb->get_row( $wpdb->prepare( "SELECT guid FROM " . $wpdb->posts . " WHERE ID = %d AND post_type = 'attachment'", $image_id ) );
+            $debug_steps[] = 'wpdb_query=' . ( $attachment_post ? $attachment_post->guid : 'NULL' );
+            if ( $attachment_post ) {
+                $image_url = $attachment_post->guid;
+            }
+        }
+        
+        $debug_output = '<!-- POST: ' . $post->post_title . ' | ID: ' . $post->ID . ' | DEBUG: ' . implode( ' | ', $debug_steps ) . ' -->';
         
         $formatted_posts[] = array(
             'title'    => $post->post_title,
