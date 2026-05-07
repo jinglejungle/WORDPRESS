@@ -169,6 +169,14 @@
     font-style: normal;
 }
 
+.bnpp-carousel-nav button[aria-selected="false"] .slide-title-category {
+    font-weight: 400;
+}
+
+.bnpp-carousel-nav button[aria-selected="true"] .slide-title-category {
+    font-weight: 700;
+}
+
 .bnpp-carousel-nav-sub-container{
 	width: 80%; 
 	margin: 0 auto; 
