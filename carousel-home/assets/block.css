@@ -27,6 +27,19 @@
     background-size: cover;
     background-position: center;
     pointer-events: none;
+    background-image: var(--bnpp-bg-image);
+}
+
+.bnpp-slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(270deg, rgba(12, 39, 40, 0.03) 38.74%, rgba(12, 39, 40, 0.70) 57.43%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .bnpp-slide.active {
@@ -191,8 +204,10 @@
         width:100%!important;
         padding-left:20px;
         padding-right:20px;
-        background: linear-gradient(180deg, rgba(12, 39, 40, 0.03) 0%, rgba(12, 39, 40, 0.70) 100%), center / 100% 100% !important;
-        background-repeat: no-repeat !important;
+    }
+
+    .bnpp-slide::before {
+        background: linear-gradient(180deg, rgba(12, 39, 40, 0.03) 0%, rgba(12, 39, 40, 0.70) 100%);
     }
 
     .bnpp-carousel-nav-sub-container{

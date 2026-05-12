@@ -377,9 +377,9 @@ function bnpp_carousel_render_block( $attributes ) {
             $link_class .= ' bnpp-button--small';
         }
 
-        $style = ! empty( $background ) ? ' style="background: linear-gradient(270deg, rgba(12, 39, 40, 0.03) 38.74%, rgba(12, 39, 40, 0.70) 57.43%), url(' . $background . ') lightgray 0px -404px / 100% 200% no-repeat;"' : '';
+        $style = ! empty( $background ) ? ' style="--bnpp-bg-image: url(' . $background . ');"' : '';
         $output .= '<div class="bnpp-slide"' . $style . '>';
-        $output .= '<div class="bnpp-overlay dark" style="background:transparent">';
+        $output .= '<div class="bnpp-overlay">';
         $output .= '<p>' . nl2br( $title ) . '</p>';
         $category_html = ! empty( $category ) ? '<span class="slide-title-category">' . esc_html( $category ) . '</span>' : '<span class="slide-title-category"></span>';
         $icon_html = $link_show_icon ? '<span class="button-icon"></span>' : '';
