@@ -62,11 +62,8 @@ function bnpp_carousel_get_recent_posts( $count = 3 ) {
         $categories = get_the_category( $post->ID );
         $category_name = ! empty( $categories ) ? $categories[0]->name : '';
         
-        // Get title - try custom field first (title_fo / title front-office)
-        $title = get_post_meta( $post->ID, 'title_fo', true );
-        if ( ! $title ) {
-            $title = get_post_meta( $post->ID, '_title_fo', true );
-        }
+        // Get title - try custom field first (title_field)
+        $title = get_post_meta( $post->ID, 'title_field', true );
         if ( ! $title ) {
             $title = $post->post_title;
         }
