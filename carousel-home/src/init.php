@@ -39,6 +39,8 @@ function bnpp_carousel_truncate_title( $title ) {
  * Returns array of posts with title, category, featured image, and URL
  */
 function bnpp_carousel_get_recent_posts( $count = 3 ) {
+    global $wpdb;
+    
     $cache_key = 'bnpp_carousel_recent_posts_' . $count;
     $cached_posts = get_transient( $cache_key );
     
@@ -63,7 +65,10 @@ function bnpp_carousel_get_recent_posts( $count = 3 ) {
         $category_name = ! empty( $categories ) ? $categories[0]->name : '';
         
         // Get title - try custom field first (title_field)
-        $title = get_post_meta( $post->ID, 'title_field', true );
+        $title = $wpdb->get_var( $wpdb->prepare( 
+            "SELECT meta_value FROM wp_postmeta WHERE post_id = %d AND meta_key = 'title_field'",
+            $post->ID
+        ) );
         if ( ! $title ) {
             $title = $post->post_title;
         }
@@ -112,7 +117,6 @@ function bnpp_carousel_get_recent_posts( $count = 3 ) {
         
         // Method 5: Query wp_posts directly
         if ( ! $image_url && $image_id ) {
-            global $wpdb;
             $attachment_post = $wpdb->get_row( $wpdb->prepare( "SELECT guid FROM " . $wpdb->posts . " WHERE ID = %d AND post_type = 'attachment'", $image_id ) );
             $debug_steps[] = 'wpdb_query=' . ( $attachment_post ? $attachment_post->guid : 'NULL' );
             if ( $attachment_post ) {
