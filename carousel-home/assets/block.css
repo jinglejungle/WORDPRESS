@@ -28,7 +28,7 @@
     background-position: center;
     pointer-events: none;
     background-image: 
-        linear-gradient(180deg, rgba(12, 39, 40, 0.70) 0%, rgba(12, 39, 40, 0.03) 100%),
+        linear-gradient(270deg, rgba(12, 39, 40, 0.03) 38.74%, rgba(12, 39, 40, 0.70) 57.43%),
         var(--bnpp-bg-image);
 }
 
