@@ -12,10 +12,10 @@ function bnpp_carousel_has_asian_chars( $text ) {
 }
 
 /**
- * Get character limit based on text content (50 for Asian, 70 for European)
+ * Get character limit based on text content (50 for Asian, 60 for European)
  */
 function bnpp_carousel_get_char_limit( $text ) {
-    return bnpp_carousel_has_asian_chars( $text ) ? 50 : 70;
+    return bnpp_carousel_has_asian_chars( $text ) ? 50 : 60;
 }
 
 /**

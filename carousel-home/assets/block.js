@@ -17,10 +17,10 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
     }
 
     /**
-     * Get character limit based on text content (50 for Asian, 70 for European)
+     * Get character limit based on text content (50 for Asian, 60 for European)
      */
     function getCharLimit( text ) {
-        return hasAsianChars( text ) ? 50 : 70;
+        return hasAsianChars( text ) ? 50 : 60;
     }
 
     /**
@@ -232,7 +232,7 @@ if ( wpBlocks && wpBlocksEditor && wpElement ) {
             };
 
             var getCharLimit = function( text ) {
-                return hasAsianChars( text ) ? 50 : 70;
+                return hasAsianChars( text ) ? 50 : 60;
             };
 
             var getDisplayLength = function( text ) {
