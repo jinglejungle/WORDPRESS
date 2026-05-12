@@ -62,6 +62,15 @@ function bnpp_carousel_get_recent_posts( $count = 3 ) {
         $categories = get_the_category( $post->ID );
         $category_name = ! empty( $categories ) ? $categories[0]->name : '';
         
+        // Get title - try custom field first (title_fo / title front-office)
+        $title = get_post_meta( $post->ID, 'title_fo', true );
+        if ( ! $title ) {
+            $title = get_post_meta( $post->ID, '_title_fo', true );
+        }
+        if ( ! $title ) {
+            $title = $post->post_title;
+        }
+        
         // Get featured image - try multiple methods
         $image_url = '';
         
@@ -117,7 +126,7 @@ function bnpp_carousel_get_recent_posts( $count = 3 ) {
         $debug_output = '<!-- POST: ' . $post->post_title . ' | ID: ' . $post->ID . ' | DEBUG: ' . implode( ' | ', $debug_steps ) . ' -->';
         
         $formatted_posts[] = array(
-            'title'    => $post->post_title,
+            'title'    => $title,
             'category' => $category_name,
             'image'    => $image_url,
             'url'      => get_permalink( $post->ID ),
