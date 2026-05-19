@@ -1,0 +1,13 @@
+/* Styles de l'éditeur WordPress */
+
+.mon-bloc-edit {
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.mon-bloc-edit h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+}

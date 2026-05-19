@@ -1,0 +1,32 @@
+/* Styles du bloc pour le front-end */
+
+.mon-composant {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mon-composant .bloc {
+  margin: 0;
+  padding: 0;
+}
+
+.mon-composant .mon-lien {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: #0073aa;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.mon-composant .mon-lien:hover {
+  background-color: #005a87;
+  text-decoration: none;
+}
+
+.mon-composant .mon-lien:focus {
+  outline: 2px solid #0073aa;
+  outline-offset: 2px;
+}
