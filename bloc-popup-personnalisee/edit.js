@@ -2,6 +2,10 @@ import { TextControl, TextareaControl, ToggleControl } from '@wordpress/componen
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
 
+// Constantes
+const MAX_TITLE_LENGTH = 100;
+const MAX_DESCRIPTION_LENGTH = 650;
+
 export default function Edit({ attributes, setAttributes }) {
   const { popupTitle, popupDescription, links } = attributes;
 
@@ -12,24 +16,89 @@ export default function Edit({ attributes, setAttributes }) {
     setAttributes({ links: updatedLinks });
   };
 
+  // Gérer le changement de titre avec limite et troncature
+  const handleTitleChange = (value) => {
+    const truncated = value.substring(0, MAX_TITLE_LENGTH);
+    const wasTruncated = value.length > MAX_TITLE_LENGTH;
+    
+    setAttributes({ 
+      popupTitle: truncated,
+      titleWasTruncated: wasTruncated
+    });
+  };
+
+  // Gérer le changement de description avec limite et troncature
+  const handleDescriptionChange = (value) => {
+    const truncated = value.substring(0, MAX_DESCRIPTION_LENGTH);
+    const wasTruncated = value.length > MAX_DESCRIPTION_LENGTH;
+    
+    setAttributes({ 
+      popupDescription: truncated,
+      descriptionWasTruncated: wasTruncated
+    });
+  };
+
+  const titleLength = popupTitle?.length || 0;
+  const descriptionLength = popupDescription?.length || 0;
+  const titleRemaining = MAX_TITLE_LENGTH - titleLength;
+  const descriptionRemaining = MAX_DESCRIPTION_LENGTH - descriptionLength;
+
   return (
     <>
       <InspectorControls>
         <PanelBody title="Paramètres Popup du Composant" initialOpen={true}>
           
-          {/* Titre et description GLOBAUX */}
-          <TextControl
-            label="Titre de la popup (optionnel)"
-            value={popupTitle}
-            onChange={(value) => setAttributes({ popupTitle: value })}
-            placeholder="Titre personnalisé..."
-          />
-          <TextareaControl
-            label="Description de la popup (optionnel)"
-            value={popupDescription}
-            onChange={(value) => setAttributes({ popupDescription: value })}
-            placeholder="Description personnalisée..."
-          />
+          {/* Titre avec limite */}
+          <div style={{ marginBottom: '20px' }}>
+            <TextControl
+              label="Titre de la popup (optionnel)"
+              value={popupTitle}
+              onChange={handleTitleChange}
+              placeholder="Titre personnalisé..."
+              maxLength={MAX_TITLE_LENGTH}
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+              <small style={{ color: '#666' }}>
+                {titleLength} / {MAX_TITLE_LENGTH} caractères
+              </small>
+              {attributes.titleWasTruncated && (
+                <small style={{ color: '#e74c3c', fontWeight: 'bold' }}>
+                  ⚠️ Texte tronqué
+                </small>
+              )}
+            </div>
+            {titleRemaining <= 10 && titleRemaining > 0 && (
+              <small style={{ color: '#f39c12' }}>
+                {titleRemaining} caractère{titleRemaining > 1 ? 's' : ''} restant{titleRemaining > 1 ? 's' : ''}
+              </small>
+            )}
+          </div>
+
+          {/* Description avec limite */}
+          <div style={{ marginBottom: '20px' }}>
+            <TextareaControl
+              label="Description de la popup (optionnel)"
+              value={popupDescription}
+              onChange={handleDescriptionChange}
+              placeholder="Description personnalisée..."
+              rows={4}
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+              <small style={{ color: '#666' }}>
+                {descriptionLength} / {MAX_DESCRIPTION_LENGTH} caractères
+              </small>
+              {attributes.descriptionWasTruncated && (
+                <small style={{ color: '#e74c3c', fontWeight: 'bold' }}>
+                  ⚠️ Texte tronqué
+                </small>
+              )}
+            </div>
+            {descriptionRemaining <= 50 && descriptionRemaining > 0 && (
+              <small style={{ color: '#f39c12' }}>
+                {descriptionRemaining} caractère{descriptionRemaining > 1 ? 's' : ''} restant{descriptionRemaining > 1 ? 's' : ''}
+              </small>
+            )}
+          </div>
 
           <hr />
           <p><strong>Activer la popup personnalisée par lien :</strong></p>

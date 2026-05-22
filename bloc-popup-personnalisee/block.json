@@ -18,6 +18,14 @@
       "type": "string",
       "default": ""
     },
+    "titleWasTruncated": {
+      "type": "boolean",
+      "default": false
+    },
+    "descriptionWasTruncated": {
+      "type": "boolean",
+      "default": false
+    },
     "links": {
       "type": "array",
       "default": [

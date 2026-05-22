@@ -11,7 +11,7 @@ document.addEventListener('click', (e) => {
     e.preventDefault();
     
     // Récupérer le switch du lien lui-même
-    const useCustom = link.dataset.dataExitPopup === 'true';
+    const useCustom = link.dataset.exitPopup === 'true';
     
     let title, description;
     
