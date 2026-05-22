@@ -2,10 +2,10 @@
 /**
  * @package MonNamespace
  * 
- * Rendu du bloc avec popup personnalisée
+ * Block rendering with custom popup
  * 
- * @var array $attributes Les attributs du bloc
- * @var array $content Le contenu du bloc
+ * @var array $attributes Block attributes
+ * @var array $content Block content
  */
 
 $popup_title = $attributes['popupTitle'] ?? '';

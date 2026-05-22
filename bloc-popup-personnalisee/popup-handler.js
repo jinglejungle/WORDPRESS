@@ -1,6 +1,6 @@
 /**
- * Gestionnaire de popups pour les liens externes
- * Utilise les attributs exit-data-popup-* pour personnaliser les popups
+ * Exit popup handler for external links
+ * Uses exit-data-popup-* attributes to customize popups
  */
 
 document.addEventListener('click', (e) => {
@@ -10,20 +10,20 @@ document.addEventListener('click', (e) => {
   if (isExternalLink(link.href)) {
     e.preventDefault();
     
-    // Récupérer le switch du lien lui-même
+    // Get the switch from the link itself
     const useCustom = link.dataset.exitPopup === 'true';
     
     let title, description;
     
     if (useCustom) {
-      // Chercher le composant parent pour récupérer titre/description
+      // Get parent component to retrieve title/description
       const composant = link.closest('[exit-data-popup-title]');
       title = composant?.dataset.exitDataPopupTitle || window.globalPopupConfig?.title;
       description = composant?.dataset.exitDataPopupDescription || window.globalPopupConfig?.description;
     } else {
-      // Utiliser les paramètres globaux
-      title = window.globalPopupConfig?.title || 'Attention';
-      description = window.globalPopupConfig?.description || 'Vous allez quitter le site';
+      // Use global settings
+      title = window.globalPopupConfig?.title || 'Warning';
+      description = window.globalPopupConfig?.description || 'You are about to leave the site';
     }
     
     showPopup(title, description, link.href);
@@ -31,23 +31,23 @@ document.addEventListener('click', (e) => {
 });
 
 /**
- * Affiche la popup avec le titre et la description
- * @param {string} title - Le titre de la popup
- * @param {string} description - La description de la popup
- * @param {string} url - L'URL cible
+ * Display popup with title and description
+ * @param {string} title - The popup title
+ * @param {string} description - The popup description
+ * @param {string} url - The target URL
  */
 function showPopup(title, description, url) {
-  console.log('=== POPUP EXIT ===');
-  console.log('Titre:', title);
+  console.log('=== EXIT POPUP ===');
+  console.log('Title:', title);
   console.log('Description:', description);
   console.log('URL:', url);
   console.log('==================');
   
-  // À REMPLACER avec votre logique de popup existante
-  // Exemple :
-  // - Afficher une modal
-  // - Afficher un dialog personnalisé
-  // - Rediriger après confirmation
+  // REPLACE with your existing popup logic
+  // Examples:
+  // - Display a modal
+  // - Display a custom dialog
+  // - Redirect after confirmation
   // etc.
   
   if (confirm(`${title}\n\n${description}`)) {
@@ -56,8 +56,8 @@ function showPopup(title, description, url) {
 }
 
 /**
- * Vérifie si un lien est externe
- * @param {string} href - L'URL à vérifier
+ * Check if a link is external
+ * @param {string} href - The URL to check
  * @returns {boolean}
  */
 function isExternalLink(href) {
@@ -71,12 +71,12 @@ function isExternalLink(href) {
 }
 
 /**
- * Configuration globale par défaut
- * À personnaliser selon vos besoins
+ * Default global configuration
+ * Customize as needed
  */
 if (!window.globalPopupConfig) {
   window.globalPopupConfig = {
-    title: 'Vous quittez le site',
-    description: 'Vous êtes sur le point de quitter notre site. Êtes-vous sûr ?'
+    title: 'You are leaving the site',
+    description: 'You are about to leave our site. Are you sure?'
   };
 }

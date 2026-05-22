@@ -1,11 +1,11 @@
 {
   "apiVersion": 3,
   "name": "mon-namespace/mon-bloc",
-  "title": "Bloc avec Popup Personnalisée",
+  "title": "Block with Custom Popup",
   "category": "common",
   "icon": "admin-links",
-  "description": "Un bloc avec 5 liens et popup personnalisée configurable",
-  "keywords": ["liens", "popup", "externe"],
+  "description": "A block with 5 links and customizable popup",
+  "keywords": ["links", "popup", "external"],
   "supports": {
     "html": false
   },
@@ -29,11 +29,11 @@
     "links": {
       "type": "array",
       "default": [
-        { "id": 1, "url": "", "text": "Lien 1", "useCustomPopup": false },
-        { "id": 2, "url": "", "text": "Lien 2", "useCustomPopup": false },
-        { "id": 3, "url": "", "text": "Lien 3", "useCustomPopup": false },
-        { "id": 4, "url": "", "text": "Lien 4", "useCustomPopup": false },
-        { "id": 5, "url": "", "text": "Lien 5", "useCustomPopup": false }
+        { "id": 1, "url": "", "text": "Link 1", "useCustomPopup": false },
+        { "id": 2, "url": "", "text": "Link 2", "useCustomPopup": false },
+        { "id": 3, "url": "", "text": "Link 3", "useCustomPopup": false },
+        { "id": 4, "url": "", "text": "Link 4", "useCustomPopup": false },
+        { "id": 5, "url": "", "text": "Link 5", "useCustomPopup": false }
       ]
     }
   },
