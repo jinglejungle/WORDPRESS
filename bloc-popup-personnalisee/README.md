@@ -125,8 +125,7 @@ function showPopup(title, description, url) {
 
 - `exit-data-popup-title` - Titre de la popup personnalisée
 - `exit-data-popup-description` - Description de la popup personnalisée
-- `exit-data-use-custom-popup` - Boolean pour activer/désactiver la popup personnalisée
-- `exit-data-link-id` - ID unique du lien
+- `data-exit-popup` - Boolean pour activer/désactiver la popup personnalisée
 
 ## ⚙️ Enregistrement du bloc
 

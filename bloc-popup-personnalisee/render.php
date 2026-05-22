@@ -18,12 +18,12 @@ $links = $attributes['links'] ?? [];
      exit-data-popup-description="<?php echo esc_attr($popup_description); ?>">
   
   <?php foreach ($links as $index => $link): ?>
-    <div class="bloc" 
-         exit-data-link-id="<?php echo esc_attr($link['id']); ?>"
-         exit-data-use-custom-popup="<?php echo $link['useCustomPopup'] ? 'true' : 'false'; ?>">
-      <a href="<?php echo esc_url($link['url']); ?>" class="mon-lien" target="_blank" rel="noopener noreferrer">
-        <?php echo esc_html($link['text']); ?>
-      </a>
-    </div>
+    <a href="<?php echo esc_url($link['url']); ?>" 
+       class="mon-lien" 
+       data-exit-popup="<?php echo $link['useCustomPopup'] ? 'true' : 'false'; ?>"
+       target="_blank" 
+       rel="noopener noreferrer">
+      <?php echo esc_html($link['text']); ?>
+    </a>
   <?php endforeach; ?>
 </div>

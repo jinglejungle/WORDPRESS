@@ -10,9 +10,8 @@ document.addEventListener('click', (e) => {
   if (isExternalLink(link.href)) {
     e.preventDefault();
     
-    // Chercher le bloc qui contient le lien
-    const bloc = link.closest('[exit-data-use-custom-popup]');
-    const useCustom = bloc?.dataset.exitDataUseCustomPopup === 'true';
+    // Récupérer le switch du lien lui-même
+    const useCustom = link.dataset.dataExitPopup === 'true';
     
     let title, description;
     
