@@ -1,154 +1,108 @@
-<ul class="posts-grid" data-post-count="3">
+/* =====================================================================
+ *  KEYBOARD NAVIGATION FIX — MEGA MENU
+ *  Paste into global.js, REPLACING the existing
+ *  getFocusableElements() and handleMegaMenuTab() functions.
+ *
+ *  What this fixes:
+ *   1. We now collect only the elements that are ACTUALLY visible
+ *      (sub-link columns set to display:none no longer corrupt the
+ *      first / last element calculation).
+ *   2. We sort the elements in the browser's REAL tab order
+ *      (positive tabindex values ascending, then 0/none in DOM
+ *      order) -> "first" and "last" finally match what the user
+ *      actually reaches with the keyboard. The fix therefore works
+ *      WITH or WITHOUT the positive tabindex values still present
+ *      in the HTML.
+ *   3. The focus trap fires correctly at the end of the menu:
+ *      focus returns to the next tab instead of jumping to the top
+ *      of the page.
+ * ===================================================================== */
 
-    <li>
-        
-                            <a href="https://www.bnpparibas-am.com/fr-fr/portfolio-perspectives/perspectives-sur-les-actifs-reels-un-elargissement-des-opportunites-dinvestissement/" class="post article-border">
-                
-                                            <div class="post-thumbnail">
-                                                            <div class="post-format">
-                                    Livre blanc                                </div>
-                                                        <img decoding="async" width="1024" height="676" src="https://www.bnpparibas-am.com/wp-content/uploads/2022/10/AdobeStock_279826059_agriculture_rice_fields.jpg?w=1024" class="attachment-large size-large wp-post-image" alt="">                        </div>
+// Returns the focusable AND visible elements within a mega menu.
+function getFocusableElements(megaMenu) {
+    const selector = 'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
-                    
-                                            <div class="post-content ">
-                            <div class="post-meta">
-                                                                    <p class="regular-publication">Investment outlook</p>
-                                                                                                    <p class="post-category">Perspectives d'investissement</p>
-                                                            </div>
-                            <h3>Perspectives sur les actifs réels : un élargissement des opportunités d’investissement</h3>
-                            <p></p>
-                            <div class="post-info">
-                                
-                                    <div class="author-images">
-                                        <img decoding="async" width="150" height="150" src="https://www.bnpparibas-am.com/wp-content/uploads/2025/11/Justin-Curlow_nb_300x300_96dpi.jpg?w=150&amp;h=150&amp;crop=1" class="attachment-thumbnail size-thumbnail" alt="">
-                                        
+    return Array.from(megaMenu.querySelectorAll(selector)).filter((el) => {
+        // Exclude disabled or hidden elements.
+        if (el.disabled || el.getAttribute('aria-hidden') === 'true') return false;
 
-                                                                                    <p class="authors">
-                                                By Justin Curlow                                                                                            </p>
-                                        
-                                    </div>
+        // Visibility test: an element set to display:none (a collapsed
+        // sub-link column) has neither an offsetParent nor a render rect.
+        const isVisible =
+            el.offsetParent !== null ||
+            el.getClientRects().length > 0;
 
-                                                                <p class="date"></p>
-                            </div>
-                        </div>
-                        
-                                    </a></li><li>
-            
-                            <a href="https://www.bnpparibas-am.com/fr-fr/portfolio-perspectives/perspectives-du-credit-alternatif-stabilite-dans-un-monde-en-mouvement/" class="post article-border">
-                
-                                            <div class="post-thumbnail">
-                                                            <div class="post-format">
-                                    Livre blanc                                </div>
-                                                        <img loading="lazy" decoding="async" width="1024" height="676" src="https://www.bnpparibas-am.com/wp-content/uploads/2024/11/AdobeStock_582297015_Fish_Farm_Aquaculture.jpg?w=1024" class="attachment-large size-large wp-post-image" alt="">                        </div>
-
-                    
-                                            <div class="post-content ">
-                            <div class="post-meta">
-                                                                    <p class="regular-publication">Investment outlook</p>
-                                                                                                    <p class="post-category">Perspectives d'investissement</p>
-                                                            </div>
-                            <h3>Perspectives du crédit alternatif : stabilité dans un monde en mouvement</h3>
-                            <p></p>
-                            <div class="post-info">
-                                
-                                    <div class="author-images">
-                                        <img loading="lazy" decoding="async" width="150" height="150" src="https://www.bnpparibas-am.com/wp-content/uploads/2025/11/Fristch_Christophe_nb_300x300_96dpi.png?w=150&amp;h=150&amp;crop=1" class="attachment-thumbnail size-thumbnail" alt="">
-                                        
-
-                                                                                    <p class="authors">
-                                                By Christophe Fritsch                                                                                            </p>
-                                        
-                                    </div>
-
-                                                                <p class="date"></p>
-                            </div>
-                        </div>
-                        
-                                    </a></li><li>
-            
-                            <a href="https://www.bnpparibas-am.com/fr-fr/portfolio-perspectives/axa-financement-entreprises-quel-bilan-1-an-apres/" class="post article-border">
-                
-                                            <div class="post-thumbnail">
-                                                            <div class="post-format">
-                                    Vidéo                                </div>
-                                                        <img loading="lazy" decoding="async" width="1024" height="676" src="https://www.bnpparibas-am.com/wp-content/uploads/2023/04/Business-People-Commute-to-Work-shutterstock-1707947281.jpg?w=1024" class="attachment-large size-large wp-post-image" alt="">                        </div>
-
-                    
-                                            <div class="post-content ">
-                            <div class="post-meta">
-                                                                                                    <p class="post-category">Perspectives d'investissement</p>
-                                                            </div>
-                            <h3>AXA Financement Entreprises, quel bilan 1 an après ?</h3>
-                            <p></p>
-                            <div class="post-info">
-                                
-                                    <div class="author-images">
-                                        <img loading="lazy" decoding="async" width="150" height="150" src="https://www.bnpparibas-am.com/wp-content/uploads/2020/10/BNPP_AM_Favicon.png?w=150&amp;h=150&amp;crop=1" class="attachment-thumbnail size-thumbnail" alt="">
-                                        
-
-                                                                                    <p class="authors">
-                                                By BNP Paribas Asset Management                                                                                            </p>
-                                        
-                                    </div>
-
-                                                                <p class="date"></p>
-                            </div>
-                        </div>
-                        
-                                    </a></li>
-            
-</ul>
-<style>
-   .posts-grid li {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    position: relative;
+        return isVisible;
+    });
 }
 
-.posts-grid li:after {
-    border: 4px solid var(--wp--preset--color--bnpp-green);
-    box-sizing: border-box;
-    content: "";
-    height: 100%;
-    left: 0;
-    opacity: 0;
-    position: absolute;
-    top: 0;
-    transition: .3s;
-    width: 100%
+// Sorts a list of elements into the browser's real tab order:
+// positive tabindex values first (1, 2, 3...), then 0 / none in DOM order.
+function sortByTabOrder(elements) {
+    return elements
+        .map((el, domIndex) => {
+            const ti = parseInt(el.getAttribute('tabindex'), 10);
+            return { el, domIndex, tabindex: Number.isNaN(ti) ? 0 : ti };
+        })
+        .sort((a, b) => {
+            const aPos = a.tabindex > 0;
+            const bPos = b.tabindex > 0;
+            if (aPos && bPos) {
+                // Two positive tabindex values: ascending value, then DOM order.
+                return a.tabindex - b.tabindex || a.domIndex - b.domIndex;
+            }
+            if (aPos !== bPos) {
+                // A positive tabindex always comes before a 0/none.
+                return aPos ? -1 : 1;
+            }
+            // Two 0/none elements: DOM order.
+            return a.domIndex - b.domIndex;
+        })
+        .map((entry) => entry.el);
 }
 
-.posts-grid li:hover:after {
-    opacity: 1
-}
+// Handles Tab / Shift+Tab inside an open mega menu.
+function handleMegaMenuTab(megaMenu, event) {
+    const focusable = sortByTabOrder(getFocusableElements(megaMenu));
+    if (focusable.length === 0) return;
 
-.posts-grid li > a {
-    container-type: inline-size;
-    display: grid;
-    grid-template-columns: 40% 1fr;
-    text-decoration: none;
-    height: 100%;
-}
+    const firstElement = focusable[0];
+    const lastElement = focusable[focusable.length - 1];
+    const active = document.activeElement;
 
-@media only screen and (max-width: 1024px) {
-    .posts-grid li > a {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media only screen and (min-width: 1024px) {
-    .posts-grid[data-post-count="3"] li:first-child {
-        grid-area: featured;
+    // Shift+Tab from the first element -> wrap around to the last one.
+    if (event.shiftKey && active === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+        return;
     }
 
-    .posts-grid[data-post-count="3"] li:first-child > a {
-        grid-template-columns: 1fr;
-    }
+    // Tab from the last element -> close the menu and move to the next
+    // top-level tab (instead of leaking focus to the top of the page).
+    if (!event.shiftKey && active === lastElement) {
+        event.preventDefault();
+        closeMegaMenu(megaMenu);
 
-    .posts-grid[data-post-count="3"] li:first-child .post-content {
-        border-left: 1px solid var(--wp--preset--color--light-grey);
-        border-top: none;
+        const currentMenuId = megaMenu.getAttribute('data-menu-id');
+        const currentTopLevelItem = document.querySelector(
+            `.top-level-menu li[data-menu-id="${currentMenuId}"]`
+        );
+
+        let nextTopLevelItem = currentTopLevelItem
+            ? currentTopLevelItem.nextElementSibling
+            : null;
+
+        // Skip any <li> with no link/button (e.g. the search icon).
+        while (nextTopLevelItem && !nextTopLevelItem.querySelector('a, button')) {
+            nextTopLevelItem = nextTopLevelItem.nextElementSibling;
+        }
+
+        // If we've reached the end, loop back to the first tab.
+        if (!nextTopLevelItem) {
+            nextTopLevelItem = document.querySelector('.top-level-menu li:first-child');
+        }
+
+        const target = nextTopLevelItem && nextTopLevelItem.querySelector('a, button');
+        if (target) target.focus();
     }
-} 
-</style>
+}
