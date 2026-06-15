@@ -63,11 +63,11 @@ function sortByTabOrder(elements) {
 
 // Handles Tab / Shift+Tab inside an open mega menu.
 function handleMegaMenuTab(megaMenu, event) {
-    const focusable = sortByTabOrder(getFocusableElements(megaMenu));
-    if (focusable.length === 0) return;
+    const focusableElements = sortByTabOrder(getFocusableElements(megaMenu));
+    if (focusableElements.length === 0) return;
 
-    const firstElement = focusable[0];
-    const lastElement = focusable[focusable.length - 1];
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
     const active = document.activeElement;
 
     // Shift+Tab from the first element -> wrap around to the last one.
