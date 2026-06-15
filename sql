@@ -1,43 +1,33 @@
 /* =====================================================================
  *  KEYBOARD NAVIGATION FIX — MEGA MENU
- *  Paste into global.js, REPLACING the existing
- *  getFocusableElements() and handleMegaMenuTab() functions.
+ *  Paste into global.js, REPLACING the existing getFocusableElements()
+ *  and handleMegaMenuTab() functions, and ADDING sortByTabOrder().
  *
- *  What this fixes:
- *   1. We now collect only the elements that are ACTUALLY visible
- *      (sub-link columns set to display:none no longer corrupt the
- *      first / last element calculation).
- *   2. We sort the elements in the browser's REAL tab order
- *      (positive tabindex values ascending, then 0/none in DOM
- *      order) -> "first" and "last" finally match what the user
- *      actually reaches with the keyboard. The fix therefore works
- *      WITH or WITHOUT the positive tabindex values still present
- *      in the HTML.
- *   3. The focus trap fires correctly at the end of the menu:
- *      focus returns to the next tab instead of jumping to the top
- *      of the page.
+ *  Minimal changes vs. the original code:
+ *   - getFocusableElements(): now returns only VISIBLE elements
+ *     (collapsed sub-link columns in display:none no longer skew
+ *     the first/last calculation). Returns an Array instead of a
+ *     NodeList so it can be sorted.
+ *   - sortByTabOrder(): NEW helper. Reorders elements into the
+ *     browser's real tab order (positive tabindex ascending, then
+ *     0/none in DOM order) so firstElement/lastElement match what
+ *     the keyboard actually reaches.
+ *   - handleMegaMenuTab(): UNCHANGED except its first line, which now
+ *     wraps the result in sortByTabOrder().
  * ===================================================================== */
 
-// Returns the focusable AND visible elements within a mega menu.
+// Function to get all focusable elements within a mega menu
 function getFocusableElements(megaMenu) {
     const selector = 'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
-
-    return Array.from(megaMenu.querySelectorAll(selector)).filter((el) => {
-        // Exclude disabled or hidden elements.
-        if (el.disabled || el.getAttribute('aria-hidden') === 'true') return false;
-
-        // Visibility test: an element set to display:none (a collapsed
-        // sub-link column) has neither an offsetParent nor a render rect.
-        const isVisible =
-            el.offsetParent !== null ||
-            el.getClientRects().length > 0;
-
-        return isVisible;
-    });
+    return Array.from(megaMenu.querySelectorAll(selector)).filter((el) =>
+        !el.disabled &&
+        el.getAttribute('aria-hidden') !== 'true' &&
+        (el.offsetParent !== null || el.getClientRects().length > 0)
+    );
 }
 
-// Sorts a list of elements into the browser's real tab order:
-// positive tabindex values first (1, 2, 3...), then 0 / none in DOM order.
+// Sorts elements into the browser's real tab order:
+// positive tabindex first (1, 2, 3...), then 0 / none in DOM order.
 function sortByTabOrder(elements) {
     return elements
         .map((el, domIndex) => {
@@ -47,62 +37,43 @@ function sortByTabOrder(elements) {
         .sort((a, b) => {
             const aPos = a.tabindex > 0;
             const bPos = b.tabindex > 0;
-            if (aPos && bPos) {
-                // Two positive tabindex values: ascending value, then DOM order.
-                return a.tabindex - b.tabindex || a.domIndex - b.domIndex;
-            }
-            if (aPos !== bPos) {
-                // A positive tabindex always comes before a 0/none.
-                return aPos ? -1 : 1;
-            }
-            // Two 0/none elements: DOM order.
+            if (aPos && bPos) return a.tabindex - b.tabindex || a.domIndex - b.domIndex;
+            if (aPos !== bPos) return aPos ? -1 : 1;
             return a.domIndex - b.domIndex;
         })
         .map((entry) => entry.el);
 }
 
-// Handles Tab / Shift+Tab inside an open mega menu.
+// Function to handle tabbing within a mega menu
 function handleMegaMenuTab(megaMenu, event) {
     const focusableElements = sortByTabOrder(getFocusableElements(megaMenu));
-    if (focusableElements.length === 0) return;
-
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
-    const active = document.activeElement;
 
-    // Shift+Tab from the first element -> wrap around to the last one.
-    if (event.shiftKey && active === firstElement) {
+    if (event.shiftKey && document.activeElement === firstElement) {
         event.preventDefault();
         lastElement.focus();
-        return;
-    }
-
-    // Tab from the last element -> close the menu and move to the next
-    // top-level tab (instead of leaking focus to the top of the page).
-    if (!event.shiftKey && active === lastElement) {
+    } else if (!event.shiftKey && document.activeElement === lastElement) {
         event.preventDefault();
         closeMegaMenu(megaMenu);
 
+        // Get the current data-menu-id of the mega menu
         const currentMenuId = megaMenu.getAttribute('data-menu-id');
-        const currentTopLevelItem = document.querySelector(
-            `.top-level-menu li[data-menu-id="${currentMenuId}"]`
-        );
 
-        let nextTopLevelItem = currentTopLevelItem
-            ? currentTopLevelItem.nextElementSibling
-            : null;
+        // Find the corresponding top-level li
+        const currentTopLevelItem = document.querySelector(`.top-level-menu li[data-menu-id="${currentMenuId}"]`);
 
-        // Skip any <li> with no link/button (e.g. the search icon).
-        while (nextTopLevelItem && !nextTopLevelItem.querySelector('a, button')) {
-            nextTopLevelItem = nextTopLevelItem.nextElementSibling;
-        }
+        // Find the next top-level item by using its sibling
+        let nextTopLevelItem = currentTopLevelItem ? currentTopLevelItem.nextElementSibling : null;
 
-        // If we've reached the end, loop back to the first tab.
+        // Loop back to the first item if we're at the end
         if (!nextTopLevelItem) {
             nextTopLevelItem = document.querySelector('.top-level-menu li:first-child');
         }
 
-        const target = nextTopLevelItem && nextTopLevelItem.querySelector('a, button');
-        if (target) target.focus();
+        // Set focus to the link or button in the next top-level item
+        if (nextTopLevelItem) {
+            nextTopLevelItem.querySelector('a, button').focus();
+        }
     }
 }
