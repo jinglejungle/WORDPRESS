@@ -1,0 +1,18 @@
+@property --num {
+	syntax: "<integer>";
+	initial-value: 0;
+	inherits: false;
+}
+
+.bnpp-statistics-module-number:not(.block-editor-rich-text__editable) {
+	transition: --num 5s;
+	counter-reset: num var(--num);
+}
+
+.bnpp-statistics-module-number:not(.block-editor-rich-text__editable).active {
+	--num: var(--numberToAnimateTo);
+}
+
+.bnpp-statistics-module-number:not(.block-editor-rich-text__editable).active::after {
+	content: counter(num);
+}
