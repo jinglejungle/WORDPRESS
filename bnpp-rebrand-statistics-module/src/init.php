@@ -62,7 +62,7 @@ function bnpp_rebrand_statistics_module_register_block() {
 	wp_register_script(
 		'bnpp-rebrand-statistics-module-editor',
 		BNPP_REBRAND_STATISTICS_MODULE_URL . 'assets/block.js',
-		[ 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n', 'wp-icons' ],
+		[ 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n' ],
 		BNPP_REBRAND_STATISTICS_MODULE_VERSION,
 		true
 	);
