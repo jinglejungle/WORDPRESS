@@ -1,0 +1,287 @@
+/* Compiled from style.scss.
+   The sectionStyles and grid mixins have been expanded inline, and the
+   $breakpoint-medium SCSS variable (1024px) has been substituted into the
+   media query because CSS custom properties cannot be used in @media. */
+
+/* sectionStyles: bnpp-container on direct child */
+.statistics-block > div {
+	max-width: var(--wp--style--global--wide-size);
+	width: 80%;
+	margin: 0 auto;
+	padding: var(--wp--preset--spacing--60) 0;
+}
+
+@media only screen and (max-width: 1024px) {
+	.statistics-block > div {
+		padding: var(--wp--preset--spacing--50) 0;
+	}
+}
+
+.statistics-block > div.narrow {
+	max-width: var(--wp--style--global--content-size) !important;
+}
+
+.statistics-block > div.full-width {
+	max-width: none !important;
+	width: 100% !important;
+}
+
+.statistics-block .content-col {
+	text-align: center;
+	max-width: 400px;
+	margin: 0 auto;
+}
+
+/* sectionStyles: colour modes */
+.statistics-block.dark {
+	background: none;
+	background-color: var(--wp--preset--color--dark-green);
+}
+
+.statistics-block.green {
+	background: none;
+	background-color: var(--wp--preset--color--bnpp-green);
+}
+
+.statistics-block.charcoal {
+	background: none;
+	background-color: var(--wp--preset--color--charcoal);
+}
+
+.statistics-block.blueDianneLightMode {
+	background: none;
+	background-color: var(--wp--preset--color--blue-dianne-light-mode);
+}
+
+.statistics-block.blueDianneDarkMode {
+	background: none;
+	background-color: var(--wp--preset--color--blue-dianne-dark-mode);
+}
+
+.statistics-block.silverTreeLightMode {
+	background: none;
+	background-color: var(--wp--preset--color--silver-tree-light-mode);
+}
+
+.statistics-block.silverTreeDarkMode {
+	background: none;
+	background-color: var(--wp--preset--color--silver-tree-dark-mode);
+}
+
+.statistics-block.aquaBlueLightMode {
+	background: none;
+	background-color: var(--wp--preset--color--aqua-blue-light-mode);
+}
+
+.statistics-block.aquaBlueDarkMode {
+	background: none;
+	background-color: var(--wp--preset--color--aqua-blue-dark-mode);
+}
+
+.statistics-block.paleGreyLightMode {
+	background: none;
+	background-color: var(--wp--preset--color--pale-grey-light-mode);
+}
+
+.statistics-block.paleGreyDarkMode {
+	background: none;
+	background-color: var(--wp--preset--color--pale-grey-dark-mode);
+}
+
+.statistics-block.paleBlueLilyLightMode {
+	background: none;
+	background-color: var(--wp--preset--color--pale-blue-lily-light-mode);
+}
+
+.statistics-block.paleBlueLilyDarkMode {
+	background: none;
+	background-color: var(--wp--preset--color--pale-blue-lily-dark-mode);
+}
+
+.statistics-block.darkGreyLightMode {
+	background: none;
+	background-color: var(--wp--preset--color--dark-grey-light-mode);
+}
+
+.statistics-block.darkGreyDarkMode {
+	background: none;
+	background-color: var(--wp--preset--color--dark-grey-darkmode);
+}
+
+/* sectionStyles: dark family text colour */
+.statistics-block:is(.dark, .green, .charcoal, .blueDianneDarkMode, .blueDianneLightMode, .darkGreyLightMode, .darkGreyDarkMode) *:not(.bnpp-button) {
+	color: var(--wp--preset--color--white);
+}
+
+.statistics-block:is(.dark, .green, .charcoal, .blueDianneDarkMode, .blueDianneLightMode, .darkGreyLightMode, .darkGreyDarkMode).contained {
+	padding: var(--wp--preset--spacing--60);
+}
+
+.statistics-block:is(.dark, .green, .charcoal, .blueDianneDarkMode, .blueDianneLightMode, .darkGreyLightMode, .darkGreyDarkMode).contained:is(.dark, .green, .charcoal, .blueDianneDarkMode, .silverTreeDarkMode, .aquaBlueDarkMode, .paleGreyDarkMode, .paleBlueLilyDarkMode, .darkGreyDarkMode) {
+	background-color: var(--wp--preset--color--dark-green);
+}
+
+.statistics-block:is(.dark, .green, .charcoal, .blueDianneDarkMode, .blueDianneLightMode, .darkGreyLightMode, .darkGreyDarkMode).contained:is(.dark, .green, .charcoal, .blueDianneDarkMode, .silverTreeDarkMode, .aquaBlueDarkMode, .paleGreyDarkMode, .paleBlueLilyDarkMode, .darkGreyDarkMode) > div {
+	background-color: var(--wp--preset--color--white);
+	padding-left: 12px !important;
+	padding-right: 12px !important;
+}
+
+.statistics-block:is(.dark, .green, .charcoal, .blueDianneDarkMode, .blueDianneLightMode, .darkGreyLightMode, .darkGreyDarkMode).contained:is(.dark, .green, .charcoal, .blueDianneDarkMode, .silverTreeDarkMode, .aquaBlueDarkMode, .paleGreyDarkMode, .paleBlueLilyDarkMode, .darkGreyDarkMode) *:not(path):not(.bnpp-button):not(.button-icon) {
+	color: var(--wp--preset--color--bnpp-black);
+}
+
+.statistics-block:is(.dark, .green, .charcoal, .blueDianneDarkMode, .blueDianneLightMode, .darkGreyLightMode, .darkGreyDarkMode).contained:is(.dark, .green, .charcoal, .blueDianneDarkMode, .silverTreeDarkMode, .aquaBlueDarkMode, .paleGreyDarkMode, .paleBlueLilyDarkMode, .darkGreyDarkMode) h2,
+.statistics-block:is(.dark, .green, .charcoal, .blueDianneDarkMode, .blueDianneLightMode, .darkGreyLightMode, .darkGreyDarkMode).contained:is(.dark, .green, .charcoal, .blueDianneDarkMode, .silverTreeDarkMode, .aquaBlueDarkMode, .paleGreyDarkMode, .paleBlueLilyDarkMode, .darkGreyDarkMode) p {
+	color: var(--wp--preset--color--bnpp-black);
+}
+
+.statistics-block:is(.dark, .green, .charcoal, .blueDianneDarkMode, .blueDianneLightMode, .darkGreyLightMode, .darkGreyDarkMode).contained:is(.blueDianneDarkMode) {
+	background-color: var(--wp--preset--color--blue-dianne-dark-mode);
+}
+
+.statistics-block:is(.dark, .green, .charcoal, .blueDianneDarkMode, .blueDianneLightMode, .darkGreyLightMode, .darkGreyDarkMode).contained:is(.silverTreeDarkMode) {
+	background-color: var(--wp--preset--color--silver-tree-dark-mode);
+}
+
+.statistics-block:is(.dark, .green, .charcoal, .blueDianneDarkMode, .blueDianneLightMode, .darkGreyLightMode, .darkGreyDarkMode).contained:is(.aquaBlueDarkMode) {
+	background-color: var(--wp--preset--color--aqua-blue-dark-mode);
+}
+
+.statistics-block:is(.dark, .green, .charcoal, .blueDianneDarkMode, .blueDianneLightMode, .darkGreyLightMode, .darkGreyDarkMode).contained:is(.paleGreyDarkMode) {
+	background-color: var(--wp--preset--color--pale-grey-dark-mode);
+}
+
+.statistics-block:is(.dark, .green, .charcoal, .blueDianneDarkMode, .blueDianneLightMode, .darkGreyLightMode, .darkGreyDarkMode).contained:is(.paleBlueLilyDarkMode) {
+	background-color: var(--wp--preset--color--pale-blue-lily-dark-mode);
+}
+
+.statistics-block:is(.dark, .green, .charcoal, .blueDianneDarkMode, .blueDianneLightMode, .darkGreyLightMode, .darkGreyDarkMode).contained:is(.darkGreyDarkMode) {
+	background-color: var(--wp--preset--color--dark-grey-darkmode);
+}
+
+/* sectionStyles: contained */
+.statistics-block.contained {
+	padding: var(--wp--preset--spacing--60);
+	background-color: var(--wp--preset--color--white);
+}
+
+.statistics-block.contained * {
+	color: var(--wp--preset--color--white);
+}
+
+.statistics-block.contained > div {
+	background-color: var(--wp--preset--color--dark-green);
+	padding-left: 12px !important;
+	padding-right: 12px !important;
+}
+
+.statistics-block.contained:is(.blueDianneLightMode) {
+	background-color: var(--wp--preset--color--blue-dianne-light-mode);
+}
+
+.statistics-block.contained:is(.silverTreeLightMode) {
+	background-color: var(--wp--preset--color--silver-tree-light-mode);
+}
+
+.statistics-block.contained:is(.aquaBlueLightMode) {
+	background-color: var(--wp--preset--color--aqua-blue-light-mode);
+}
+
+.statistics-block.contained:is(.paleGreyLightMode) {
+	background-color: var(--wp--preset--color--pale-grey-light-mode);
+}
+
+.statistics-block.contained:is(.paleBlueLilyLightMode) {
+	background-color: var(--wp--preset--color--pale-blue-lily-light-mode);
+}
+
+.statistics-block.contained:is(.darkGreyLightMode) {
+	background-color: var(--wp--preset--color--dark-grey-light-mode);
+}
+
+/* sectionStyles: full-width */
+.statistics-block.full-width {
+	max-width: none;
+	width: 100%;
+	padding: 0;
+}
+
+/* bnpp-container grid */
+.statistics-block .bnpp-container {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+	gap: var(--wp--preset--spacing--50);
+}
+
+.statistics-block .bnpp-container > div > div.block-editor-block-list__layout {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+	gap: var(--wp--preset--spacing--50);
+}
+
+.statistics-block.contained .bnpp-container {
+	padding: var(--wp--preset--spacing--60);
+}
+
+/* single column layout */
+.statistics-block.single .bnpp-container {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 100%), 1fr));
+	gap: var(--wp--preset--spacing--50);
+}
+
+.statistics-block.single .statistics-block__content {
+	text-align: center;
+}
+
+.statistics-block.single .statistics-block__statistics {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 2em;
+}
+
+.statistics-block.single .statistics-block__statistics .bnpp-statistics-module {
+	flex: 0 1 275px;
+}
+
+.statistics-block h2 {
+	padding-top: var(--wp--preset--spacing--50);
+}
+
+/* statistics grid */
+.statistics-block .statistics-block__statistics {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+	gap: var(--wp--preset--spacing--50);
+}
+
+.statistics-block .statistics-block__statistics .bnpp-statistics-module {
+	background-color: var(--wp--preset--color--bnpp-green-tint-10);
+	padding: var(--wp--preset--spacing--60);
+	height: auto;
+}
+
+.statistics-block .statistics-block__statistics .bnpp-statistics-module h3 {
+	color: var(--wp--preset--color--bnpp-green);
+}
+
+.statistics-block .statistics-block__statistics .bnpp-statistics-module p {
+	margin: 0;
+}
+
+/* dark variant of statistics modules */
+.statistics-block.dark .statistics-block__statistics .bnpp-statistics-module {
+	background-color: #0A352E;
+	padding: var(--wp--preset--spacing--60);
+	height: fit-content;
+}
+
+.statistics-block.dark .statistics-block__statistics .bnpp-statistics-module h3 {
+	color: var(--wp--preset--color--white);
+}
+
+.statistics-block.dark .statistics-block__statistics .bnpp-statistics-module p {
+	color: #7FD4B5;
+}

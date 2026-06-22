@@ -1,0 +1,15 @@
+/* Compiled from editor.scss. The grid mixin has been expanded inline.
+   Commented-out rules from the original SCSS are intentionally omitted. */
+
+.statistics-block .statistics-block__statistics .block-editor-block-list__layout {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+	gap: var(--wp--preset--spacing--50);
+}
+
+.statistics-block.single .statistics-block__statistics .block-editor-block-list__layout {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 2em;
+}

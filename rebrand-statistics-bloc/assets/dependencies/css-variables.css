@@ -1,0 +1,103 @@
+/* CSS Variables.
+   Converted from _css-variables.scss (only // comments changed to CSS comments).
+   See breakpoints.css for media query breakpoint variables. */
+
+:root {
+	/* Color Definitions.
+	   DO NOT USE THESE ON ELEMENTS, ONLY FOR VARIABLES */
+	--wmb--color--black: 0  0  0;
+	--wmb--color--white: 255  255  255;
+	--wmb--color--offwhite: 242  242  242;
+	--wmb--color--darkgrey: 5 20 33;
+	--wmb--color--lightgrey: 233  233  233;
+	--wmb--color--neutral: 175 184 193;
+	--wmb--color--slate: 17  45  71;
+	--wmb--color--purple: 100  92  255;
+	--wmb--color--teal: 0 129 138;
+
+	/* Color Assignments. */
+	--wmb--color--accent: rgb(var(--wmb--color--teal));
+	--wmb--color--accent--dark: rgb(var(--wmb--color--darkgrey));
+	--wmb--color--title: rgb(var(--wmb--color--black));
+	--wmb--link--color: rgb(var(--wmb--color--accent));
+	--wmb--code--color: rgb(var(--wmb--color--black));
+	--wmb--code--background-color: rgb(var(--wmb--color--neutral));
+	--wmb--header--color: rgb(var(--wmb--color--slate));
+	--wmb--header--background-color: rgb(var(--wmb--color--offwhite));
+	--wmb--navigation-menu--color: rgb(var(--wmb--color--black));
+	--wmb--navigation-menu--color--hover: rgb(var(--wmb--color--accent));
+	--wmb--navigation-menu--background-color: transparent;
+	--wmb--dropdown--background-color: rgb(var(--wmb--color--white));
+	--wmb--main--color: rgb(var(--wmb--color--slate));
+	--wmb--main--background-color: rgb(var(--wmb--color--offwhite));
+	--wmb--secondary--background-color: rgb(var(--wmb--color--white));
+	--wmb--footer--color: rgb(var(--wmb--color--slate) / 50%);
+	--wmb--footer--top-background-color: rgb(var(--wmb--color--offwhite));
+	--wmb--footer--bottom-background-color: rgb(var(--wmb--color--lightgrey));
+	--wmb--heading--color: rgb(var(--wmb--color--accent));
+	--wmb--border--light: 1px solid rgb(var(--wmb--color--neutral));
+	--wmb--border--extra-light: 1px solid rgb(var(--wmb--color--offwhite));
+	--wmb--button--color-fill: rgb(var(--wmb--color--slate));
+	--wmb--button--color-text: rgb(var(--wmb--color--white));
+
+	/* Type. */
+	--wmb--font-weight--light: 300;
+	--wmb--font-weight--medium: 400;
+	--wmb--font-weight--bold: 700;
+
+	/* Spacing. */
+	--wmb--content--max-width: 840px;
+	--wmb--section--padding-y: 3rem;
+	--wmb--container--padding-x: 15px;
+	--wmb--container--max-width: 1250px;
+
+	/* Shadows. */
+	--wmb--shadow--default: 0px 3px 6px rgb(0 0 0 / 20%);
+	--wmb--shadow--large: 0 50px 120px -40px rgba(150, 150, 150, 0.2), 0 20px 60px -30px rgba(0, 0, 0, 0.5);
+
+	/* Border Radius. */
+	--wmb--border-radius--default: 6px;
+
+	/* Transitions. */
+	--wmb--transition--timing: 300ms;
+	--wmb--transition--default: all var(--wmb--transition--timing) ease-in-out;
+}
+
+.dark-mode {
+	/* Black to White */
+	--wmb--color--title: rgb(var(--wmb--color--white));
+	--wmb--code--color: rgb(var(--wmb--color--white));
+	--wmb--navigation-menu--color: rgb(var(--wmb--color--white));
+
+	/* Main colours */
+	--wmb--main--color: rgb(var(--wmb--color--white) / 70%);
+	--wmb--footer--color: rgb(var(--wmb--color--white) / 50%);
+
+	/* White to Black */
+	--wmb--dropdown--background-color: rgb(var(--wmb--color--slate));
+	--wmb--button--color-text: rgb(var(--wmb--color--slate));
+	--wmb--secondary--background-color: rgb(var(--wmb--color--offwhite));
+
+	/* Accent can stay same */
+	--wmb--heading--color: rgb(var(--wmb--color--accent));
+	--wmb--link--color: rgb(var(--wmb--color--accent));
+	--wmb--navigation-menu--color--hover: rgb(var(--wmb--color--accent));
+
+	/* Slate to Offwhite */
+	--wmb--header--color: rgb(var(--wmb--color--offwhite));
+	--wmb--button--color-fill: rgb(var(--wmb--color--offwhite));
+
+	/* Offwhite to Slate */
+	--wmb--header--background-color: rgb(var(--wmb--color--slate));
+	--wmb--main--background-color: rgb(var(--wmb--color--slate));
+	--wmb--border--extra-light: 1px solid rgb(var(--wmb--color--slate));
+	--wmb--footer--top-background-color: rgb(var(--wmb--color--slate));
+	--wmb--footer--bottom-background-color: rgb(var(--wmb--color--slate) / 60%);
+
+	/* Color Assignments. */
+	--wmb--color--accent: rgb(var(--wmb--color--teal));
+	--wmb--color--accent--dark: rgb(var(--wmb--color--white) / 80%);
+	--wmb--code--background-color: rgb(var(--wmb--color--neutral));
+	--wmb--navigation-menu--background-color: transparent;
+	--wmb--border--light: 1px solid rgb(var(--wmb--color--neutral));
+}

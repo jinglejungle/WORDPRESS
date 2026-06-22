@@ -1,0 +1,15 @@
+/* Media query breakpoints.
+   Converted from breakpoint.scss.
+
+   In SCSS these were variables used directly inside @media queries.
+   CSS custom properties cannot be used inside @media conditions, so they are
+   exposed here as custom properties for reference/reuse, while the compiled
+   component CSS (block.css) hardcodes the pixel values where needed
+   (e.g. 1024px for $breakpoint-medium). */
+
+:root {
+	--breakpoint-tiny: 350px;
+	--breakpoint-extra-small: 640px;
+	--breakpoint-small: 768px;
+	--breakpoint-medium: 1024px;
+}

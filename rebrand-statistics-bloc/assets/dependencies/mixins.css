@@ -1,0 +1,198 @@
+/* Converted from _mixins.scss.
+
+   IMPORTANT: SCSS mixins have no direct CSS equivalent. The parameterized and
+   component-scoped mixins (grid, bnpp-container, sectionStyles, the colour-mode
+   mixins) were compiled inline into the component CSS (block.css) because they
+   only produce CSS once applied to a selector with arguments.
+
+   This file keeps the parts of _mixins.scss that ARE standalone, reusable CSS:
+   - the global @keyframes definitions (hoverKeyframes / graphicKeyframes)
+   - the animation helper rules
+   - the button mixin, exposed as a reusable .bnpp-button class
+   - the input mixin, exposed as a reusable .bnpp-input class
+   - the SVGDarkBg helper, exposed as a reusable .svg-dark-bg class */
+
+/* hoverKeyframes */
+@keyframes rotate45reverse {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(45deg); }
+}
+
+@keyframes rotate45 {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(-45deg); }
+}
+
+@keyframes rotate180reverse {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(180deg); }
+}
+
+@keyframes rotate180 {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(-180deg); }
+}
+
+@keyframes translateY10 {
+	0% { transform: translateY(0); }
+	100% { transform: translateY(10px); }
+}
+
+@keyframes translateY10reverse {
+	0% { transform: translateY(0); }
+	100% { transform: translateY(-10px); }
+}
+
+@keyframes translateX10 {
+	0% { transform: translateX(0); }
+	100% { transform: translateX(10px); }
+}
+
+@keyframes translateX10reverse {
+	0% { transform: translateX(0); }
+	100% { transform: translateX(-10px); }
+}
+
+@keyframes scale12 {
+	0% { transform: scale(1); }
+	100% { transform: scale(1.2); }
+}
+
+/* graphicKeyframes */
+@keyframes rotate360loop {
+	100% { transform: rotate(360deg); }
+}
+
+:is(
+	[data-name="rotate45"],
+	[data-name="rotate45reverse"],
+	[data-name="rotate180"],
+	[data-name="rotate180reverse"],
+	[data-name="translateY10"],
+	[data-name="translateY10reverse"],
+	[data-name="translateX10"],
+	[data-name="translateX10reverse"],
+	[data-name="scale12"]
+) {
+	transform-origin: center;
+	transform-box: fill-box;
+}
+
+#ngx-icon-speedometer [data-name="rotate45reverse"] {
+	transform-origin: 100% 83%;
+}
+
+#ngx-icon-turbine [data-name="rotate180reverse"] {
+	transform-origin: 50% 65%;
+}
+
+[data-name="rotate360loop"] {
+	animation: rotate360loop 10s infinite linear;
+	transform-box: fill-box;
+	transform-origin: 50% 66.1%;
+}
+
+[data-name="rotate360loop"] + [data-name="rotate360loop"] {
+	animation-duration: 15s;
+}
+
+/* button mixin, exposed as a reusable class */
+.bnpp-button {
+	--buttonHoverColour: #004E31;
+	background-color: var(--wp--preset--color--bnpp-green);
+	padding: var(--wp--preset--spacing--40) var(--wp--preset--spacing--60);
+	color: var(--wp--preset--color--white);
+	font-size: var(--wp--preset--font-size--medium);
+	text-decoration: none;
+	border: none;
+	cursor: pointer;
+	transition: 300ms;
+	display: inline-flex;
+	align-items: center;
+	width: fit-content;
+	gap: var(--wp--preset--spacing--40);
+	position: relative;
+}
+
+.bnpp-button.secondary {
+	--buttonHoverColour: var(--wp--preset--color--bnpp-green);
+	background-color: var(--wp--preset--color--bnpp-black);
+}
+
+.bnpp-button.tertiary {
+	--buttonHoverColour: var(--wp--preset--color--bnpp-green);
+	background-color: transparent;
+	color: var(--wp--preset--color--bnpp-black);
+	outline: solid 1px var(--wp--preset--color--bnpp-black);
+}
+
+.bnpp-button.tertiary:hover {
+	color: var(--wp--preset--color--white);
+}
+
+.bnpp-button:hover,
+.bnpp-button:focus {
+	background-color: var(--buttonHoverColour);
+}
+
+.bnpp-button:hover span.button-icon,
+.bnpp-button:focus span.button-icon {
+	transform: translateX(5px);
+}
+
+.bnpp-button:focus {
+	outline: 2px solid var(--wp--preset--color--white);
+	outline-offset: 2px;
+}
+
+.bnpp-button:focus-visible {
+	outline: 2px solid var(--wp--preset--color--white);
+	outline-offset: 2px;
+}
+
+.bnpp-button[aria-disabled="true"] {
+	pointer-events: none;
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.bnpp-button span.button-icon {
+	display: inline-block;
+	--iconSize: 20px;
+	width: var(--iconSize);
+	background-color: currentColor;
+	height: 2.3px;
+	border-radius: 50px;
+	transition: 300ms;
+}
+
+.bnpp-button span.button-icon::before,
+.bnpp-button span.button-icon::after {
+	content: "";
+	position: absolute;
+	width: calc(var(--iconSize) / 1.4);
+	height: 3px;
+	background: currentColor;
+	border-radius: 50px;
+	transform-origin: right;
+}
+
+.bnpp-button span.button-icon::before {
+	transform: translateX(5.5px) translateY(0.5px) rotate(45deg);
+}
+
+.bnpp-button span.button-icon::after {
+	transform: translateX(5.5px) translateY(-0.5px) rotate(-45deg);
+}
+
+/* input mixin, exposed as a reusable class */
+.bnpp-input {
+	padding: 1em 0;
+	border: none;
+	border-bottom: solid 1px;
+}
+
+/* SVGDarkBg helper, exposed as a reusable class */
+.svg-dark-bg svg :is(*[style*="1d1d1b"], *[style*="rgb(29, 29, 27)"], *[stroke*="1d1d1b"], *[stroke*="rgb(29, 29, 27)"]) {
+	stroke: var(--wp--preset--color--white) !important;
+}
