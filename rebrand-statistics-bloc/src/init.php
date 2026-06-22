@@ -230,3 +230,24 @@ JS;
 	);
 }
 add_action( 'init', 'bnpp_rebrand_statistics_bloc_register_block' );
+
+/**
+ * Register the "new-blocks" block category if it is not already registered,
+ * so the block is visible in the inserter list.
+ */
+function bnpp_rebrand_statistics_bloc_register_category( $categories ) {
+
+	foreach ( $categories as $category ) {
+		if ( isset( $category['slug'] ) && 'new-blocks' === $category['slug'] ) {
+			return $categories;
+		}
+	}
+
+	$categories[] = [
+		'slug'  => 'new-blocks',
+		'title' => __( 'New Blocks', 'bnpp-custom-blocks' ),
+	];
+
+	return $categories;
+}
+add_filter( 'block_categories_all', 'bnpp_rebrand_statistics_bloc_register_category' );
