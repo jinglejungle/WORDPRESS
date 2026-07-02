@@ -45,7 +45,7 @@
 	
 	// ADD dark mode in the toolbar
 	const { BlockControls, LinkControl } = wp.blockEditor;
-	const {  ToolbarGroup, ToolbarItem, ToolbarButton, SelectControl, ToolbarDropdownMenu, MenuItem } = wp.components;	
+	const {  ToolbarGroup, ToolbarButton, SelectControl, ToolbarDropdownMenu, MenuItem } = wp.components;	
 
 	var registerBlockType  = wp.blocks.registerBlockType;
 	var el                 = wp.element.createElement;
@@ -91,8 +91,20 @@
 		{ value: 'kaki2Mode' , label: 'Kaki 2'},
 		{ value: 'jade1Mode' , label: 'Jade 1'},
 		{ value: 'jade2Mode' , label: 'Jade 2'},
-		{ value: 'jade3Mode' , label: 'Jade 3'}, 
+		{ value: 'jade3Mode' , label: 'Jade 3'},
 	];
+
+	// Hex color used only to render the swatch preview for each background mode
+	// in the sidebar "Campaign background" panel.
+	var BACKGROUND_PREVIEW = {
+		light:     '#ffffff',
+		dark:      '#0C2728',
+		mintMode:  '#D9ECE5',
+		kaki2Mode: '#465843',
+		jade1Mode: '#001B15',
+		jade2Mode: '#082D23',
+		jade3Mode: '#003F29',
+	};
 
 	/* ------------------------------------------------------------------ */
 	/*  Predefined color palette for the description box                   */
@@ -334,18 +346,25 @@
 							ToolbarGroup,
 							null,
 						
-				        		el( ToolbarItem,
+				        		el(ToolbarDropdownMenu,
 									{
-										as: SelectControl,
-										label: __( 'Background color', 'gl-campaign-block' ),
-										value: background,
-										options: backgroundColor.map( function ( color ) {
-											return { label: color.label, value: color.value };
-										} ),
-										onChange: function ( value ) {
-											setAttributes( { background: value } );
-										},
-									}
+										icon: 'art',
+										label: 'Background color',
+										controls:backgroundColor.map(function(color){
+                                           return {
+												title : color.label,
+												isActive: background === color.value,
+												onClick: function(){
+													setAttributes({
+														background:color.value
+													});
+													
+												
+												}
+										   }
+										})
+									},
+	
 								),
 								el(
 									ToolbarButton,
@@ -525,6 +544,43 @@
 			var inspectorControls = el(
 				InspectorControls,
 				{},
+
+				/* ==== Campaign background panel ==== */
+				el(
+					PanelBody,
+					{ title: __( 'Campaign background', 'gl-campaign-block' ), initialOpen: true },
+
+					el( 'p', { className: 'campaign-palette-label' },
+						__( 'Campaign background color', 'gl-campaign-block' )
+					),
+
+					el(
+						'div',
+						{
+							className:    'campaign-palette',
+							role:         'radiogroup',
+							'aria-label': __( 'Campaign background color', 'gl-campaign-block' ),
+						},
+						backgroundColor.map( function ( entry ) {
+							var isSelected = entry.value === background;
+							return el(
+								'button',
+								{
+									key:            entry.value,
+									type:           'button',
+									className:      'campaign-palette__swatch' + ( isSelected ? ' is-selected' : '' ),
+									style:          { backgroundColor: BACKGROUND_PREVIEW[ entry.value ] },
+									title:          entry.label,
+									'aria-label':   entry.label + ( isSelected ? ' – ' + __( 'selected', 'gl-campaign-block' ) : '' ),
+									'aria-pressed': isSelected,
+									onClick: function () {
+										setAttributes( { background: entry.value } );
+									},
+								}
+							);
+						} )
+					)
+				),
 
 				/* ==== Content panel ==== */
 				el(
