@@ -180,6 +180,7 @@
 			imageUrl:       { type: 'string',  default: '' },
 			imageAlt:       { type: 'string',  default: '' },
 			imageAlignment: { type: 'string',  default: 'left' },
+			background:     { type: 'string',  default: 'light' },
 			boxBgColor:     { type: 'string',  default: DEFAULT_BG    },
 			boxTextColor:   { type: 'string',  default: DEFAULT_COLOR },
 			// Button attributes
@@ -333,25 +334,17 @@
 							ToolbarGroup,
 							null,
 						
-				        		el(ToolbarDropdownMenu,
+				        		el( SelectControl,
 									{
-										icon: 'art',
-										label: 'Background color',
-										controls:backgroundColor.map(function(color){
-                                           return {
-												title : color.label,
-												isActive: background === color.value,
-												onClick: function(){
-													setAttributes({
-														background:color.value
-													});
-													
-												
-												}
-										   }
-										})
-									},
-	
+										label: __( 'Background color', 'gl-campaign-block' ),
+										value: background,
+										options: backgroundColor.map( function ( color ) {
+											return { label: color.label, value: color.value };
+										} ),
+										onChange: function ( value ) {
+											setAttributes( { background: value } );
+										},
+									}
 								),
 								el(
 									ToolbarButton,
