@@ -45,7 +45,7 @@
 	
 	// ADD dark mode in the toolbar
 	const { BlockControls, LinkControl } = wp.blockEditor;
-	const {  ToolbarGroup, ToolbarButton, SelectControl, ToolbarDropdownMenu, MenuItem } = wp.components;	
+	const {  ToolbarGroup, ToolbarItem, ToolbarButton, SelectControl, ToolbarDropdownMenu, MenuItem } = wp.components;	
 
 	var registerBlockType  = wp.blocks.registerBlockType;
 	var el                 = wp.element.createElement;
@@ -334,8 +334,9 @@
 							ToolbarGroup,
 							null,
 						
-				        		el( SelectControl,
+				        		el( ToolbarItem,
 									{
+										as: SelectControl,
 										label: __( 'Background color', 'gl-campaign-block' ),
 										value: background,
 										options: backgroundColor.map( function ( color ) {
