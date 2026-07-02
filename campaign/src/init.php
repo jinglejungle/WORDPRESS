@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Block registration for the Campaign Block.
  *
@@ -18,7 +19,7 @@
  */
 
 // Exit if accessed directly.
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit;
 }
 
@@ -27,16 +28,17 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @return void
  */
-function campaign_block_register() {
+function gl_ampaign_block_register()
+{
 
 	// -----------------------------------------------------------------
 	// 1. Enqueue the block editor script (only in the editor context).
 	// -----------------------------------------------------------------
 	wp_register_script(
-		'campaign-block-editor-js',
-		plugin_dir_url( dirname( __FILE__ ) ) . 'assets/block.js',
-		array( 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n', 'wp-block-editor', 'wp-data' ),
-		filemtime( plugin_dir_path( dirname( __FILE__ ) ) . 'assets/block.js' ),
+		'gl-campaign-block-editor-js',
+		plugin_dir_url(dirname(__FILE__)) . 'assets/block.js',
+		array('wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n', 'wp-block-editor', 'wp-data'),
+		filemtime(plugin_dir_path(dirname(__FILE__)) . 'assets/block.js'),
 		true
 	);
 
@@ -44,21 +46,26 @@ function campaign_block_register() {
 	// 2. Enqueue the shared stylesheet (editor + front end).
 	// -----------------------------------------------------------------
 	wp_register_style(
-		'campaign-block-style',
-		plugin_dir_url( dirname( __FILE__ ) ) . 'assets/block.css',
+		'gl-campaign-block-style',
+		plugin_dir_url(dirname(__FILE__)) . 'assets/block.css',
 		array(),
-		filemtime( plugin_dir_path( dirname( __FILE__ ) ) . 'assets/block.css' )
+		filemtime(plugin_dir_path(dirname(__FILE__)) . 'assets/block.css')
 	);
 
 	// -----------------------------------------------------------------
 	// 3. Register the block type with its attributes and callbacks.
 	// -----------------------------------------------------------------
 	register_block_type(
-		'campaign-block/campaign',
+		'gl-campaign-block/campaign',
 		array(
 			/* ---- Block attributes ---- */
 			'attributes'      => array(
 
+				//darkMode
+				'darkLight' => array(
+					'type' => 'boolean',
+					'default' => false,
+				),
 				// Campaign title (max 55 characters; max 25 for Asian scripts).
 				'title'          => array(
 					'type'    => 'string',
@@ -100,6 +107,11 @@ function campaign_block_register() {
 					'type'    => 'string',
 					'default' => '#008252',
 				),
+				'background'     => array(
+					'type'    => 'string',
+					'default' => 'light',
+				),
+				
 
 				// Text color applied to title and description (hex value).
 				'boxTextColor'   => array(
@@ -113,19 +125,27 @@ function campaign_block_register() {
 					'default' => '',
 				),
 
-				// Button label text.
-				'buttonText'   => array(
+				// link
+				'link'   => array(
 					'type'    => 'string',
-					'default' => 'Button content...',
+					'default' => '',
 				),
-
+				//
+				'linkbis'   => array(
+					'type'    => 'object',
+					'default' => null,
+				),
 				// Whether the link opens in a new tab.
 				'buttonTarget' => array(
 					'type'    => 'boolean',
 					'default' => false,
 				),
-
-				// Button style: 'primary' | 'secondary' | 'tertiary'.
+				// Whether the icon link show.
+				'iconShow' => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
+				// Button style: 'primary' | 'secondary' | 'tertiary' | 'ghost'.
 				'buttonStyle'  => array(
 					'type'    => 'string',
 					'default' => 'primary',
@@ -133,113 +153,79 @@ function campaign_block_register() {
 			),
 
 			/* ---- Asset handles ---- */
-			'editor_script'   => 'campaign-block-editor-js',
-			'editor_style'    => 'campaign-block-style',
-			'style'           => 'campaign-block-style',
+			'editor_script'   => 'gl-campaign-block-editor-js',
+			'editor_style'    => 'gl-campaign-block-style',
+			'style'           => 'gl-campaign-block-style',
 
 			/* ---- Server-side render callback ---- */
-			'render_callback' => 'campaign_block_render',
+			'render_callback' => 'gl_ampaign_block_render',
 		)
 	);
 }
-add_action( 'init', 'campaign_block_register' );
+add_action('init', 'gl_ampaign_block_register');
 
 
-/**
- * Server-side render callback for the Campaign Block.
- *
- * Outputs accessible, W3C-valid HTML for the block on the front end.
- *
- * @param array $attributes Block attributes saved in the database.
- * @return string           HTML markup for the block.
- */
-/**
- * Convert a hex color to an rgba() CSS string.
- *
- * Used to compute the image border color (background color at 30 % opacity).
- *
- * @param  string $hex     Hex color, e.g. '#008252' or '#abc'.
- * @param  float  $opacity Opacity between 0 and 1.
- * @return string          CSS rgba() value, e.g. 'rgba(0,130,82,0.3)'.
- */
-function campaign_block_hex_to_rgba( $hex, $opacity ) {
-	$hex = ltrim( $hex, '#' );
-
-	// Expand shorthand #rgb to #rrggbb.
-	if ( 3 === strlen( $hex ) ) {
-		$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
-	}
-
-	if ( 6 !== strlen( $hex ) ) {
-		return 'rgba(0,0,0,' . (float) $opacity . ')';
-	}
-
-	$r = hexdec( substr( $hex, 0, 2 ) );
-	$g = hexdec( substr( $hex, 2, 2 ) );
-	$b = hexdec( substr( $hex, 4, 2 ) );
-
-	return 'rgba(' . $r . ',' . $g . ',' . $b . ',' . (float) $opacity . ')';
-}
-
-function campaign_block_render( $attributes ) {
+function gl_ampaign_block_render($attributes)
+{
 
 	// Sanitize all attribute values before output.
-	$title           = isset( $attributes['title'] )          ? sanitize_text_field( $attributes['title'] )           : '';
-	$description     = isset( $attributes['description'] )    ? sanitize_textarea_field( $attributes['description'] ) : '';
-	$image_url       = isset( $attributes['imageUrl'] )       ? esc_url( $attributes['imageUrl'] )                    : '';
-	$image_alt       = isset( $attributes['imageAlt'] )       ? sanitize_text_field( $attributes['imageAlt'] )        : '';
-	$image_alignment = isset( $attributes['imageAlignment'] ) ? sanitize_text_field( $attributes['imageAlignment'] )  : 'left';
-	$box_bg_color    = isset( $attributes['boxBgColor'] )     ? sanitize_hex_color( $attributes['boxBgColor'] )       : '#008252';
-	$box_text_color  = isset( $attributes['boxTextColor'] )   ? sanitize_hex_color( $attributes['boxTextColor'] )     : '#ffffff';
-	$button_url      = isset( $attributes['buttonUrl'] )      ? esc_url( $attributes['buttonUrl'] )                   : '';
-	$button_text     = isset( $attributes['buttonText'] )     ? sanitize_text_field( $attributes['buttonText'] )      : 'Button content...';
-	$button_target   = isset( $attributes['buttonTarget'] )   ? (bool) $attributes['buttonTarget']                    : false;
-	$button_style    = isset( $attributes['buttonStyle'] )    ? sanitize_text_field( $attributes['buttonStyle'] )     : 'primary';
+	$title           = isset($attributes['title'])          ? sanitize_text_field($attributes['title'])           : '';
+	$description     = isset($attributes['description'])    ? sanitize_textarea_field($attributes['description']) : '';
+	$image_url       = isset($attributes['imageUrl'])       ? esc_url($attributes['imageUrl'])                    : '';
+	$image_alt       = isset($attributes['imageAlt'])       ? sanitize_text_field($attributes['imageAlt'])        : '';
+	$image_alignment = isset($attributes['imageAlignment']) ? sanitize_text_field($attributes['imageAlignment'])  : 'left';
+	$box_bg_color    = isset($attributes['boxBgColor'])     ? sanitize_hex_color($attributes['boxBgColor'])       : '#008252';
+	$box_text_color  = isset($attributes['boxTextColor'])   ? sanitize_hex_color($attributes['boxTextColor'])     : '#ffffff';
+	$link            = (isset($attributes['link']) && $attributes['link'] && is_string($attributes['link'])) ? esc_url($attributes['link']) : '';
+	$button_text     = isset($attributes['buttonText'])     ? sanitize_text_field($attributes['buttonText'])      : 'Button content...';
+	$button_target   = isset($attributes['buttonTarget'])   ? (bool) $attributes['buttonTarget']                    : false;
+	$icon_show       = isset($attributes['iconShow'])     ? (bool) $attributes['iconShow']                      : false;
+	$button_style    = isset($attributes['buttonStyle'])    ? sanitize_text_field($attributes['buttonStyle'])     : 'primary';
+	$sizeButton = (isset($attributes['sizeButton']) && $attributes['sizeButton']) ? $attributes['sizeButton'] : '';
 
-	// Fallback to defaults if sanitize_hex_color returns empty (invalid value).
-	if ( ! $box_bg_color )   { $box_bg_color   = '#008252'; }
-	if ( ! $box_text_color ) { $box_text_color = '#ffffff'; }
+	// add only on the global div container for the background
+	// there will be descriptionBox with dark mode or note so we can't use dark class on the global div container
+	$darkBackgroundClass = (isset($attributes['darkLight']) && $attributes['darkLight']) ? 'darkBackground' : '';
+	$borderContainer = (isset($attributes['darkLight']) && $attributes['darkLight']) ? 'border:1px solid #0C2728;' : 'border:1px solid #ffffff;';
+
+	$darkColor = ['#0C2728', '#832E5A', '#12494B', '#61696E', '#153340','#465843','#001B15','#082D23','#003F29'];
 
 	// Validate button style.
-	if ( ! in_array( $button_style, array( 'primary', 'secondary', 'tertiary' ), true ) ) {
+	if (! in_array($button_style, array('primary', 'secondary', 'tertiary', 'ghost'), true)) {
 		$button_style = 'primary';
 	}
 
-	// Determine if the dark class should be added (when text color is white).
-	$button_dark_class = ( '#ffffff' === $box_text_color ) ? ' dark' : '';
+	// Determine if the dark class should be added on the descriptionBox (when the color is a dark color).
+	$button_dark_class = in_array($box_bg_color, $darkColor, true) ? ' dark' : '';
 
 	// The button is only rendered if a URL has been set AND the text differs from the default.
-	$show_button = ( ! empty( $button_url ) && ! empty( $button_text ) && 'Button content...' !== $button_text );
-
-	// Border color for the image: background color at 30 % opacity.
-	$image_border_color = campaign_block_hex_to_rgba( $box_bg_color, 0.3 );
+	$show_button = (! empty($link) && ! empty($button_text) && 'Button content...' !== $button_text);
 
 	// Validate alignment value to prevent unexpected output.
-	if ( ! in_array( $image_alignment, array( 'left', 'right' ), true ) ) {
+	if (! in_array($image_alignment, array('left', 'right'), true)) {
 		$image_alignment = 'left';
 	}
-
-	// Build CSS modifier class: image-left places description on the right, and vice-versa.
-	$container_class = 'campaign-container campaign-image-' . esc_attr( $image_alignment );
+	$container_class  = 'campaign-container campaign-image-' . esc_attr($image_alignment);
 
 	// Inline style for the description box – applies the chosen palette colors.
-	$box_style = 'background-color:' . esc_attr( $box_bg_color ) . ';color:' . esc_attr( $box_text_color ) . ';';
+	$box_style = 'background-color:' . esc_attr($box_bg_color) . ';color:' . esc_attr($box_text_color) . ';';
+
 
 	// Open the outer container.
-	$html  = '<div id="campaign_container" class="' . $container_class . '" role="region" aria-label="' . esc_attr__( 'Campaign', 'campaign-block' ) . '">';
-
+	$html  = '<div id="global-campaign-container" class="' . $darkBackgroundClass . ' " >';
+	$html .= '<div id="campaign_container" class="' . $container_class . '" style="' . $borderContainer . '" role="region" aria-label="' . esc_attr__('Campaign', 'gl-campaign-block') . ' ">';
 	// ---- Image element (rendered as <img>, NOT as background-image) ----
-	if ( $image_url ) {
+	if ($image_url) {
 		// outline on <img> instead of border on the wrapper:
 		// outline draws on top of the image (outside the box model) so it is
 		// never hidden by the absolutely-positioned wrapper's overflow.
-		$img_outline_style = 'outline:3px solid ' . esc_attr( $image_border_color ) . ';outline-offset:-3px;';
-		$html .= '<div class="campaign-image-wrapper" aria-hidden="false">';
+		$img_shadow_style = 'box-shadow: 5px 5px 5px ' . esc_attr($box_bg_color) . '4D;';
+
+		$html .= '<div class="campaign-image-wrapper" style="' . $img_shadow_style . '" aria-hidden="false">';
 		$html .= '<img';
-		$html .= ' src="' . esc_url( $image_url ) . '"';
-		$html .= ' alt="' . esc_attr( $image_alt ) . '"';
+		$html .= ' src="' . esc_url($image_url) . '"';
+		$html .= ' alt="' . esc_attr($image_alt) . '"';
 		$html .= ' class="campaign-image"';
-		$html .= ' style="' . $img_outline_style . '"';
 		$html .= ' width="700"';
 		$html .= ' height="500"';
 		$html .= ' loading="lazy"';
@@ -249,27 +235,34 @@ function campaign_block_render( $attributes ) {
 	}
 
 	// ---- Description box (inline style applies the selected palette colors) ----
-	$html .= '<div id="boxDescription" class="campaign-box-description" style="' . $box_style . '">';
+	$html .= '<div id="boxDescription" class="campaign-box-description ' . $button_dark_class . ' " style="' . $box_style . '">';
 
-	if ( $title ) {
+	if ($title) {
 		// Use h2 for semantic heading; adjust to your document outline as needed.
-		$html .= '<h2 class="campaign-title" style="color:' . esc_attr( $box_text_color ) . ';">' . esc_html( $title ) . '</h2>';
+		$html .= '<h2 class="campaign-title" style="color:' . esc_attr($box_text_color) . ';">' . esc_html($title) . '</h2>';
 	}
 
-	if ( $description ) {
-		$html .= '<p class="campaign-description" style="color:' . esc_attr( $box_text_color ) . ';">' . esc_html( $description ) . '</p>';
+	if ($description) {
+		$html .= '<p class="campaign-description" style="color:' . esc_attr($box_text_color) . ';">' . esc_html($description) . '</p>';
 	}
 
 	// ---- Button (only when URL is set and text has been changed from default) ----
-	if ( $show_button ) {
-		$btn_class  = 'bnpp-custom ' . esc_attr( $button_style ) . $button_dark_class;
+	if ($show_button) {
+		$btn_class  = 'bnpp-button ' . esc_attr($button_style);
 		$btn_target = $button_target ? ' target="_blank" rel="noopener noreferrer"' : '';
-		$html .= '<a href="' . esc_url( $button_url ) . '" class="' . $btn_class . '"' . $btn_target . '>' . esc_html( $button_text ) . '</a>';
+
+		if ($icon_show) {
+			$icon = '<span class="button-icon"></span>';
+		} else {
+			$icon = "";
+		}
+		$html .= '<a href="' . esc_url($link)  . '" class="' . $btn_class . ' ' . $sizeButton . '" role="button" ' . $btn_target . ' > ' . esc_html($button_text) . ' ' . $icon . '</a>';
 	}
 
-	$html .= '</div>';// #boxDescription
+	$html .= '</div>'; // #boxDescription
+	$html .= '</div>'; // container with a a width
 
-	$html .= '</div>';// #campaign_container
+	$html .= '</div>'; // #campaign_container ( need to be 100% for dark mode)
 
 	return $html;
 }

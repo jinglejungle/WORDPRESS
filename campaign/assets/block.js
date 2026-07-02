@@ -36,12 +36,17 @@
  * @package CampaignBlock
  */
 
-( function () {
+( function (editor) {
 	'use strict';
 
 	/* ------------------------------------------------------------------ */
 	/*  Destructure WordPress globals                                       */
 	/* ------------------------------------------------------------------ */
+	
+	// ADD dark mode in the toolbar
+	const { BlockControls, LinkControl } = wp.blockEditor;
+	const {  ToolbarGroup, ToolbarButton, SelectControl, ToolbarDropdownMenu, MenuItem } = wp.components;	
+
 	var registerBlockType  = wp.blocks.registerBlockType;
 	var el                 = wp.element.createElement;
 	var Fragment           = wp.element.Fragment;
@@ -72,6 +77,21 @@
 		{ value: 'primary',   label: 'Primary'   },
 		{ value: 'secondary', label: 'Secondary' },
 		{ value: 'tertiary',  label: 'Tertiary'  },
+		{ value: 'ghost',  label: 'Ghost'  },
+		
+	];
+
+	/* ------------------------------------------------------------------ */
+	/*  Background colors                                                */
+	/* ------------------------------------------------------------------ */
+	const backgroundColor = [
+		{ value: 'light'     , label: 'Light' },
+		{ value: 'dark'      , label: 'Dark' },
+		{ value: 'mintMode'  , label: 'Mint'  },
+		{ value: 'kaki2Mode' , label: 'Kaki 2'},
+		{ value: 'jade1Mode' , label: 'Jade 1'},
+		{ value: 'jade2Mode' , label: 'Jade 2'},
+		{ value: 'jade3Mode' , label: 'Jade 3'}, 
 	];
 
 	/* ------------------------------------------------------------------ */
@@ -82,10 +102,21 @@
 		{ bg: '#ffdcee', color: '#000000', label: 'Pink'       },
 		{ bg: '#66B498', color: '#000000', label: 'Sage'       },
 		{ bg: '#D9ECE5', color: '#000000', label: 'Mint'       },
-		{ bg: '#12494B', color: '#ffffff', label: 'Dark teal'  },
 		{ bg: '#CEEFFF', color: '#000000', label: 'Light blue' },
-	];
+		{ bg: '#0C2728', color: '#ffffff', label: 'Dark Teal'      },
+		{ bg: '#832E5A', color: '#ffffff', label: 'Deep Magenta'       },
+		{ bg: '#12494B', color: '#ffffff', label: 'Dark Cyan'       },
+		{ bg: '#61696E', color: '#ffffff', label: 'Slate Gray'       },
+		{ bg: '#153340', color: '#ffffff', label: 'Midnight Blue'  },
+		{ bg: '#E7FFD9', color: '#000000', label: 'Leaf' },
+		{ bg: '#E8FCF2', color: '#000000', label: 'Off Mint' },
+		{ bg: '#465843', color: '#ffffff', label: 'Kaki2'      },
+		{ bg: '#001B15', color: '#ffffff', label: 'Jade1'      },
+		{ bg: '#082D23', color: '#ffffff', label: 'Jade2'      },
+		{ bg: '#003F29', color: '#ffffff', label: 'Jade3'      },
 
+	];
+    var darkColor = [ '#0C2728','#832E5A','#12494B', '#61696E','#153340'];
 	var DEFAULT_BG    = COLOR_PALETTE[ 0 ].bg;
 	var DEFAULT_COLOR = COLOR_PALETTE[ 0 ].color;
 
@@ -127,10 +158,10 @@
 	/* ------------------------------------------------------------------ */
 	/*  Block registration                                                  */
 	/* ------------------------------------------------------------------ */
-	registerBlockType( 'campaign-block/campaign', {
+	registerBlockType( 'gl-campaign-block/campaign', {
 
-		title:       __( 'Campaign Block', 'campaign-block' ),
-		description: __( 'Display a campaign with a title, description and an image.', 'campaign-block' ),
+		title:       __( 'GL Campaign Block', 'gl-campaign-block' ),
+		description: __( 'Display a campaign with a title, description and an image.', 'gl-campaign-block' ),
 		category:    'media',
 		icon:        'megaphone',
 		supports: {
@@ -152,34 +183,53 @@
 			boxBgColor:     { type: 'string',  default: DEFAULT_BG    },
 			boxTextColor:   { type: 'string',  default: DEFAULT_COLOR },
 			// Button attributes
-			buttonUrl:      { type: 'string',  default: '' },
 			buttonText:     { type: 'string',  default: 'Button content...' },
 			buttonTarget:   { type: 'boolean', default: false },
+			iconShow:     { type: 'boolean', default: false },
 			buttonStyle:    { type: 'string',  default: 'primary' },
+		    darkLight:      { type:'Boolean', default: false},
+			sizeButton: { type: 'string', default: '' },
+
+			//button with auto completion
+			link: { type: 'string', default:  '' },
+			linkbis: { type: 'object', default:  null },
 		},
 
 		/* ---------------------------------------------------------------- */
 		/*  edit()                                                           */
 		/* ---------------------------------------------------------------- */
 		edit: function ( props ) {
+
+			if (props.attributes.darkLight == true) {
+                $(props.class).css("background-color", "#0C2728");
+                $(".campaign-container").css("border", "#0C2728");							
+                $("[data-type=\"gl-campaign-block/campaign\"]").css("background-color", "#0C2728");							
+            }
+
 			var attributes    = props.attributes;
+			console.log(attributes.background);
 			var setAttributes = props.setAttributes;
 
 			var title          = attributes.title;
 			var description    = attributes.description;
+			var background    = attributes.background;
 			var imageUrl       = attributes.imageUrl;
 			var imageAlt       = attributes.imageAlt;
 			var imageAlignment = attributes.imageAlignment;
 			var boxBgColor     = attributes.boxBgColor   || DEFAULT_BG;
 			var boxTextColor   = attributes.boxTextColor || DEFAULT_COLOR;
 			// Button
-			var buttonUrl    = attributes.buttonUrl    || '';
+			var link         = attributes.link    || '';
+			var linkbis         = attributes.linkbis    || '';
 			var buttonText   = attributes.buttonText   || 'Button content...';
 			var buttonTarget = attributes.buttonTarget || false;
+			var iconShow   = attributes.iconShow || false;
+			var sizeButton = attributes.sizeButton;
+			
 			var buttonStyle  = attributes.buttonStyle  || 'primary';
 
 			/* Border color for the image: boxBgColor at 30% opacity. */
-			var imageBorderColor = hexToRgba( boxBgColor, 0.3 );
+			//var imageBorderColor = hexToRgba( boxBgColor, 0.3 );
 
 			var titleMax      = getTitleMax( title );
 			var titleLen      = title.length;
@@ -211,16 +261,21 @@
 
 			/* ---- Handlers ---- */
 			function onTitleChange( newValue ) {
-				/* Bloquer au-delà de la limite, autoriser jusqu'à la limite incluse */
 				if ( newValue.length <= getTitleMax( newValue ) ) {
 					setAttributes( { title: newValue } );
+				}
+				if ( newValue.length > getTitleMax( newValue ) ) {
+					setAttributes( { title: newValue.slice( 0, getTitleMax( newValue )) } );
 				}
 			}
 
 			function onDescriptionChange( newValue ) {
-				/* Bloquer au-delà de la limite, autoriser jusqu'à la limite incluse */
+					
 				if ( newValue.length <= DESC_MAX ) {
 					setAttributes( { description: newValue } );
+				}
+				if ( newValue.length > DESC_MAX ){
+					setAttributes( { description: newValue.slice(0, DESC_MAX) } );
 				}
 			}
 
@@ -268,21 +323,76 @@
 					id:           'campaign_container',
 					className:    containerClass,
 					role:         'region',
-					'aria-label': __( 'Campaign preview', 'campaign-block' ),
+					'aria-label': __( 'Campaign preview', 'gl-campaign-block' ),
 					style:        { width: '100%', maxWidth: '1130px' },
 				},
-
+					el(
+						BlockControls,
+						null,
+						el(
+							ToolbarGroup,
+							null,
+						
+				        		el(ToolbarDropdownMenu,
+									{
+										icon: 'art',
+										label: 'Background color',
+										controls:backgroundColor.map(function(color){
+                                           return {
+												title : color.label,
+												isActive: background === color.value,
+												onClick: function(){
+													setAttributes({
+														background:color.value
+													});
+													
+												
+												}
+										   }
+										})
+									},
+	
+								),
+								el(
+									ToolbarButton,
+									{
+										icon: props.attributes.darkLight=== true ? 'star-filled' : 'star-empty',
+										label: 'Bouton Dark/light',
+										style: {display: 'flex', alignItems: 'center', gap: '8px',width: '100px'},
+										onClick: function() {
+											let value = true;
+											
+											if (props.attributes.darkLight == true) {
+												props.setAttributes({ darkLight: !value });
+												$("[data-type=\"gl-campaign-block/campaign\"]").css("background-color", "#ffffff");
+											
+											} else {
+												props.setAttributes({ darkLight: value });
+												$("[data-type=\"gl-campaign-block/campaign\"]").css("background-color", "#0C2728");												
+											}
+										},
+									},
+	
+									el(
+										'span',
+										null,
+										'Dark/Light'
+									),
+								),
+						),
+					),
 				/* ---- Image (clickable) or placeholder ---- */
 				imageUrl
 					? el(
 						'div',
-						{
+						{   
+							style:     { boxShadow:  '5px 5px 5px ' + boxBgColor+'4D'},
 							className:    'campaign-image-wrapper campaign-image-wrapper--clickable',
 							onClick:      onImageClick,
 							role:         'button',
 							tabIndex:     0,
-							title:        __( 'Click to edit image settings', 'campaign-block' ),
-							'aria-label': __( 'Edit image – opens image settings panel', 'campaign-block' ),
+							title:        __( 'Click to edit image settings', 'gl-campaign-block' ),
+							'aria-label': __( 'Edit image – opens image settings panel', 'gl-campaign-block' ),
 							onKeyDown: function ( e ) {
 								if ( e.key === 'Enter' || e.key === ' ' ) { e.preventDefault(); onImageClick(); }
 							},
@@ -299,11 +409,12 @@
 							 * is never clipped or hidden by the absolute positioning
 							 * of the wrapper.
 							 */
-							style:     { outline: '3px solid ' + imageBorderColor, outlineOffset: '-3px' },
+							/*style:     { outline: '3px solid ' + imageBorderColor, outlineOffset: '-3px' },*/
+						   
 						} ),
 						/* Hover overlay hint */
 						el( 'span', { className: 'campaign-image-edit-hint', 'aria-hidden': 'true' },
-							__( '✎ Edit image', 'campaign-block' )
+							__( '✎ Edit image', 'gl-campaign-block' )
 						)
 					)
 					: el(
@@ -313,14 +424,15 @@
 							onClick:      onImageClick,
 							role:         'button',
 							tabIndex:     0,
-							'aria-label': __( 'Select an image – opens image settings panel', 'campaign-block' ),
+							'aria-label': __( 'Select an image – opens image settings panel', 'gl-campaign-block' ),
 							/* outline instead of border: consistent with the image variant. */
-							style:        { outline: '3px solid ' + imageBorderColor, outlineOffset: '-3px' },
+							/*style:        { outline: '3px solid ' + imageBorderColor, outlineOffset: '-3px' },*/
+							
 							onKeyDown: function ( e ) {
 								if ( e.key === 'Enter' || e.key === ' ' ) { e.preventDefault(); onImageClick(); }
 							},
 						},
-						el( 'span', {}, __( 'Click to select an image', 'campaign-block' ) )
+						el( 'span', {}, __( 'Click to select an image', 'gl-campaign-block' ) )
 					),
 
 				/* ---- Description box ---- */
@@ -328,7 +440,7 @@
 					'div',
 					{
 						id:        'boxDescription',
-						className: 'campaign-box-description',
+						className: 'campaign-box-description '+ (  darkColor.includes(boxBgColor)  ? ' dark' : ' ' ),
 						style:     { backgroundColor: boxBgColor, color: boxTextColor },
 					},
 
@@ -338,9 +450,9 @@
 						className: 'campaign-title',
 						value: title,
 						onChange: function ( e ) { onTitleChange( e.target.value ); },
-						placeholder: __( 'Campaign title…', 'campaign-block' ),
+						placeholder: __( 'Campaign title…', 'gl-campaign-block' ),
 						maxLength: titleMax,
-						'aria-label': __( 'Campaign title', 'campaign-block' ),
+						'aria-label': __( 'Campaign title', 'gl-campaign-block' ),
 						style: { color: boxTextColor, width: '100%', border: 'none', padding: 0, fontSize: 'inherit', fontWeight: 'bold' },
 					} ),
 					el(
@@ -354,8 +466,8 @@
 							style:       { color: hexToRgba( boxTextColor, 0.7 ) },
 						},
 						titleAtLimit
-							? __( 'Maximum number of characters reached.', 'campaign-block' )
-							: ( titleLen + ' / ' + titleMax + ' ' + __( 'characters', 'campaign-block' ) )
+							? __( 'Maximum number of characters reached. If you pasted text, it has been truncated to fit the character limit', 'gl-campaign-block' )
+							: ( titleLen + ' / ' + titleMax + ' ' + __( 'characters', 'gl-campaign-block' ) )
 					),
 
 					/* Inline description */
@@ -363,9 +475,9 @@
 						className: 'campaign-description',
 						value: description,
 						onChange: function ( e ) { onDescriptionChange( e.target.value ); },
-						placeholder: __( 'Campaign description…', 'campaign-block' ),
+						placeholder: __( 'Campaign description…', 'gl-campaign-block' ),
 						maxLength: DESC_MAX,
-						'aria-label': __( 'Campaign description', 'campaign-block' ),
+						'aria-label': __( 'Campaign description', 'gl-campaign-block' ),
 						style: { color: boxTextColor, backgroundColor: boxBgColor, width: '100%', border: 'none', padding: 0, fontSize: 'inherit', resize: 'none', fontFamily: 'inherit' },
 						rows: 5,
 					} ),
@@ -379,22 +491,22 @@
 							style:       { color: hexToRgba( boxTextColor, 0.7 ) },
 						},
 						descAtLimit
-							? __( 'Maximum number of characters reached.', 'campaign-block' )
-							: ( descLen + ' / ' + DESC_MAX + ' ' + __( 'characters', 'campaign-block' ) )
+							? __( 'Maximum number of characters reached. If you pasted text, it has been truncated to fit the character limit', 'gl-campaign-block' )
+							: ( descLen + ' / ' + DESC_MAX + ' ' + __( 'characters', 'gl-campaign-block' ) )
 					),
 
 				/* ---- Button preview inside boxDescription ---- */
-				( buttonUrl && buttonText && buttonText !== 'Button content...' )
+				( link && buttonText && buttonText !== 'Button content...' )
 					? el(
 						'a',
 						{
 							href:         '#',
-							className:    'bnpp-custom ' + buttonStyle + ( boxTextColor === '#ffffff' ? ' dark' : '' ) + ' campaign-button-preview',
+							className:    'bnpp-button campaign-button-preview ' + buttonStyle +' '+ sizeButton,
 							onClick:      onButtonClick,
-							title:        __( 'Click to edit button settings', 'campaign-block' ),
-							'aria-label': __( 'Edit button – opens button settings panel', 'campaign-block' ),
+							title:        __( 'Click to edit button settings', 'gl-campaign-block' ),
+							'aria-label': __( 'Edit button – opens button settings panel', 'gl-campaign-block' ),
 						},
-						buttonText
+						 buttonText 
 					)
 					: el(
 						'div',
@@ -403,12 +515,12 @@
 							onClick:      onButtonClick,
 							role:         'button',
 							tabIndex:     0,
-							'aria-label': __( 'Configure button – opens button settings panel', 'campaign-block' ),
+							'aria-label': __( 'Configure button – opens button settings panel', 'gl-campaign-block' ),
 							onKeyDown: function ( e ) {
 								if ( e.key === 'Enter' || e.key === ' ' ) { e.preventDefault(); onButtonClick( e ); }
 							},
 						},
-						__( '＋ Add a button', 'campaign-block' )
+						__( '＋ Add a button', 'gl-campaign-block' )
 					)
 				)
 			);
@@ -423,10 +535,10 @@
 				/* ==== Content panel ==== */
 				el(
 					PanelBody,
-					{ title: __( 'Content', 'campaign-block' ), initialOpen: true },
+					{ title: __( 'Content', 'gl-campaign-block' ), initialOpen: true },
 
 					el( TextControl, {
-						label:    __( 'Title', 'campaign-block' ),
+						label:    __( 'Title', 'gl-campaign-block' ),
 						value:    title,
 						onChange: onTitleChange,
 					} ),
@@ -436,12 +548,12 @@
 						'aria-live': 'polite',
 					},
 						titleAtLimit
-							? __( 'Maximum number of characters reached.', 'campaign-block' )
-							: ( titleLen + ' / ' + titleMax + ' ' + __( 'characters', 'campaign-block' ) )
+							? __( 'Maximum number of characters reached.', 'gl-campaign-block' )
+							: ( titleLen + ' / ' + titleMax + ' ' + __( 'characters', 'gl-campaign-block' ) )
 					),
 
 					el( TextareaControl, {
-						label:    __( 'Description', 'campaign-block' ),
+						label:    __( 'Description', 'gl-campaign-block' ),
 						value:    description,
 						onChange: onDescriptionChange,
 						rows:     4,
@@ -452,18 +564,18 @@
 						'aria-live': 'polite',
 					},
 						descAtLimit
-							? __( 'Maximum number of characters reached.', 'campaign-block' )
-							: ( descLen + ' / ' + DESC_MAX + ' ' + __( 'characters', 'campaign-block' ) )
+							? __( 'Maximum number of characters reached.', 'gl-campaign-block' )
+							: ( descLen + ' / ' + DESC_MAX + ' ' + __( 'characters', 'gl-campaign-block' ) )
 					)
 				),
 
 				/* ==== Appearance panel (color palette) ==== */
 				el(
 					PanelBody,
-					{ title: __( 'Appearance', 'campaign-block' ), initialOpen: true },
+					{ title: __( 'Appearance', 'gl-campaign-block' ), initialOpen: true },
 
 					el( 'p', { className: 'campaign-palette-label' },
-						__( 'Description box color', 'campaign-block' )
+						__( 'Description box color', 'gl-campaign-block' )
 					),
 
 					el(
@@ -471,7 +583,7 @@
 						{
 							className:    'campaign-palette',
 							role:         'radiogroup',
-							'aria-label': __( 'Description box background color', 'campaign-block' ),
+							'aria-label': __( 'Description box background color', 'gl-campaign-block' ),
 						},
 						COLOR_PALETTE.map( function ( entry ) {
 							var isSelected = entry.bg === boxBgColor;
@@ -483,16 +595,16 @@
 									className:      'campaign-palette__swatch' + ( isSelected ? ' is-selected' : '' ),
 									style:          { backgroundColor: entry.bg },
 									title:          entry.label,
-									'aria-label':   entry.label + ( isSelected ? ' – ' + __( 'selected', 'campaign-block' ) : '' ),
+									'aria-label':   entry.label + ( isSelected ? ' – ' + __( 'selected', 'gl-campaign-block' ) : '' ),
 									'aria-pressed': isSelected,
 									onClick: function () {
-										setAttributes( { boxBgColor: entry.bg, boxTextColor: entry.color } );
+										setAttributes( { boxBgColor: entry.bg});
+										setAttributes( { boxTextColor: entry.color } );
 									},
 								}
 							);
 						} )
 					),
-
 					/* Small live preview chip */
 					el(
 						'div',
@@ -501,7 +613,7 @@
 							style:        { backgroundColor: boxBgColor, color: boxTextColor },
 							'aria-hidden': 'true',
 						},
-						__( 'Preview', 'campaign-block' ) + ' — Aa'
+						__( 'Preview', 'gl-campaign-block' ) + ' — Aa'
 					)
 				),
 
@@ -516,7 +628,7 @@
 					el(
 						PanelBody,
 						{
-							title:    __( 'Image', 'campaign-block' ),
+							title:    __( 'Image', 'gl-campaign-block' ),
 							opened:   imagePanelOpen,
 							onToggle: function ( next ) { setImagePanelOpen( next ); },
 						},
@@ -538,8 +650,8 @@
 											className: 'campaign-media-button',
 										},
 											imageUrl
-												? __( 'Replace image', 'campaign-block' )
-												: __( 'Select / upload image', 'campaign-block' )
+												? __( 'Replace image', 'gl-campaign-block' )
+												: __( 'Select / upload image', 'gl-campaign-block' )
 										),
 										imageUrl ? el(
 											'div',
@@ -550,7 +662,7 @@
 												variant:       'link',
 												isDestructive: true,
 												className:     'campaign-remove-image',
-											}, __( 'Remove image', 'campaign-block' ) )
+											}, __( 'Remove image', 'gl-campaign-block' ) )
 										) : null
 									);
 								},
@@ -559,10 +671,10 @@
 
 						/* Image position – toggle group */
 						el( 'div', { className: 'campaign-toggle-group-wrap' },
-							el( 'p', { className: 'campaign-toggle-group-label' }, __( 'Image position', 'campaign-block' ) ),
-							el( 'div', { className: 'campaign-toggle-group', role: 'group', 'aria-label': __( 'Image position', 'campaign-block' ) },
-								[ { label: __( 'Left',  'campaign-block' ), value: 'left'  },
-								  { label: __( 'Right', 'campaign-block' ), value: 'right' } ]
+							el( 'p', { className: 'campaign-toggle-group-label' }, __( 'Image position', 'gl-campaign-block' ) ),
+							el( 'div', { className: 'campaign-toggle-group', role: 'group', 'aria-label': __( 'Image position', 'gl-campaign-block' ) },
+								[ { label: __( 'Left',  'gl-campaign-block' ), value: 'left'  },
+								  { label: __( 'Right', 'gl-campaign-block' ), value: 'right' } ]
 								.map( function( opt ) {
 									var isActive = imageAlignment === opt.value;
 									return el( 'button', {
@@ -585,13 +697,13 @@
 					el(
 						PanelBody,
 						{
-							title:    __( 'Button', 'campaign-block' ),
+							title:    __( 'Button', 'gl-campaign-block' ),
 							opened:   buttonPanelOpen,
 							onToggle: function ( next ) { setButtonPanelOpen( next ); },
 						},
 
 						el( TextControl, {
-							label:    __( 'Button text', 'campaign-block' ),
+							label:    __( 'Button text', 'gl-campaign-block' ),
 							value:    buttonText,
 							onChange: function ( val ) { setAttributes( { buttonText: val } ); },
 							onFocus:  function ( e ) {
@@ -604,23 +716,33 @@
 									setAttributes( { buttonText: 'Button content...' } );
 								}
 							},
-							help:     __( 'Default: "Button content…". Change this text to display the button.', 'campaign-block' ),
+							help:     __( 'Default: "Button content…". Change this text to display the button.', 'gl-campaign-block' ),
 						} ),
 
-						el( TextControl, {
-							label:    __( 'Button URL', 'campaign-block' ),
-							value:    buttonUrl,
-							onChange: function ( val ) { setAttributes( { buttonUrl: val } ); },
-							type:     'url',
-							help:     __( 'The button is hidden if the URL is empty or the text is still the default.', 'campaign-block' ),
-						} ),
+						/* ==== Search Link with autocompletion ==== */
+						el('div',        {
+								style: {
+									width: '1OO%',      // largeur voulue
+									maxWidth: '100%',       // annule le min‑width du core
+									overflow: 'hidden',    // empêche le flex‑grow du sidebar
+								},
+							},
+							el(LinkControl, {
+								placeholder: 'link',
+								value: attributes.linkbis,
+								onChange: (value) => {
+									setAttributes({link: value.url});
+									setAttributes({linkbis: value});
+								},
+							}),
+						),
 
 						/* ==== Open in – custom toggle group ==== */
 						el( 'div', { className: 'campaign-toggle-group-wrap' },
-							el( 'p', { className: 'campaign-toggle-group-label' }, __( 'Open in', 'campaign-block' ) ),
-							el( 'div', { className: 'campaign-toggle-group', role: 'group', 'aria-label': __( 'Open in', 'campaign-block' ) },
-								[ { label: __( 'Same tab', 'campaign-block' ), value: '_self' },
-								  { label: __( 'New tab',  'campaign-block' ), value: '_blank' } ]
+							el( 'p', { className: 'campaign-toggle-group-label' }, __( 'Open in', 'gl-campaign-block' ) ),
+							el( 'div', { className: 'campaign-toggle-group', role: 'group', 'aria-label': __( 'Open in', 'gl-campaign-block' ) },
+								[ { label: __( 'Same tab', 'gl-campaign-block' ), value: '_self' },
+								  { label: __( 'New tab',  'gl-campaign-block' ), value: '_blank' } ]
 								.map( function( opt ) {
 									var isActive = ( buttonTarget ? '_blank' : '_self' ) === opt.value;
 									return el( 'button', {
@@ -633,11 +755,40 @@
 								} )
 							)
 						),
+					   /* ==== show icon – custom toggle group ==== */
+						el( 'div', { className: 'campaign-toggle-group-wrap' },
+							el( 'p', { className: 'campaign-toggle-group-label' }, __( 'Show Icon ', 'gl-campaign-block' ) ),
+							el( 'div', { className: 'campaign-toggle-group', role: 'group', 'aria-label': __( 'Show Icon', 'gl-campaign-block' ) },
+								[ { label: __( 'Hide', 'gl-campaign-block' ), value: false },
+								  { label: __( 'Show',  'gl-campaign-block' ), value: true } ]
+								.map( function( opt ) {
+									var isActive = ( iconShow ? true : false ) === opt.value;
+									return el( 'button', {
+										key:           opt.value,
+										type:          'button',
+										className:     'campaign-toggle-btn' + ( isActive ? ' is-active' : '' ),
+										'aria-pressed': isActive,
+										onClick: function() { setAttributes( { iconShow: opt.value === true } ); },
+									}, opt.label );
+								} )
+							)
+						),
 
 						/* ==== Button style – custom toggle group ==== */
 						el( 'div', { className: 'campaign-toggle-group-wrap' },
-							el( 'p', { className: 'campaign-toggle-group-label' }, __( 'Button style', 'campaign-block' ) ),
-							el( 'div', { className: 'campaign-toggle-group', role: 'group', 'aria-label': __( 'Button style', 'campaign-block' ) },
+							el( 'p', { className: 'campaign-toggle-group-label' }, __( 'Button style', 'gl-campaign-block' ) ),
+							el(SelectControl, {
+								label: '',
+								value: props.attributes.sizeButton,
+								options: [
+									{ label: __('Default'), value: '' },
+									{ label: __('Small'), value: 'bnpp-button--small' },
+								],
+								onChange: function( value ) {
+									props.setAttributes({ sizeButton : value });
+								}
+							}),
+							el( 'div', { className: 'campaign-toggle-group', role: 'group', 'aria-label': __( 'Button style', 'gl-campaign-block' ) },
 								BUTTON_STYLES.map( function( opt ) {
 									var isActive = buttonStyle === opt.value;
 									return el( 'button', {
@@ -649,7 +800,7 @@
 									}, opt.label );
 								} )
 							)
-						)
+						),
 					)
 				)
 			);
@@ -658,7 +809,9 @@
 		},
 
 		/* save() – server-side render */
-		save: function () { return null; },
+		save: function () { 
+			return null; 
+		},
 	} );
 
 }() );

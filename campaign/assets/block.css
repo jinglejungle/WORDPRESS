@@ -79,7 +79,7 @@
    max-width: 1130px  → never exceeds 1130 px.
    overflow: hidden   → clips the fixed-size image when container is narrower.
    ========================================================================= */
-#campaign_container,
+
 .campaign-container {
 	position   : relative;
 	width      : 100%;
@@ -91,6 +91,10 @@
 	/* Centre the block within its parent column */
 	margin-left  : auto;
 	margin-right : auto;
+}
+
+div.campaign-container.dark {
+    background-color: #0C2629;
 }
 
 /* =========================================================================
@@ -108,6 +112,7 @@
 	z-index  : var( --campaign-image-z );
 	width    : var( --campaign-image-width );
 	height   : var( --campaign-image-height );
+	border-radius: 5px;
 }
 
 /* Left-aligned variant: image pinned to the left edge */
@@ -133,8 +138,7 @@
 	 * We declare outline here only to prevent theme resets (e.g. img { outline: 0 })
 	 * from wiping the inline value. The actual color and width come from JS / PHP.
 	 */
-	outline        : 3px solid transparent;
-	outline-offset : -3px;
+	border-radius: 5px;
 }
 
 /* =========================================================================
@@ -151,13 +155,13 @@
 	z-index    : var( --campaign-box-z );
 
 	width      : var( --campaign-box-width );
-	min-height : var( --campaign-box-min-h );
 	margin-top : var( --campaign-box-margin-top );
 	padding    : var( --campaign-box-padding );
 	box-sizing : border-box;
 
 	background-color : var( --campaign-box-bg );
 	color            : var( --campaign-box-color );
+	height:fit-content;
 }
 
 /* ─── Image LEFT → description pushed to the right ───────────────────────
@@ -223,6 +227,7 @@ h2.campaign-title {
 	font-size          : var( --campaign-desc-font-size );
 	line-height        : var( --campaign-desc-line-height );
 	color              : var( --campaign-box-color );
+	margin-bottom:46px!important;
 }
 
 /* =========================================================================
@@ -279,6 +284,15 @@ h2.campaign-title {
 		margin-left  : 0;
 		margin-right : 0;
 	}
+
+	#global-campaign-container .dark{
+		display:block; /* in dark mode, the display:flex generate visual bug on mobile version*/
+	}
+
+	.campaign-description {
+		margin-bottom:15px!important;
+	}
+
 }
 
 /* =========================================================================
@@ -287,8 +301,7 @@ h2.campaign-title {
 a:focus-visible,
 button:focus-visible,
 [tabindex]:focus-visible {
-	outline        : 3px solid #005fcc;
-	outline-offset : 2px;
+
 }
 
 /* =========================================================================
@@ -422,8 +435,7 @@ button:focus-visible,
 }
 
 .campaign-palette__swatch:focus-visible {
-	outline        : 3px solid #005fcc;
-	outline-offset : 2px;
+
 }
 
 /* Selected state – white ring + dark outer border */
@@ -487,83 +499,6 @@ button:focus-visible,
 
 .campaign-image-wrapper--clickable:hover::after {
 	background-color : rgba( 0, 0, 0, 0.18 );
-}
-
-/* =========================================================================
-   Campaign Button  (.bnpp-custom)
-   =========================================================================
-   Three style variants: primary, secondary, tertiary.
-   The optional .dark class is added when the description box uses white text
-   (dark background), and removed when the box uses black text.
-
-   primary   : green background + white text
-   secondary : white background + green text + green border
-   tertiary  : white background + black text + orange border
-   ========================================================================= */
-
-/* Base button reset & shared layout */
-a.bnpp-custom,
-.bnpp-custom {
-	display          : inline-block;
-	padding          : 10px 24px;
-	border-radius    : 4px;
-	font-size        : 0.9rem;
-	font-weight      : 600;
-	text-decoration  : none;
-	cursor           : pointer;
-	border           : 2px solid transparent;
-	transition       : opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
-	margin-top       : 20px;
-	line-height      : 1.4;
-}
-
-a.bnpp-custom:hover,
-.bnpp-custom:hover {
-	opacity : 0.85;
-}
-
-/* ---- Primary ---- */
-a.bnpp-custom.primary,
-.bnpp-custom.primary {
-	background-color : #008252;
-	color            : #ffffff;
-	border-color     : #008252;
-}
-
-/* ---- Secondary ---- */
-a.bnpp-custom.secondary,
-.bnpp-custom.secondary {
-	background-color : #ffffff;
-	color            : #008252;
-	border-color     : #008252;
-}
-
-/* ---- Tertiary ---- */
-a.bnpp-custom.tertiary,
-.bnpp-custom.tertiary {
-	background-color : #ffffff;
-	color            : #000000;
-	border-color     : #e87722;  /* BNPP orange */
-}
-
-/*
- * .dark modifier – applied when the description box text color is #ffffff.
- * Adjusts contrast so the button is readable on a dark background.
- * primary stays green (already works).
- * secondary/tertiary invert their background to transparent so the box color shows through.
- */
-a.bnpp-custom.secondary.dark,
-.bnpp-custom.secondary.dark {
-	background-color : transparent;
-	color            : #ffffff;
-	border-color     : #ffffff;
-}
-
-a.bnpp-custom.tertiary.dark,
-.bnpp-custom.tertiary.dark {
-	background-color : transparent;
-	color            : #ffffff;
-	border-color     : #e87722;
 }
 
 /* =========================================================================
@@ -649,6 +584,175 @@ a.campaign-button-preview {
 }
 
 .campaign-toggle-btn:focus-visible {
-	outline        : 3px solid #005fcc;
-	outline-offset : 2px;
+
 }
+
+/* START STYLE FOR AUCTOCOMPLETION IN RIGHT PANEL */
+.block-editor-link-control{
+	min-width:unset!important;
+	/*width:100%!important;*/
+	margin-left: 0px !important;
+	margin-top:0px;
+}
+
+.block-editor-link-control__search-item-action ~ .block-editor-link-control__search-input-wrapper,
+.block-editor-link-control__search-popover,
+.block-editor-link-control__search-input {
+	min-width: unset !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	margin-left: 0px !important;
+	margin-top:0px;
+}
+
+.block-editor-link-control__search-input-wrapper {
+	min-width: unset !important;
+	width: 100% !important;
+	margin-left: 0px !important;
+	margin-top:0px;
+}
+
+.block-editor-link-control__search-input-container{
+	margin-left: 0px !important;
+	margin-top:0px
+}
+
+div.block-editor-link-control__search-input-wrapper.has-actions > div > div{
+  margin-left:0px;
+   margin-top:0px;
+}
+/* END STYLE FOR AUCTOCOMPLETION IN RIGHT PANEL */
+
+#boxDescription {
+    border-radius:5px;
+    padding:30px;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+	display:block!important;
+}
+
+#global-campaign-container{
+	padding:30px;
+}
+
+.campaign-container{
+	overflow:visible;            /* needed for shadow on the image */ 
+	border:1px solid #ffffff; /* needed for shadow on the image */ 
+}
+
+h2.campaign-title{
+    font-family: "BNPP Sans Condensed";
+    font-size: 64px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 60px; /* 93.75% */
+    padding:0px;
+}
+
+p.campaign-description{
+    font-family: "BNPP Sans";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+    margin:16px 0px 0px 0px;
+    padding:0px;
+}
+
+/* #boxDescription a {
+ 
+   padding: 10px 24px 10px 24px!important;
+    
+    height: 40px;
+    padding: 10px 24px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border-radius:3px;
+    text-align: center;
+    font-family: "BNPP Sans";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 0.5px;
+} */
+
+@media only screen and (max-width: 466px){
+    .campaign-image-wrapper{
+		box-shadow: none!important;
+	}
+
+    #global-campaign-container{
+        padding:14px 26px 14px 26px;
+    }
+
+    .campaign-image{
+        border-radius:5px 5px 0px 0px;
+		border-bottom:0;
+    }
+
+    #boxDescription{
+        border-radius: 0px 0px 5px 5px;
+        padding:33px;
+		box-shadow: none!important;
+    }
+
+    h2.campaign-title{
+        font-family: "BNPP Sans Condensed";
+        font-size: 30px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 36px; /* 120% */
+    }
+
+    p.campaign-description{
+        font-family: "BNPP Sans";
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px; 
+        margin-bottom:30px;
+    }
+	#boxDescription{ 
+		a {
+       		width:100%!important;
+		}
+	}
+}
+
+.borderBlack{
+	border-color:#0C2728;
+}
+
+
+.labelWithicon{
+	margin-top:5px!important;
+}
+
+.darkBackground{
+	background: #0C2728;
+}
+
+#global-campaign-container  span.button-icon {
+	position:relative!important;
+	display: inline-block;
+	top:-2px;
+	--iconSizeCampaign: 15px!important;
+	width: var(--iconSizeCampaign);
+	background-color: currentColor;
+	height: 2.3px;
+	border-radius: 50px;
+	transition: 300ms;
+
+	&::before,
+	&::after {
+		content: "";
+		position: absolute;
+		width: calc(var(--iconSizeCampaign) / 1.4);
+		height: 3px;
+		background: currentColor;
+		border-radius: 50px;
+		transform-origin: right;
+	}
+
+}
+/****/
