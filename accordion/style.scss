@@ -1,0 +1,18 @@
+@use '../../styles/mixins' as mixins;
+@use '../../styles/breakpoints' as bp;
+	
+.rebrand-accordion-block {
+	@include mixins.sectionStyles;
+
+	.rebrand-accordion-block__list {
+		display: grid;
+		gap: var(--wp--preset--spacing--40);
+	}
+
+	&.full-width {
+		.rebrand-accordion-module{
+			max-width: none;
+		}
+	}
+	
+}

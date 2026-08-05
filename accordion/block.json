@@ -1,0 +1,30 @@
+{
+    "name": "bnpp-custom-blocks/rebrand-accordion-block",
+    "title": "GL Accordion Block",
+    "description": "A block to show a list accordion items",
+    "category": "new-blocks",
+    "icon": "menu-alt3",
+    "editorScript": "file:./index.js",
+    "viewScript": "file:./frontend.js",
+    "viewStyle": "file:./style-index.css",
+    "editorStyle": "file:./index.css",
+    "render": "file:./render.php",
+    "attributes": {
+        "cover": {
+            "type": "string",
+            "default": ""
+        },
+        "colourDisplay": {
+            "type": "string",
+            "default": "light"
+        },
+        "fullWidth": {
+            "type": "boolean",
+            "default": false
+        },
+        "anchor": {
+            "type": "string",
+            "default": ""
+        }
+    }
+}
