@@ -78,7 +78,11 @@ const Edit = (props) => {
                 onChange={(colourDisplay) => setAttributes({ colourDisplay })}
             />
             <Container>
-                <div className="rebrand-accordion-block__list">
+                <div
+                    // "is-editor-flexible" (see editor.scss) overrides the front-end
+                    // 495px max-width / fluid gap so the editor keeps full editing width
+                    className={`rebrand-accordion-block__list ${twoColumns ? 'is-editor-flexible' : ''}`}
+                >
                     <InnerBlocks 
                         allowedBlocks={['bnpp-custom-blocks/rebrand-accordion-column']} 
                         template={[['bnpp-custom-blocks/rebrand-accordion-column', {}]]}
