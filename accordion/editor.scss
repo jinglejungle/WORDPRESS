@@ -1,11 +1,1 @@
 @use '../../styles/mixins' as mixins;
-
-// Editor-only override: keep the two lists fully flexible in the admin so
-// there's more room to type/edit content. The 495px max-width and fluid gap
-// (defined in style.scss) are a front-end-only design rule.
-// "!important" is needed here to reliably win over the ".two-columns" rule
-// in style.scss, since the editor.scss/style.scss cascade order isn't guaranteed.
-.rebrand-accordion-block__list.is-editor-flexible {
-	grid-template-columns: 1fr 1fr !important;
-	column-gap: var(--wp--preset--spacing--40) !important;
-}

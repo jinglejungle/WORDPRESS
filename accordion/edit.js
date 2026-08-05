@@ -79,9 +79,12 @@ const Edit = (props) => {
             />
             <Container>
                 <div
-                    // "is-editor-flexible" (see editor.scss) overrides the front-end
-                    // 495px max-width / fluid gap so the editor keeps full editing width
-                    className={`rebrand-accordion-block__list ${twoColumns ? 'is-editor-flexible' : ''}`}
+                    className="rebrand-accordion-block__list"
+                    // Inline style: guaranteed to apply regardless of how/whether
+                    // editor.scss gets compiled and enqueued in this project's build
+                    // pipeline. Overrides the front-end ".two-columns" CSS rule
+                    // (495px max-width + fluid gap) so the editor keeps full editing width.
+                    style={twoColumns ? { gridTemplateColumns: '1fr 1fr', columnGap: 'var(--wp--preset--spacing--40)' } : undefined}
                 >
                     <InnerBlocks 
                         allowedBlocks={['bnpp-custom-blocks/rebrand-accordion-column']} 
