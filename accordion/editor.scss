@@ -1,1 +1,15 @@
 @use '../../styles/mixins' as mixins;
+
+// The 495px max-width and fluid gap on ".two-columns" are a front-end-only
+// design rule. In the admin editor, keep the two lists fully flexible so
+// there's more room to type/edit content.
+// ".editor-styles-wrapper" scopes this to the editor canvas only, and gives
+// it enough specificity to override the rule coming from style.scss.
+.editor-styles-wrapper {
+	.rebrand-accordion-block.two-columns {
+		.rebrand-accordion-block__list {
+			grid-template-columns: 1fr 1fr;
+			column-gap: var(--wp--preset--spacing--40);
+		}
+	}
+}
