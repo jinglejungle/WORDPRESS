@@ -12,7 +12,14 @@
 	// When the second list has been added, show the two columns side by side
 	&.two-columns {
 		.rebrand-accordion-block__list {
-			grid-template-columns: 1fr 1fr;
+			// Each column shrinks with the viewport but never exceeds 495px
+			grid-template-columns: repeat(2, minmax(0, 495px));
+			// Keep the two columns centered if the container is wider than 2 * 495px + gap
+			justify-content: center;
+			// Fluid gap between the two columns, clamped between 20px and 260px.
+			// Scales linearly between a 375px and a 1920px viewport width;
+			// adjust the viewport bounds below to match your design breakpoints if needed.
+			column-gap: clamp(20px, calc(-38.25px + 15.534vw), 260px);
 
 			// Fallback to a single column on small screens; replace with
 			// your existing bp mixin/breakpoint if you have one available
