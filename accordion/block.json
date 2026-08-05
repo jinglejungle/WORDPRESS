@@ -25,6 +25,10 @@
         "anchor": {
             "type": "string",
             "default": ""
+        },
+        "twoColumns": {
+            "type": "boolean",
+            "default": false
         }
     }
 }

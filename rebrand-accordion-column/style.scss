@@ -1,0 +1,7 @@
+@use '../../styles/mixins' as mixins;
+@use '../../styles/breakpoints' as bp;
+
+.rebrand-accordion-column {
+	display: grid;
+	gap: var(--wp--preset--spacing--40);
+}

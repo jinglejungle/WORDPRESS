@@ -9,6 +9,19 @@
 		gap: var(--wp--preset--spacing--40);
 	}
 
+	// When the second list has been added, show the two columns side by side
+	&.two-columns {
+		.rebrand-accordion-block__list {
+			grid-template-columns: 1fr 1fr;
+
+			// Fallback to a single column on small screens; replace with
+			// your existing bp mixin/breakpoint if you have one available
+			@media (max-width: 768px) {
+				grid-template-columns: 1fr;
+			}
+		}
+	}
+
 	&.full-width {
 		.rebrand-accordion-module{
 			max-width: none;

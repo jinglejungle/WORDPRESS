@@ -1,0 +1,13 @@
+{
+    "name": "bnpp-custom-blocks/rebrand-accordion-column",
+    "title": "GL Accordion Column",
+    "description": "A single accordion list column. Used by the Accordion Block to display one or two lists side by side.",
+    "category": "new-blocks",
+    "icon": "menu-alt3",
+    "parent": ["bnpp-custom-blocks/rebrand-accordion-block"],
+    "editorScript": "file:./index.js",
+    "viewStyle": "file:./style-index.css",
+    "editorStyle": "file:./index.css",
+    "render": "file:./render.php",
+    "attributes": {}
+}

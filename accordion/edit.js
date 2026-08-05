@@ -1,7 +1,8 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InnerBlocks, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, CheckboxControl } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
+import { useBlockProps, InnerBlocks, InspectorControls, store as blockEditorStore } from '@wordpress/block-editor';
+import { PanelBody, CheckboxControl, Button } from '@wordpress/components';
+import { useSelect, useDispatch } from '@wordpress/data';
+import { createBlock } from '@wordpress/blocks';
 import { 
     ColorDisplayControl,
     Container,
@@ -10,15 +11,41 @@ import {
 
 
 const Edit = (props) => {
-    const { attributes, setAttributes } = props;
+    const { attributes, setAttributes, clientId } = props;
     const { 
         cover, 
         colourDisplay,
-        fullWidth
+        fullWidth,
+        twoColumns
     } = attributes;
     const blockProps = useBlockProps({
-        className: `rebrand-accordion-block ${colourDisplay}`,
+        className: `rebrand-accordion-block ${colourDisplay} ${twoColumns ? 'two-columns' : ''}`,
     });
+
+    // Current "column" inner blocks, used to know how many lists are already present
+    const columnBlocks = useSelect(
+        (select) => select(blockEditorStore).getBlocks(clientId),
+        [clientId]
+    );
+    const { insertBlock, removeBlock } = useDispatch(blockEditorStore);
+
+    /**
+     * Add or remove the second accordion list (column).
+     * Adding inserts a new empty column block; removing deletes the last column block.
+     */
+    const toggleSecondList = () => {
+        if (twoColumns) {
+            const lastColumn = columnBlocks[columnBlocks.length - 1];
+            if (lastColumn) {
+                removeBlock(lastColumn.clientId, false);
+            }
+            setAttributes({ twoColumns: false });
+        } else {
+            const newColumn = createBlock('bnpp-custom-blocks/rebrand-accordion-column');
+            insertBlock(newColumn, columnBlocks.length, clientId, false);
+            setAttributes({ twoColumns: true });
+        }
+    };
 
     if ( cover ) {
         return <img src={ cover } width={"100%"}/>;
@@ -34,6 +61,16 @@ const Edit = (props) => {
                         label={__('Set accordion to be full width?', 'bnpp-custom-blocks')}
                     />
                 </PanelBody>
+                <PanelBody title={__('Accordion Lists', 'bnpp-custom-blocks')}>
+                    <Button
+                        variant="secondary"
+                        onClick={toggleSecondList}
+                    >
+                        {twoColumns
+                            ? __('Remove second list', 'bnpp-custom-blocks')
+                            : __('Add second list', 'bnpp-custom-blocks')}
+                    </Button>
+                </PanelBody>
                 <HtmlAnchorControl {...props} />
             </InspectorControls>
             <ColorDisplayControl
@@ -43,9 +80,8 @@ const Edit = (props) => {
             <Container>
                 <div className="rebrand-accordion-block__list">
                     <InnerBlocks 
-                        allowedBlocks={['bnpp-custom-blocks/bnpp-rebrand-accordion-module']} 
-                        renderAppender={() => <InnerBlocks.ButtonBlockAppender />}
-                        template={[['bnpp-custom-blocks/bnpp-rebrand-accordion-module', {}]]}
+                        allowedBlocks={['bnpp-custom-blocks/rebrand-accordion-column']} 
+                        template={[['bnpp-custom-blocks/rebrand-accordion-column', {}]]}
                     />
                 </div>
             </Container>

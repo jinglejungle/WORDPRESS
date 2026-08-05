@@ -10,6 +10,7 @@
     'colourDisplay' => $colourDisplay,
     'anchor'    => $anchor,
     'fullWidth' => $fullWidth,
+    'twoColumns' => $twoColumns,
 ] = $attributes;
 
 // Prepare classes
@@ -18,6 +19,11 @@ $classes = "rebrand-accordion-block {$colourDisplay}";
 // Add full width class if applicable
 if ( $fullWidth ) {
     $classes .= ' full-width';
+}
+
+// Add two-columns class if the second list has been added
+if ( $twoColumns ) {
+    $classes .= ' two-columns';
 }
 
 // Prepare id attribute
