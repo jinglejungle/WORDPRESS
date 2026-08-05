@@ -80,11 +80,11 @@ const Edit = (props) => {
             <Container>
                 <div
                     className="rebrand-accordion-block__list"
-                    // Inline style: guaranteed to apply regardless of how/whether
-                    // editor.scss gets compiled and enqueued in this project's build
-                    // pipeline. Overrides the front-end ".two-columns" CSS rule
-                    // (495px max-width + fluid gap) so the editor keeps full editing width.
-                    style={twoColumns ? { gridTemplateColumns: '1fr 1fr', columnGap: 'var(--wp--preset--spacing--40)' } : undefined}
+                    // In the editor, keep the two "column" blocks stacked at full width
+                    // (single column) instead of the front-end side-by-side layout, so
+                    // there's more room to edit content. The side-by-side display is a
+                    // front-end-only concern, handled by render.php + style.scss.
+                    style={twoColumns ? { gridTemplateColumns: '1fr' } : undefined}
                 >
                     <InnerBlocks 
                         allowedBlocks={['bnpp-custom-blocks/rebrand-accordion-column']} 
