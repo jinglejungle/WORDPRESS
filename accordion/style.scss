@@ -16,6 +16,9 @@
 			grid-template-columns: repeat(2, minmax(0, 495px));
 			// Keep the two columns centered if the container is wider than 2 * 495px + gap
 			justify-content: center;
+			// Prevent a column from stretching (and redistributing its own items'
+			// spacing) when the other column's height changes as an item expands
+			align-items: start;
 			// Fluid gap between the two columns, clamped between 20px and 260px.
 			// Scales linearly between a 375px and a 1920px viewport width;
 			// adjust the viewport bounds below to match your design breakpoints if needed.
