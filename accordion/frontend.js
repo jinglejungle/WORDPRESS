@@ -3,17 +3,15 @@ window.addEventListener('load', () => {
     const accordionModuleToggles = document.querySelectorAll('.rebrand-accordion-module > h3');
   
     /**
-     * Toggle the accordion open or closed.
+     * Open or close the accordion module for a given toggle (heading) element.
      *
      * This function toggles the "isOpen" class on the accordion module and
      * updates a CSS custom property (--maxHeight) to animate the opening/closing.
      * It also updates the aria-expanded attribute for accessibility.
      *
-     * @param {Event} e - The event object.
+     * @param {HTMLElement} currentToggle - The heading element (h3) acting as the toggle.
      */
-    const toggleAccordion = (e) => {
-      // The current heading that was activated (clicked or triggered by keyboard)
-      const currentToggle = e.currentTarget;
+    const openOrCloseAccordion = (currentToggle) => {
       // Find the accordion module container for this toggle
       const parent = currentToggle.closest('.rebrand-accordion-module');
       // The accordion content is assumed to be the immediate sibling after the heading
@@ -31,6 +29,15 @@ window.addEventListener('load', () => {
         accordionContent.setAttribute('style', `--maxHeight: calc(var(--wp--preset--spacing--40) + ${accordionContent.scrollHeight}px +60px);`);
         currentToggle.setAttribute('aria-expanded', 'true');
       }
+    };
+
+    /**
+     * Toggle the accordion open or closed from a click/keyboard event.
+     *
+     * @param {Event} e - The event object.
+     */
+    const toggleAccordion = (e) => {
+      openOrCloseAccordion(e.currentTarget);
     };
   
     accordionModuleToggles.forEach(toggle => {
@@ -69,6 +76,17 @@ window.addEventListener('load', () => {
           headings[nextIndex].focus();
         }
       });
+    });
+
+    // By default, open the first accordion item of each list so its description
+    // is visible on load. ".rebrand-accordion-column" is included so that, when
+    // the block has two lists side by side, each list gets its own first item open.
+    const listContainers = document.querySelectorAll('.rebrand-accordion-block__list, .rebrand-accordion-column');
+    listContainers.forEach(container => {
+      const firstToggle = container.querySelector(':scope > .rebrand-accordion-module > h3');
+      if (firstToggle) {
+        openOrCloseAccordion(firstToggle);
+      }
     });
   });
   
